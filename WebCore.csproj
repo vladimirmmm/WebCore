@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\Application\Application.d.ts" />
+    <Content Remove="wwwroot\Application\Application.js" />
+    <Content Remove="wwwroot\Application\Application.js.map" />
+    <Content Remove="wwwroot\Application\Application.ts" />
+    <Content Remove="wwwroot\Application\AppModels.ts" />
+    <Content Remove="wwwroot\Application\Article.ts" />
+    <Content Remove="wwwroot\Application\BaseModel.ts" />
+    <Content Remove="wwwroot\Application\Contact.ts" />
+    <Content Remove="wwwroot\Application\Controls.ts" />
+    <Content Remove="wwwroot\Application\ErpAppModels.ts" />
+    <Content Remove="wwwroot\Application\HtmlHelpers.ts" />
+    <Content Remove="wwwroot\Application\Settings.ts" />
+    <Content Remove="wwwroot\Application\Validations.ts" />
+    <Content Remove="wwwroot\format.20110630-1100.min.js" />
+    <Content Remove="wwwroot\iziToast.min.js" />
+    <Content Remove="wwwroot\Utils\Binding.ts" />
+    <Content Remove="wwwroot\Utils\iziToast.d.ts" />
+    <Content Remove="wwwroot\Utils\MetaData.ts" />
+    <Content Remove="wwwroot\Utils\Models.ts" />
+    <Content Remove="wwwroot\Utils\Parser.ts" />
+    <Content Remove="wwwroot\Utils\Razor2.ts" />
+    <Content Remove="wwwroot\Utils\Utils.d.ts" />
+    <Content Remove="wwwroot\Utils\Utils.js" />
+    <Content Remove="wwwroot\Utils\Utils.js.map" />
+    <Content Remove="wwwroot\Utils\Utils.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Application\Application.d.ts" />
+    <None Include="wwwroot\Application\Application.js" />
+    <None Include="wwwroot\Application\Application.js.map" />
+    <None Include="wwwroot\Application\Application.ts" />
+    <None Include="wwwroot\Application\AppModels.ts" />
+    <None Include="wwwroot\Application\Article.ts" />
+    <None Include="wwwroot\Application\BaseModel.ts" />
+    <None Include="wwwroot\Application\Contact.ts" />
+    <None Include="wwwroot\Application\Controls.ts" />
+    <None Include="wwwroot\Application\ErpAppModels.ts" />
+    <None Include="wwwroot\Application\HtmlHelpers.ts" />
+    <None Include="wwwroot\Application\Settings.ts" />
+    <None Include="wwwroot\Application\Validations.ts" />
+    <None Include="wwwroot\format.20110630-1100.min.js" />
+    <None Include="wwwroot\iziToast.min.js" />
+    <None Include="wwwroot\Utils\Binding.ts" />
+    <None Include="wwwroot\Utils\iziToast.d.ts" />
+    <None Include="wwwroot\Utils\MetaData.ts" />
+    <None Include="wwwroot\Utils\Models.ts" />
+    <None Include="wwwroot\Utils\Parser.ts" />
+    <None Include="wwwroot\Utils\Razor2.ts" />
+    <None Include="wwwroot\Utils\Utils.d.ts" />
+    <None Include="wwwroot\Utils\Utils.js" />
+    <None Include="wwwroot\Utils\Utils.js.map" />
+    <None Include="wwwroot\Utils\Utils.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.3.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>
