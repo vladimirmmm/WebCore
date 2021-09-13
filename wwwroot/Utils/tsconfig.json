@@ -5,6 +5,7 @@
     "noEmitOnError": true,
     "removeComments": false,
     "sourceMap": true,
+<<<<<<< HEAD
     "outFile": "WebCore-Utils.js",
     "declaration": true,
     "target": "es6"
@@ -18,6 +19,18 @@
     "wwwroot",
     "*.d.ts",
     "*.js"
+=======
+    "outFile": "Utils.js",
+    "declaration": true,
+    "target": "es6"
+  },
+  "exclude": [
+    "node_modules",
+    "wwwroot"
+  ],
+  "include": [
+    "*.ts", "../Application/HtmlHelpers.ts"
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
   ],
   "references": []
 }

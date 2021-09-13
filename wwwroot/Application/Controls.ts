@@ -1,6 +1,10 @@
 //@keyattribute
 module WebCore {
+<<<<<<< HEAD
     export class Controls {
+=======
+    class Controls {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         public static DateFormat = "yyyy-MM-dd";
     }
 
@@ -26,7 +30,11 @@ module WebCore {
         public excludednodes?: Node[] = [];
         public excludedselectors?: string[] = [];
     }
+<<<<<<< HEAD
     export class DomDiff {
+=======
+    class DomDiff {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         public static InComparableSelectors: string[] = [];
         public static Test() {
             var e1 = _SelectFirst(".div1");
@@ -462,7 +470,11 @@ module WebCore {
         var htmlbulder = [];
         return htmlbulder.join();
     }
+<<<<<<< HEAD
     export function TreeMenu(target: Element, obj: any): string {
+=======
+    function TreeMenu(target: Element, obj: any): string {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         let searchfgh = (f) => true;
         if (application.Settings.IsPermissionManagementEnabled) {
             let parseUrl = (url: string): { controll: string, view: string, p: any, area: string } => {
@@ -1424,7 +1436,11 @@ module WebCore {
 
     }
 
+<<<<<<< HEAD
     export class App_QueryEditor extends HTMLElement {
+=======
+    class App_QueryEditor extends HTMLElement {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         private QueryTemplate: RazorTemplate = null;
         private Query: ClientQuery = new ClientQuery();
         private VisibleFields: string[] = [];
@@ -1732,7 +1748,11 @@ module WebCore {
     }
     window.customElements.define("app-queryeditor", App_QueryEditor);
 
+<<<<<<< HEAD
     export class App_FilterEditor extends HTMLElement {
+=======
+    class App_FilterEditor extends HTMLElement {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         private _filter: IClientFilter = <any>{};
         private Template: RazorTemplate = null;
 
@@ -1908,7 +1928,11 @@ module WebCore {
     }
     window.customElements.define("app-filtereditor", App_FilterEditor);
 
+<<<<<<< HEAD
     export class App_ProgressButton extends HTMLElement {
+=======
+    class App_ProgressButton extends HTMLElement {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         private _value: string = "";
 
         get value() {
@@ -1935,7 +1959,11 @@ module WebCore {
     }
     window.customElements.define("app-progressbutton", App_ProgressButton);
 
+<<<<<<< HEAD
     export class App_ProgressBar extends HTMLElement {
+=======
+    class App_ProgressBar extends HTMLElement {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         private _value: string = "";
 
         get value() {
@@ -1986,7 +2014,11 @@ module WebCore {
     }
     window.customElements.define("app-progressbar", App_ProgressBar);
 
+<<<<<<< HEAD
     export class App_Tabs extends HTMLElement {
+=======
+    class App_Tabs extends HTMLElement {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         public connectedCallback() {
             var me = this;
             var head = _SelectFirst(":scope > .heads", me);
@@ -2032,7 +2064,11 @@ module WebCore {
     }
     window.customElements.define("app-tabs", App_Tabs);
 
+<<<<<<< HEAD
     export class App_MetaBrowser extends HTMLElement {
+=======
+    class App_MetaBrowser extends HTMLElement {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         private _value: string = "";
         private _valueMeta: any = null;
         private _path: string = "";
@@ -2163,7 +2199,11 @@ module WebCore {
     }
     window.customElements.define("app-metabrowser", App_MetaBrowser);
 
+<<<<<<< HEAD
     export class App_Validation extends HTMLElement {
+=======
+    class App_Validation extends HTMLElement {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
 
         private _Template: RazorTemplate = null;
         private get Template(): RazorTemplate {
@@ -2233,7 +2273,11 @@ module WebCore {
     }
     window.customElements.define("app-validation", App_Validation);
 
+<<<<<<< HEAD
     export class App_RadioList extends HTMLElement {
+=======
+    class App_RadioList extends HTMLElement {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         private _value: string = "";
         constructor() {
             super();
@@ -2316,7 +2360,11 @@ module WebCore {
     }
     window.customElements.define("app-radiolist", App_RadioList);
 
+<<<<<<< HEAD
     export class App_DictionaryEditor extends HTMLElement {
+=======
+    class App_DictionaryEditor extends HTMLElement {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         public attributeChangedCallback(attrName, oldValue, newValue) {
             this[attrName] = this.hasAttribute(attrName);
         }
@@ -2466,7 +2514,11 @@ module WebCore {
     }
     window.customElements.define("app-dictionaryeditor", App_DictionaryEditor);
 
+<<<<<<< HEAD
     export class AutoCompleteOption {
+=======
+    class AutoCompleteOption {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         public clearinput: string = "0";
         public targetquery: string = "";
         public selectormode = "listwithdefault";
@@ -2498,7 +2550,11 @@ module WebCore {
 
     }
 
+<<<<<<< HEAD
     export class App_AutoComplete extends HTMLElement {
+=======
+    class App_AutoComplete extends HTMLElement {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         public options: AutoCompleteOption = new AutoCompleteOption();
         private _input: HTMLInputElement = null;
         private c_value: HTMLInputElement = null;
@@ -3156,8 +3212,12 @@ module WebCore {
 
     }
     window.customElements.define("app-autocomplete", App_AutoComplete);
+<<<<<<< HEAD
 
     export class App_ObjectPicker extends App_AutoComplete {
+=======
+    class App_ObjectPicker extends App_AutoComplete {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         private _tagsnode: HTMLElement = null;
         private _hinput: HTMLInputElement = null;
         private _uitype: UIDataType = null;
@@ -3683,7 +3743,11 @@ module WebCore {
         }
     }
 
+<<<<<<< HEAD
     export function LogToast(verb: string, stitle: string, smessage: string = "") {
+=======
+    function LogToast(verb: string, stitle: string, smessage: string = "") {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         var msg = document.createElement('code');
         var details = document.createElement('code');
         msg.classList.add(verb);
@@ -3699,7 +3763,11 @@ module WebCore {
     function Toast_DestroyAll() {
         window["iziToast"].destroy();
     }
+<<<<<<< HEAD
     export function Toast_Error(stitle: string, smessage: string = "", sdata: string = "", timeout: number = 5000) {
+=======
+    function Toast_Error(stitle: string, smessage: string = "", sdata: string = "", timeout: number = 5000) {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("error", stitle, sdata + smessage);
         Log(stitle, smessage);
@@ -3714,7 +3782,11 @@ module WebCore {
             } catch (ex) { }
         }
     }
+<<<<<<< HEAD
     export function Toast_Notification(stitle: string, smessage: string = "", timeout: number = 5000) {
+=======
+    function Toast_Notification(stitle: string, smessage: string = "", timeout: number = 5000) {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("info", stitle, smessage);
 
@@ -3726,7 +3798,11 @@ module WebCore {
             timeout: timeout
         });
     }
+<<<<<<< HEAD
     export function Toast_Warning(stitle: string, smessage: string = "", sdata: string = "", timeout: number = 5000) {
+=======
+    function Toast_Warning(stitle: string, smessage: string = "", sdata: string = "", timeout: number = 5000) {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("warning", stitle, sdata + smessage);
         Log(stitle, smessage);
@@ -3738,7 +3814,11 @@ module WebCore {
         LogToast("warn", stitle, smessage);
 
     }
+<<<<<<< HEAD
     export function Toast_Success(stitle: string, smessage: string = "", timeout: number = 5000) {
+=======
+    function Toast_Success(stitle: string, smessage: string = "", timeout: number = 5000) {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("success", stitle, smessage);
 
@@ -3749,7 +3829,11 @@ module WebCore {
         });
     }
 
+<<<<<<< HEAD
     export function Toast_Question(stitle: string, smessage: string = "", timeout: number = 5000, onYes: Function = () => { }, onNo: Function = () => { }) {
+=======
+    function Toast_Question(stitle: string, smessage: string = "", timeout: number = 5000, onYes: Function = () => { }, onNo: Function = () => { }) {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("success", stitle, smessage);
 
@@ -3780,7 +3864,11 @@ module WebCore {
         });
     }
 
+<<<<<<< HEAD
     export function Toast_Alert(stitle: string, smessage: string = "", timeout: number = 5000, onOk: Function = () => { }) {
+=======
+    function Toast_Alert(stitle: string, smessage: string = "", timeout: number = 5000, onOk: Function = () => { }) {
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("success", stitle, smessage);
 

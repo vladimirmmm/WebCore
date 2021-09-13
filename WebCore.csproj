@@ -40,7 +40,6 @@
     <None Include="wwwroot\Application\Contact.ts" />
     <None Include="wwwroot\Application\Controls.ts" />
     <None Include="wwwroot\Application\ErpAppModels.ts" />
-    <None Include="wwwroot\Utils\HtmlHelpers.ts" />
     <None Include="wwwroot\Application\Settings.ts" />
     <None Include="wwwroot\Application\Validations.ts" />
     <None Include="wwwroot\format.20110630-1100.min.js" />

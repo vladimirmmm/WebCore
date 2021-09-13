@@ -19,7 +19,11 @@
     }
     export class Block extends Part {
         public Signature: string;
+<<<<<<< HEAD
     } 
+=======
+    }
+>>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
     export class Loop extends Block {
 
     }
