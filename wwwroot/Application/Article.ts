@@ -378,7 +378,7 @@ module Common.Article {
                     } else {
                         commandmessage = "Article was saved successfully"
                     }
-                    Toast_Success(commandmessage);
+                    webcore.Toast_Success(commandmessage);
                 },
                 null,
                 null);
@@ -396,7 +396,7 @@ module Common.Article {
                     var response = <AppResponse>JSON.parse(xhttp.responseText);
                     var model = response.Model.FirstOrDefault();
                     var id = model.Model["Value"]
-                    Toast_Success("Category added", id);
+                    webcore.Toast_Success("Category added", id);
                 },
                 null,
                 "application/json");
@@ -443,7 +443,7 @@ module Common.Article {
                     function (xhttp: XMLHttpRequest) {
                         var response = <AppResponse>JSON.parse(xhttp.responseText);
                         var model = IsArray(response.Model) ? response.Model.FirstOrDefault() : response.Model;
-                        Toast_Success("Article with " + id + " was deleted successfully");
+                        webcore.Toast_Success("Article with " + id + " was deleted successfully");
                     },
                     null,
                     null);

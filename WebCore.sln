@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31229.75
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebCore", "WebCore.csproj", "{C48B4E6A-4B77-4E3B-889D-9C9755EC070F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebCore", "WebCore.csproj", "{C48B4E6A-4B77-4E3B-889D-9C9755EC070F}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "WebCoreSh", "..\WebCoreSh\WebCoreSh.shproj", "{50067E72-9E36-4060-857F-1E050228E2EA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreApiModel", "..\AspNetCore\CoreApiModel.csproj", "{66833DAA-C2B9-4192-B5F2-AC8BCE664181}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -20,6 +22,10 @@ Global
 		{C48B4E6A-4B77-4E3B-889D-9C9755EC070F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C48B4E6A-4B77-4E3B-889D-9C9755EC070F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C48B4E6A-4B77-4E3B-889D-9C9755EC070F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66833DAA-C2B9-4192-B5F2-AC8BCE664181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66833DAA-C2B9-4192-B5F2-AC8BCE664181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66833DAA-C2B9-4192-B5F2-AC8BCE664181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66833DAA-C2B9-4192-B5F2-AC8BCE664181}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

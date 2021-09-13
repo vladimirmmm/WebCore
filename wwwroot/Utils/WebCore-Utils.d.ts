@@ -10,34 +10,48 @@ declare function GetBoundObject(element: Element, target?: Element): {};
 declare function ObtainBoundObject(el: Element, model: any, container?: Element): any;
 declare function ConvertToProperty(obj: object, key: string, onset?: Function): void;
 declare function GetLinkedObj(element: Element, obj: object): object;
-declare module DB {
-    export class Type {
-        Name: string;
-        Scale?: any;
-        Precision?: any;
-    }
-    export class Types {
-        static Text: string;
-        static Number: string;
-        static DateTime: string;
-        static Data: string;
-    }
-    interface DBImplementation {
-        GetLogicalType(typestr: string): Type;
-        GetDbType(type: Type): string;
-    }
-    export class FireBird implements DBImplementation {
-        GetDbType(type: Type): string;
-        GetLogicalType(typestr: string): Type;
-    }
-    export class SqlServer implements DBImplementation {
-        GetDbType(type: Type): string;
-        GetLogicalType(typestr: string): Type;
-    }
-    export {};
+interface QueryLookupOptions {
+    QueryName?: string;
+    LookupFields?: string[];
+    ValueField?: string;
+    DisplayField?: string;
 }
-declare class FlowEditor extends HTMLElement {
-    connectedCallback(): void;
+declare class HtmlHelpers {
+    view: any;
+    static dataentrypoint: string;
+    static DateFormat: string;
+    static DateTimeFormat: string;
+    static DecimalFormat: string;
+    static MonetaryFormat: string;
+    static ResNvl: Function;
+    static GetMinMaxDate: Function;
+    Res(Key: string): string;
+    ModelRes(Key: string): string;
+    Encode(txt: string): string;
+    Url(url: string): string;
+    Link(url: string, title: string): string;
+    Image(url: string, format: string): string;
+    GetInputsFor(field: string, type: string, items: [], values?: [], source?: []): string;
+    FilterFor(key: string, typename?: string): string;
+    GetFilter(options: IUIFilterOptions): string;
+    FieldFor(expression: string, hideifempty?: boolean): string;
+    LabelFor(model: object, expression: Function, UIType: string, attributes: Object): string;
+    ValueFor(model: any, meta: ObjectMeta, parent?: any): string;
+    Value(model: any, key: string): string;
+    ControlFor(model: any, key: string, scope?: string, accessorprefix?: string): string;
+    labelFor(model: any, expression: Function, attributes: Object): string;
+    GetLabel(key: string, attributes?: Object): string;
+    GetLabelText(key: string): string;
+    Text(key: string): string;
+    LabelText(model: any, key: string): string;
+    Label(model: any, key: string, attributes?: Object): string;
+    ObjectPickerFor(model: any, expression: Function, labelexpression: Function, options: QueryLookupOptions, attributes: Object): string;
+    AutoCompleteFor(model: any, expression: Function, accessorprefix: string, options: QueryLookupOptions, attributes: Object): string;
+    InputFor(model: any, expression: Function, attributes: Object): string;
+    TextAreaFor(model: any, expression: Function, attributes: Object): string;
+    BoundInput(model: any, key: string, attributes?: any): string;
+    Input(model: any, key: string, attributes: Object): string;
+    FormattedLabelFor(model: object, expression: Function, formatstring: string, attributes: Object): string;
 }
 interface IMeta {
     MetaKey: string;
@@ -872,8 +886,8 @@ declare function GetHtml2(obj: any, span?: string): string;
 declare function GetHtml(obj: Object): string;
 declare function download(filename: any, data: any): void;
 declare function CsvLineSplit(text: string, delimiter?: string, enclose?: string): string[];
-declare function compareString(a: any, b: any): 1 | 0 | -1;
-declare function getStringCompareFunction(p: Function): (a: any, b: any) => 1 | 0 | -1;
+declare function compareString(a: any, b: any): 0 | 1 | -1;
+declare function getStringCompareFunction(p: Function): (a: any, b: any) => 0 | 1 | -1;
 declare function RestoreModel(item: object, fielddictionary: object): object;
 declare var dataURLToBlob: (dataURL: any) => Blob;
 declare function _RequiredFieldHandle(uielement: any): void;
@@ -926,46 +940,3 @@ declare function PromiseSyncronizeAs<T>(key: string, callback: Func2<Action<T>, 
  * @returns the result is Promise<typeof any>.
  */
 declare function PromiseSyncronize(key: string, callback: Action2<Action<any>, Action<any>>): Promise<any>;
-interface QueryLookupOptions {
-    QueryName?: string;
-    LookupFields?: string[];
-    ValueField?: string;
-    DisplayField?: string;
-}
-declare class HtmlHelpers {
-    view: any;
-    static dataentrypoint: string;
-    static DateFormat: string;
-    static DateTimeFormat: string;
-    static DecimalFormat: string;
-    static MonetaryFormat: string;
-    static ResNvl: Function;
-    static GetMinMaxDate: Function;
-    Res(Key: string): string;
-    ModelRes(Key: string): string;
-    Encode(txt: string): string;
-    Url(url: string): string;
-    Link(url: string, title: string): string;
-    Image(url: string, format: string): string;
-    GetInputsFor(field: string, type: string, items: [], values?: [], source?: []): string;
-    FilterFor(key: string, typename?: string): string;
-    GetFilter(options: IUIFilterOptions): string;
-    FieldFor(expression: string, hideifempty?: boolean): string;
-    LabelFor(model: object, expression: Function, UIType: string, attributes: Object): string;
-    ValueFor(model: any, meta: ObjectMeta, parent?: any): string;
-    Value(model: any, key: string): string;
-    ControlFor(model: any, key: string, scope?: string, accessorprefix?: string): string;
-    labelFor(model: any, expression: Function, attributes: Object): string;
-    GetLabel(key: string, attributes?: Object): string;
-    GetLabelText(key: string): string;
-    Text(key: string): string;
-    LabelText(model: any, key: string): string;
-    Label(model: any, key: string, attributes?: Object): string;
-    ObjectPickerFor(model: any, expression: Function, labelexpression: Function, options: QueryLookupOptions, attributes: Object): string;
-    AutoCompleteFor(model: any, expression: Function, accessorprefix: string, options: QueryLookupOptions, attributes: Object): string;
-    InputFor(model: any, expression: Function, attributes: Object): string;
-    TextAreaFor(model: any, expression: Function, attributes: Object): string;
-    BoundInput(model: any, key: string, attributes?: any): string;
-    Input(model: any, key: string, attributes: Object): string;
-    FormattedLabelFor(model: object, expression: Function, formatstring: string, attributes: Object): string;
-}

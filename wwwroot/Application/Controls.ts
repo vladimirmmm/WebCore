@@ -1,6 +1,6 @@
 //@keyattribute
 module WebCore {
-    class Controls {
+    export class Controls {
         public static DateFormat = "yyyy-MM-dd";
     }
 
@@ -26,7 +26,7 @@ module WebCore {
         public excludednodes?: Node[] = [];
         public excludedselectors?: string[] = [];
     }
-    class DomDiff {
+    export class DomDiff {
         public static InComparableSelectors: string[] = [];
         public static Test() {
             var e1 = _SelectFirst(".div1");
@@ -462,7 +462,7 @@ module WebCore {
         var htmlbulder = [];
         return htmlbulder.join();
     }
-    function TreeMenu(target: Element, obj: any): string {
+    export function TreeMenu(target: Element, obj: any): string {
         let searchfgh = (f) => true;
         if (application.Settings.IsPermissionManagementEnabled) {
             let parseUrl = (url: string): { controll: string, view: string, p: any, area: string } => {
@@ -1424,7 +1424,7 @@ module WebCore {
 
     }
 
-    class App_QueryEditor extends HTMLElement {
+    export class App_QueryEditor extends HTMLElement {
         private QueryTemplate: RazorTemplate = null;
         private Query: ClientQuery = new ClientQuery();
         private VisibleFields: string[] = [];
@@ -1732,7 +1732,7 @@ module WebCore {
     }
     window.customElements.define("app-queryeditor", App_QueryEditor);
 
-    class App_FilterEditor extends HTMLElement {
+    export class App_FilterEditor extends HTMLElement {
         private _filter: IClientFilter = <any>{};
         private Template: RazorTemplate = null;
 
@@ -1908,7 +1908,7 @@ module WebCore {
     }
     window.customElements.define("app-filtereditor", App_FilterEditor);
 
-    class App_ProgressButton extends HTMLElement {
+    export class App_ProgressButton extends HTMLElement {
         private _value: string = "";
 
         get value() {
@@ -1935,7 +1935,7 @@ module WebCore {
     }
     window.customElements.define("app-progressbutton", App_ProgressButton);
 
-    class App_ProgressBar extends HTMLElement {
+    export class App_ProgressBar extends HTMLElement {
         private _value: string = "";
 
         get value() {
@@ -1986,7 +1986,7 @@ module WebCore {
     }
     window.customElements.define("app-progressbar", App_ProgressBar);
 
-    class App_Tabs extends HTMLElement {
+    export class App_Tabs extends HTMLElement {
         public connectedCallback() {
             var me = this;
             var head = _SelectFirst(":scope > .heads", me);
@@ -2032,7 +2032,7 @@ module WebCore {
     }
     window.customElements.define("app-tabs", App_Tabs);
 
-    class App_MetaBrowser extends HTMLElement {
+    export class App_MetaBrowser extends HTMLElement {
         private _value: string = "";
         private _valueMeta: any = null;
         private _path: string = "";
@@ -2163,7 +2163,7 @@ module WebCore {
     }
     window.customElements.define("app-metabrowser", App_MetaBrowser);
 
-    class App_Validation extends HTMLElement {
+    export class App_Validation extends HTMLElement {
 
         private _Template: RazorTemplate = null;
         private get Template(): RazorTemplate {
@@ -2233,7 +2233,7 @@ module WebCore {
     }
     window.customElements.define("app-validation", App_Validation);
 
-    class App_RadioList extends HTMLElement {
+    export class App_RadioList extends HTMLElement {
         private _value: string = "";
         constructor() {
             super();
@@ -2316,7 +2316,7 @@ module WebCore {
     }
     window.customElements.define("app-radiolist", App_RadioList);
 
-    class App_DictionaryEditor extends HTMLElement {
+    export class App_DictionaryEditor extends HTMLElement {
         public attributeChangedCallback(attrName, oldValue, newValue) {
             this[attrName] = this.hasAttribute(attrName);
         }
@@ -2466,7 +2466,7 @@ module WebCore {
     }
     window.customElements.define("app-dictionaryeditor", App_DictionaryEditor);
 
-    class AutoCompleteOption {
+    export class AutoCompleteOption {
         public clearinput: string = "0";
         public targetquery: string = "";
         public selectormode = "listwithdefault";
@@ -2498,7 +2498,7 @@ module WebCore {
 
     }
 
-    class App_AutoComplete extends HTMLElement {
+    export class App_AutoComplete extends HTMLElement {
         public options: AutoCompleteOption = new AutoCompleteOption();
         private _input: HTMLInputElement = null;
         private c_value: HTMLInputElement = null;
@@ -3156,7 +3156,8 @@ module WebCore {
 
     }
     window.customElements.define("app-autocomplete", App_AutoComplete);
-    class App_ObjectPicker extends App_AutoComplete {
+
+    export class App_ObjectPicker extends App_AutoComplete {
         private _tagsnode: HTMLElement = null;
         private _hinput: HTMLInputElement = null;
         private _uitype: UIDataType = null;
@@ -3682,7 +3683,7 @@ module WebCore {
         }
     }
 
-    function LogToast(verb: string, stitle: string, smessage: string = "") {
+    export function LogToast(verb: string, stitle: string, smessage: string = "") {
         var msg = document.createElement('code');
         var details = document.createElement('code');
         msg.classList.add(verb);
@@ -3698,7 +3699,7 @@ module WebCore {
     function Toast_DestroyAll() {
         window["iziToast"].destroy();
     }
-    function Toast_Error(stitle: string, smessage: string = "", sdata: string = "", timeout: number = 5000) {
+    export function Toast_Error(stitle: string, smessage: string = "", sdata: string = "", timeout: number = 5000) {
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("error", stitle, sdata + smessage);
         Log(stitle, smessage);
@@ -3713,7 +3714,7 @@ module WebCore {
             } catch (ex) { }
         }
     }
-    function Toast_Notification(stitle: string, smessage: string = "", timeout: number = 5000) {
+    export function Toast_Notification(stitle: string, smessage: string = "", timeout: number = 5000) {
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("info", stitle, smessage);
 
@@ -3725,7 +3726,7 @@ module WebCore {
             timeout: timeout
         });
     }
-    function Toast_Warning(stitle: string, smessage: string = "", sdata: string = "", timeout: number = 5000) {
+    export function Toast_Warning(stitle: string, smessage: string = "", sdata: string = "", timeout: number = 5000) {
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("warning", stitle, sdata + smessage);
         Log(stitle, smessage);
@@ -3737,7 +3738,7 @@ module WebCore {
         LogToast("warn", stitle, smessage);
 
     }
-    function Toast_Success(stitle: string, smessage: string = "", timeout: number = 5000) {
+    export function Toast_Success(stitle: string, smessage: string = "", timeout: number = 5000) {
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("success", stitle, smessage);
 
@@ -3748,7 +3749,7 @@ module WebCore {
         });
     }
 
-    function Toast_Question(stitle: string, smessage: string = "", timeout: number = 5000, onYes: Function = () => { }, onNo: Function = () => { }) {
+    export function Toast_Question(stitle: string, smessage: string = "", timeout: number = 5000, onYes: Function = () => { }, onNo: Function = () => { }) {
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("success", stitle, smessage);
 
@@ -3779,7 +3780,7 @@ module WebCore {
         });
     }
 
-    function Toast_Alert(stitle: string, smessage: string = "", timeout: number = 5000, onOk: Function = () => { }) {
+    export function Toast_Alert(stitle: string, smessage: string = "", timeout: number = 5000, onOk: Function = () => { }) {
         smessage = IsNull(smessage) ? "" : smessage;
         LogToast("success", stitle, smessage);
 

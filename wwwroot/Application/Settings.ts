@@ -100,7 +100,7 @@
                 localStorage.clear();
                 application.ReloadSettings();
                 application.Settings.DataEntryPoint = dep;
-                SetParameter("WebServiceIdentifier", wsid);
+                AppDependencies.SetParameter("WebServiceIdentifier", wsid);
                 callback();
             };
             var r_idb = function () {
@@ -180,7 +180,7 @@
         public ShowMissingResources() {
             var me = this;
             var container = _SelectFirst(".missingresources", me.UIElement);
-            container.innerHTML = GetHtml2(missingresources);
+            container.innerHTML = GetHtml2(window["missingresources"]);
         }
 
         public ExecuteSQL(element: Element) {
@@ -224,13 +224,13 @@
             var oe = window.onerror;
             window.onerror = function (msg, url, lineNo, columnNo, error) {
                 // ... handle error ...
-                Toast_Error("Error", <any>msg);
+                webcore.Toast_Error("Error", <any>msg);
 
                 return false;
             }
 
             await AppDependencies.RunTest(ta.value);
-            LogToast("test", "Test Completed");
+            webcore.LogToast("test", "Test Completed");
             //console.error = orc;
             window.onerror = oe;
             //} catch (ex) {
@@ -257,7 +257,7 @@
                 default:
                     val = "0";
             }
-            SetParameter(key, val)
+            AppDependencies.SetParameter(key, val)
         }
 
         public SyncUp(isPartialSyncup: boolean = false) {
@@ -271,7 +271,7 @@
 
         public SyncDown(callback: Function = () => { }) {
             var me = this;
-            SetParameter("DBDate", "")
+            AppDependencies.SetParameter("DBDate", "")
             me.Refresh('IDB', callback)
             me.AddSync(new Date(), "down")
         }
@@ -413,7 +413,7 @@
 
                 me.NotifyApplication(AppEvent.Create("Index", "Home", {}));
 
-                OnAuthenticated(model);
+                webcore.OnAuthenticated(model);
                 callasync(me.ShowSplashScreen);
                 //window.location.hash = FirstNotNull(me.returnurl, application.Settings.MainHash);
                 window.location.hash = "#" + returnurl; //Navigate to the Home page

@@ -1,7 +1,7 @@
 ﻿//declare global {
 //    function Res(key: string, culture?: string): string;
 //}
-type Predicate<T> = (item: T) => boolean;
+type Predicate<T> = (item: T) => boolean; 
 type SelectFunc<T> = (item: T) => any;
 type Func<TOut> = () => TOut;
 type Action<T> = (T)=>any;
@@ -16,12 +16,12 @@ var ModelRes = function (key: string, viewpath: string =""): string {
 var ResExists = function (key: string, culture?: string): boolean { throw "Res not implemented"; };
 var GetResource=function(key: string, culture?: string): string {
     throw "Res not implemented"; 
-}
+}   
 var z = 0;
 var _Select = (CssSelector: string, from?: any): Element[] => {
     var container: Element =<any>document;
     if (!IsNull(from))
-    {
+    {     
         container = from;
     }
     return [].slice.call(container.querySelectorAll(CssSelector));

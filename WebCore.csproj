@@ -26,9 +26,6 @@
     <Content Remove="wwwroot\Utils\Models.ts" />
     <Content Remove="wwwroot\Utils\Parser.ts" />
     <Content Remove="wwwroot\Utils\Razor2.ts" />
-    <Content Remove="wwwroot\Utils\Utils.d.ts" />
-    <Content Remove="wwwroot\Utils\Utils.js" />
-    <Content Remove="wwwroot\Utils\Utils.js.map" />
     <Content Remove="wwwroot\Utils\Utils.ts" />
   </ItemGroup>
 
@@ -43,7 +40,7 @@
     <None Include="wwwroot\Application\Contact.ts" />
     <None Include="wwwroot\Application\Controls.ts" />
     <None Include="wwwroot\Application\ErpAppModels.ts" />
-    <None Include="wwwroot\Application\HtmlHelpers.ts" />
+    <None Include="wwwroot\Utils\HtmlHelpers.ts" />
     <None Include="wwwroot\Application\Settings.ts" />
     <None Include="wwwroot\Application\Validations.ts" />
     <None Include="wwwroot\format.20110630-1100.min.js" />
@@ -54,9 +51,6 @@
     <None Include="wwwroot\Utils\Models.ts" />
     <None Include="wwwroot\Utils\Parser.ts" />
     <None Include="wwwroot\Utils\Razor2.ts" />
-    <None Include="wwwroot\Utils\Utils.d.ts" />
-    <None Include="wwwroot\Utils\Utils.js" />
-    <None Include="wwwroot\Utils\Utils.js.map" />
     <None Include="wwwroot\Utils\Utils.ts" />
   </ItemGroup>
 

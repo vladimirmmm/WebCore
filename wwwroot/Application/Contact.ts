@@ -1,6 +1,16 @@
 ﻿declare var tinymce: any;
 
+
 module Common.Contact {
+    import Toast_Success = webcore.Toast_Success;
+    import BaseModel = webcore.BaseModel;
+    import AppDataLayer = webcore.AppDataLayer;
+    import AppResponse = webcore.AppResponse;
+    import View = webcore.View;
+    import ModelController = webcore.ModelController;
+    import ViewModel = webcore.ViewModel;
+    import AppDependencies = webcore.AppDependencies;
+    import AppEvent = webcore.AppEvent;
     export class MessageCollection {
         public Incoming: ErpApp.Model.AppMessage[] = [];
         public Outgoing: ErpApp.Model.AppMessage[] = [];
