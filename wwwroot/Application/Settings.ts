@@ -100,11 +100,9 @@
                 localStorage.clear();
                 application.ReloadSettings();
                 application.Settings.DataEntryPoint = dep;
-<<<<<<< HEAD
+
                 AppDependencies.SetParameter("WebServiceIdentifier", wsid);
-=======
-                SetParameter("WebServiceIdentifier", wsid);
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
+
                 callback();
             };
             var r_idb = function () {
@@ -184,11 +182,8 @@
         public ShowMissingResources() {
             var me = this;
             var container = _SelectFirst(".missingresources", me.UIElement);
-<<<<<<< HEAD
             container.innerHTML = GetHtml2(window["missingresources"]);
-=======
-            container.innerHTML = GetHtml2(missingresources);
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
+
         }
 
         public ExecuteSQL(element: Element) {
@@ -232,21 +227,15 @@
             var oe = window.onerror;
             window.onerror = function (msg, url, lineNo, columnNo, error) {
                 // ... handle error ...
-<<<<<<< HEAD
                 webcore.Toast_Error("Error", <any>msg);
-=======
-                Toast_Error("Error", <any>msg);
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
+
 
                 return false;
             }
 
             await AppDependencies.RunTest(ta.value);
-<<<<<<< HEAD
             webcore.LogToast("test", "Test Completed");
-=======
-            LogToast("test", "Test Completed");
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
+
             //console.error = orc;
             window.onerror = oe;
             //} catch (ex) {
@@ -273,11 +262,8 @@
                 default:
                     val = "0";
             }
-<<<<<<< HEAD
             AppDependencies.SetParameter(key, val)
-=======
-            SetParameter(key, val)
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
+
         }
 
         public SyncUp(isPartialSyncup: boolean = false) {
@@ -291,11 +277,8 @@
 
         public SyncDown(callback: Function = () => { }) {
             var me = this;
-<<<<<<< HEAD
             AppDependencies.SetParameter("DBDate", "")
-=======
-            SetParameter("DBDate", "")
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
+
             me.Refresh('IDB', callback)
             me.AddSync(new Date(), "down")
         }
@@ -437,11 +420,8 @@
 
                 me.NotifyApplication(AppEvent.Create("Index", "Home", {}));
 
-<<<<<<< HEAD
                 webcore.OnAuthenticated(model);
-=======
-                OnAuthenticated(model);
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
+
                 callasync(me.ShowSplashScreen);
                 //window.location.hash = FirstNotNull(me.returnurl, application.Settings.MainHash);
                 window.location.hash = "#" + returnurl; //Navigate to the Home page

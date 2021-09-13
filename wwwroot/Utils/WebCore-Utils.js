@@ -3369,6 +3369,9 @@ class RazorTemplate {
         return t;
     }
 }
+//declare global {
+//    function Res(key: string, culture?: string): string;
+//}
 var Res = function (key, culture) { throw "Res not implemented"; };
 var ModelRes = function (key, viewpath = "") {
     throw "Res not implemented";

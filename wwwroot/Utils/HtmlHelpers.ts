@@ -15,7 +15,7 @@ class HtmlHelpers
     public static MonetaryFormat = "";
     public static ResNvl: Function;
     public static GetMinMaxDate: Function;
-    public Res(Key: string): string 
+    public Res(Key: string): string  
     {
         return GetResource(Key);
     }

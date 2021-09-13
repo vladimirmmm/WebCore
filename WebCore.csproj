@@ -30,6 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="wwwroot\Utils\HtmlHelpers.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\Application\Application.d.ts" />
     <None Include="wwwroot\Application\Application.js" />
     <None Include="wwwroot\Application\Application.js.map" />

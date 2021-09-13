@@ -10,11 +10,8 @@
     }
     declare function StartJS(): any;
 
-<<<<<<< HEAD
+
     export function OnAuthenticated(result: any) {
-=======
-    function OnAuthenticated(result: any) {
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
         ToastBuilder.Toast().restitle("general.AuthSuccess").Success();
         //Toast_Success("Authentication successful.");
         if ("Token" in result) {

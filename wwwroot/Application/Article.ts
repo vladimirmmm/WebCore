@@ -15,11 +15,7 @@ module Common.Article {
      
     export class List extends WebCore.ListViewModel<ErpApp.Model.Article[]>
     {
-<<<<<<< HEAD
         public Identifier(): string { 
-=======
-        public Identifier(): string {
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
             return Format("{0}_{1}", this.Name, this.Area);
         }
 
@@ -382,11 +378,8 @@ module Common.Article {
                     } else {
                         commandmessage = "Article was saved successfully"
                     }
-<<<<<<< HEAD
                     webcore.Toast_Success(commandmessage);
-=======
-                    Toast_Success(commandmessage);
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
+
                 },
                 null,
                 null);
@@ -404,11 +397,8 @@ module Common.Article {
                     var response = <AppResponse>JSON.parse(xhttp.responseText);
                     var model = response.Model.FirstOrDefault();
                     var id = model.Model["Value"]
-<<<<<<< HEAD
+
                     webcore.Toast_Success("Category added", id);
-=======
-                    Toast_Success("Category added", id);
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
                 },
                 null,
                 "application/json");
@@ -455,11 +445,8 @@ module Common.Article {
                     function (xhttp: XMLHttpRequest) {
                         var response = <AppResponse>JSON.parse(xhttp.responseText);
                         var model = IsArray(response.Model) ? response.Model.FirstOrDefault() : response.Model;
-<<<<<<< HEAD
                         webcore.Toast_Success("Article with " + id + " was deleted successfully");
-=======
-                        Toast_Success("Article with " + id + " was deleted successfully");
->>>>>>> b9b34fe8f309f856b9fcadb8ff80bf1cf3a26643
+
                     },
                     null,
                     null);
