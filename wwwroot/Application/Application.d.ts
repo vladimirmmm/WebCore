@@ -1,3 +1,15 @@
+declare function XXX(): void;
+declare function EvalIn(context: object, code: string): any;
+declare function GetObjectFromCode(context: object, code: string): any;
+declare function returneval(code: any, me?: any): any;
+declare function EvalX(context: object, code: string): any;
+declare function BindAccess(obj: any, key: string): any;
+declare function evalInContext(code: string): any;
+declare function GetBoundElements(element: Element): any[];
+declare function GetBoundObject(element: Element, target?: Element): {};
+declare function ObtainBoundObject(el: Element, model: any, container?: Element): any;
+declare function ConvertToProperty(obj: object, key: string, onset?: Function): void;
+declare function GetLinkedObj(element: Element, obj: object): object;
 interface QueryLookupOptions {
     QueryName?: string;
     LookupFields?: string[];
@@ -93,6 +105,20 @@ declare class MetaModels {
     GenerateTSInterface(typename: string): string;
 }
 declare var metaModels: MetaModels;
+declare function FixUpdateObjWithMeta(obj: any, settings?: any, application?: any): void;
+declare function GetUIDataTypeFrom(sourcetype: string): UIDataType.Text | UIDataType.Date | UIDataType.Number;
+declare function GetMeta(obj: Object): EntityMeta;
+declare function GetMetaByTypeName(typename: string): EntityMeta;
+declare function SetObjectTo(item: Object, typename: string): void;
+declare function SetTypeName(item: Object, typename: string): void;
+declare function __x(): void;
+declare function MapObject(source: Object, target: Object, cleararray?: boolean, xmeta?: EntityMeta): void;
+declare function MapObjectCI(source: Object, target: Object, cleararray?: boolean): void;
+declare function GetMetaKeyChain(typename: string, key: string): object[];
+declare function PropertyMetaAccess(typename: string, key: string): PropertyMeta;
+declare function MetaAccessByTypeName(typename: string, key: string): PropertyMeta;
+declare function MetaAccess(obj: any, key: string): PropertyMeta;
+declare function DF_Meta(root: string, txt: string, callback: Function): void;
 declare var FieldOperators: string[];
 interface Field {
     Name: string;
@@ -247,6 +273,7 @@ declare class DateFilter extends Filter implements IFilter {
     Max: Date;
     List: Date[];
 }
+declare function GetFilters(obj: any, meta: EntityMeta): IFilter[];
 declare class ClientQueryGroup {
     By: string[];
     Aggregates: DictionaryOf<string>;
@@ -662,7 +689,116 @@ interface Dictionary {
 interface DictionaryOf<T> {
     [name: string]: T;
 }
+declare function LoadJS(path: string): void;
+declare function GetFunctionBody(f: Function): string;
+declare function GetReturnStatement(f: Function): string;
+declare function GetMemberExpression(f: Function): string;
+declare function StringEquals(s1: any, s2: any): boolean;
+declare function ToBool(item: string): boolean;
+declare function keyPress(key: any): void;
+declare function SendKeys(txt: string, element?: HTMLInputElement): void;
+declare function ExcelColNameToIx(colname: string): string;
+declare function ExcelColNameToPropertyName(obj: object, colname: string): string;
+declare function GetNext<T>(items: T[], item: T): T;
+declare function GetPrevious<T>(items: T[], item: T): T;
+declare function HasNext(items: any[], item: any): any;
+declare function GetPart(data: any, startix: number, endix: number): any[];
+declare function EnumerateObject(target: Object, context: any, func: Function): void;
+declare function StartsWith(text: string, item: string): boolean;
+declare function EndsWith(text: string, item: string): boolean;
+declare function GetLength(data: any): any;
+declare function RemoveFrom(item: Object, items: any[]): void;
+declare function LastFrom(items: any[]): any;
+declare function CallFunctionFrom(eventcontainer: Object, eventname: string, args?: any[]): void;
+declare function CallFunction(func: Function, args?: any[]): any;
+declare function CallFunctionWithContext(context: any, func: Function, args?: any[]): any;
+declare function callasync(func: Function, timeout?: number): void;
+declare function GetHashPart(item: string): string;
+declare function clearobject(item: any): void;
+declare function GetErrorObj(exception: any, contenttype?: string): {
+    message: string;
+    stacktrace: string;
+};
+declare function SetProperty(target: Object, name: string, value: any): void;
+declare function GetBaseURL(): string;
+declare function TextBetween(text: string, begintag: string, endtag: string, withtags?: boolean): string;
+declare function TextsBetween(text: string, begintag: string, endtag: string, withtags: boolean): string[];
+declare function FormatSimpleTest(...any: any[]): string;
+declare function FormatSimple(format: string, args: any[]): string;
+declare function ResFormat(key: any, ...any: any[]): string;
+declare function Format(...any: any[]): string;
+declare function addDays(date: any, days: any): Date;
+declare function StringToDate(item: string, format?: string): Date;
+declare function IsDate(p: any): boolean;
+declare function IsNumeric(n: any): boolean;
+declare function IsInt(value: any): boolean;
+declare function pad(a: any, b: any, c: any, d: any): any;
+declare function Property(item: any, property: string, value?: any): any;
+declare function IsDefined(value: any, path: any): boolean;
+declare function AddToArray(item: any[], ...any: any[]): any[];
+declare function In(item: any, ...any: any[]): boolean;
+declare function IsAllNull(item: any, ...any: any[]): boolean;
+declare function FirstNotNull(...any: any[]): any;
+declare function IsAllNotNull(item: any, ...any: any[]): boolean;
+declare function intersectArrays(a: any, b: any): any[];
+declare function cleanArray(actual: any): any[];
+declare function removeFromArray(arr: any, ...any: any[]): any;
+declare function Equals(arg1: any, arg2: any): boolean;
+declare function GetClientQueryString(hash?: string): KeyValue[];
+declare function ToHierarchy(items: any, idproperty: any, parentproperty: any, rootid: any): any;
+declare function GetHierarchy(items: any[], idproperty: string, parentproperty: string, setparents?: boolean): object[];
+declare function HashCode(s: any): any;
+declare function GetFlattenedHierarchy(items: any[], idproperty: string, childproperty?: string, level?: number): object[];
+declare function ForAll(hierarchy: Object, childrenproperty: string, func: Function, parent?: Object, level?: number): void;
+declare function Clone(obj: Object): Object;
+declare function IsNull(item: any): boolean;
+declare function IsNullObj(a: any): boolean;
+declare function Coalesce(...items: any[]): any;
+declare function s4(): string;
+declare function getRndInteger(min: any, max: any): any;
+declare function Guid(): string;
+declare function ToHtmlAttributeListString(obj: Object): string;
+declare function RenderHierarchy(obj: Object, itemformatter?: Function, level?: number): string;
+declare function HtmlToText(html: string): string;
+declare function ToString(item: Object): string;
+declare function Truncate(item: string, limit?: number): string;
+declare function IsNumberBetween(min: any, max: any, value: number): boolean;
+declare function IsDateBetween(startdate: any, enddate: any, date?: Date): boolean;
+declare function JsonToDate(item: string): Date;
+declare function ToDate(item: string): string;
+declare function DateDiff(startDate: string | Date, endDate: string | Date, by?: string): number;
+declare function ToNormalDate(item: string): string;
+declare function FormatDate(d: Date, format?: string): string;
 declare var formatDate: (dt: any, format: any) => any;
+declare function xpad(n: any, width: any, z?: any): any;
+declare function leftpad(n: any, width: any, z?: any): any;
+declare function rightpad(n: any, width: any, z?: any): any;
+declare function sharedStart(array: any): any;
+declare function longestCommonSubstring(array: any): any;
+declare function commonwords(array: any[]): string;
+/**End Proto/
+
+/*Expressions*/
+declare function parseExp(expression: any, model: any): {
+    propertyname: string;
+    fullpropertyname: string;
+    obj: any;
+    value: any;
+    typename: string;
+    resourceid: string;
+};
+declare function FilesIntoUL(viewmodel: any): string;
+declare function browserSupportsWebWorkers(): boolean;
+declare function ToOptionList(obj: Object, addemptyoption: boolean): string;
+declare function NormalizeFolderPath(folder: any): string;
+declare function Eval(obj: any): any;
+declare function IsFunction(functionToCheck: any): boolean;
+declare function IsObject(obj: any): boolean;
+declare function IsArray(value: any): boolean;
+declare function Split(text: string, delimeters: any, removeempty: boolean): any[];
+declare function EvalOn<T>(obj: T, f: Func1<T, any>): any;
+declare function Access(obj: any, key: any, context?: any): any;
+declare function SetPropertyPath(obj: object, path: string, value: any): void;
 declare var e_testobj: {
     id: string;
     VoucherItems: {
@@ -675,11 +811,27 @@ declare var e_testobj: {
         }[];
     }[];
 };
+declare function ObjToPathList(obj: object): string[];
+declare function ObjToPathValueList(obj: object, path?: string): string[];
+declare function ExtractPaths(obj: object, paths: string[]): object;
+declare function SetPath(obj: object, path: string, value: any): void;
+declare function GetPath(obj: object, path: string): object;
+declare function PathMap(source: object, target: object): void;
+declare function HtmlEncode(s: any): any;
 declare var __div: HTMLDivElement;
+declare function HtmlDecode(s: any): string;
+declare function OuterHtml(item: Element): string;
+declare function Wait(duration: number): Promise<any>;
+declare function Replace(text: string, texttoreplace: string, textwithreplace: string): string;
+declare function Bind_Replace(text: string, texttoreplace: string, textwithreplace: string): string;
+declare function RoundNumber(value: any, decimals: number): number;
 interface KeyValue {
     Key: any;
     Value: any;
 }
+declare function GetProperties(item: Object): KeyValue[];
+declare function GetKeys(item: Object): any[];
+declare function GetPropertiesArray(item: Object): Object[];
 interface Array<T> {
     FirstOrDefault(f?: Predicate<T>): T;
     Where(f?: Predicate<T>): T[];
@@ -697,6 +849,15 @@ interface Array<T> {
 interface Date {
     IsWeekend(): boolean;
 }
+declare function IsWeekend(date: Date): boolean;
+declare function dynamicSort(property: any, sortOrder?: number): (a: any, b: any) => number;
+declare function ForeachInHierarchy(obj: object, func: Function, childrenpropertyname?: string): void;
+declare function ForeachInHierarchy2(obj: object, func: Function, childrenpropertyname?: string): void;
+declare function WhereInHierarchy(obj: object, func: Function, childrenpropertyname?: string): any[];
+declare function ParentsOfHierarchy(obj: object, parentpropertyname?: string): any[];
+declare function FindInHierarchy(obj: object, func: Function, childrenpropertyname?: string): object;
+declare function Log(item: any, ext?: any): void;
+declare function HttpRequest(method: any, url: any, callback: any): XMLHttpRequest;
 interface IDictionary<T> {
     [key: string]: T;
 }
@@ -705,7 +866,32 @@ declare class Tasks {
     static StartTask(name: string): void;
     static EndTask(name: string): void;
 }
+declare function ShowProgress(src?: string): void;
+declare function HideProgress(src?: string): void;
+declare function IsDataContainer(element: Element): boolean;
+declare function GetPropertyandValue(element: Element): {
+    Key: any;
+    Value: any;
+};
+declare function EnsureProperrty(obj: Object, property: string, defaultvalue?: any): void;
+declare function CopyProperty(source: Object, target: Object, property: string, targetproperty?: string): void;
+declare function getUrlParameter(name: any): string;
+declare function getTextAreaLineNr(element: HTMLTextAreaElement): number;
+declare function Activate(a: Element, container: Element): void;
+declare function ActivateOld(a: Element): void;
+declare function SelectElement(parent: Element, child: Element): void;
+declare function ActivateFloat(element: Element): void;
+declare function JsonCopy(obj: object): any;
+declare function GetHtml2(obj: any, span?: string): string;
+declare function GetHtml(obj: Object): string;
+declare function download(filename: any, data: any): void;
+declare function CsvLineSplit(text: string, delimiter?: string, enclose?: string): string[];
+declare function compareString(a: any, b: any): 0 | 1 | -1;
+declare function getStringCompareFunction(p: Function): (a: any, b: any) => 0 | 1 | -1;
+declare function RestoreModel(item: object, fielddictionary: object): object;
 declare var dataURLToBlob: (dataURL: any) => Blob;
+declare function _RequiredFieldHandle(uielement: any): void;
+declare function SetInputValueWithEvent(input: HTMLInputElement, value: any, event: string | Event): void;
 declare class Timer {
     private isrunning;
     tickms: number;
@@ -715,8 +901,45 @@ declare class Timer {
     Stop(): void;
     private Tick;
 }
+declare function AsArrayOf<T>(obj: any): T[];
+declare function GetPropertyByShortname(properties: Object[], shortname: string): string;
+declare function TransformNumber(number: number, numberofdecimal: number): string;
 declare var numbers: readonly string[];
+declare function Hash(length: number, date?: Date): string;
+declare function generateIDBKey(model: any): string;
 declare var __SyncronizationStore__: {};
+/**
+ * Syncronizes the given function by the given key.
+ *
+ * @param key
+ * @param callback annonimus innerfunction containing the block that needed to be syncronized.
+ * @returns the result is typeof T.
+ */
+declare function SyncronizeAs<T>(key: string, callback: Func<T>): T;
+/**
+ * Syncronizes the given function by the given key.
+ *
+ * @param key
+ * @param callback annonimus innerfunction containing the block that needed to be syncronized.
+ * @returns the result is any.
+ */
+declare function Syncronize(key: string, callback: Func<any>): any;
+/**
+ * Syncronizes the given function by the given key.
+ *
+ * @param key
+ * @param callback annonimus innerfunction containing the block that needed to be syncronized.
+ * @returns the result is Promise<typeof T>.
+ */
+declare function PromiseSyncronizeAs<T>(key: string, callback: Func2<Action<T>, Action<any>, T>): Promise<T>;
+/**
+ * Syncronizes the given function by the given key.
+ *
+ * @param key
+ * @param callback annonimus innerfunction containing the block that needed to be syncronized.
+ * @returns the result is Promise<typeof any>.
+ */
+declare function PromiseSyncronize(key: string, callback: Action2<Action<any>, Action<any>>): Promise<any>;
 declare module WebCore {
     interface AppScript {
         script: string;
