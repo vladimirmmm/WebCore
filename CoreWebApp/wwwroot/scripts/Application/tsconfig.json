@@ -1,0 +1,23 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "declaration": true,
+    "outFile": "Application.js",
+    "target": "es6"
+  },
+  "exclude": [
+    "node_modules",
+    "wwwroot",
+    "*d.ts"
+
+  ],
+  "include": [
+    "../Utils/*.ts",
+    "*.ts"
+  ],
+  "references": []
+}

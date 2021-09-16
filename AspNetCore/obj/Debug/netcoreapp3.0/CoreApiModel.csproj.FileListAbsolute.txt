@@ -1,0 +1,7 @@
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\bin\Debug\netcoreapp3.0\CoreApiModel.deps.json
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\bin\Debug\netcoreapp3.0\CoreApiModel.dll
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\bin\Debug\netcoreapp3.0\CoreApiModel.pdb
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\obj\Debug\netcoreapp3.0\CoreApiModel.AssemblyInfoInputs.cache
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\obj\Debug\netcoreapp3.0\CoreApiModel.AssemblyInfo.cs
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\obj\Debug\netcoreapp3.0\CoreApiModel.dll
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\obj\Debug\netcoreapp3.0\CoreApiModel.pdb

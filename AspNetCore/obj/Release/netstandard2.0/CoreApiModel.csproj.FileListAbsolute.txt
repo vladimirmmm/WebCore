@@ -1,0 +1,9 @@
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\bin\Release\netstandard2.0\CoreApiModel.deps.json
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\bin\Release\netstandard2.0\CoreApiModel.dll
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\bin\Release\netstandard2.0\CoreApiModel.pdb
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\obj\Release\netstandard2.0\CoreApiModel.csprojAssemblyReference.cache
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\obj\Release\netstandard2.0\CoreApiModel.AssemblyInfoInputs.cache
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\obj\Release\netstandard2.0\CoreApiModel.AssemblyInfo.cs
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\obj\Release\netstandard2.0\CoreApiModel.csproj.CoreCompileInputs.cache
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\obj\Release\netstandard2.0\CoreApiModel.dll
+C:\My\Developement\DyntellSPA\Partner\CoreApiModel\obj\Release\netstandard2.0\CoreApiModel.pdb

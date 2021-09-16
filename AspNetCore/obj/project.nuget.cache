@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "ybtkkvMTl6HJ12YtZMCRx6Bd9BORGwlr8g2AOqYl53Zw5DE0Ee7MUnY9QcQ79VZMwnFmT4J8wF7DXWCrBW1O7w==",
+  "success": true,
+  "projectFilePath": "C:\\My\\Developement\\WebCore\\AspNetCore\\CoreApiModel.csproj",
+  "expectedPackageFiles": [
+    "C:\\Program Files (x86)\\dotnet\\sdk\\NuGetFallbackFolder\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Program Files (x86)\\dotnet\\sdk\\NuGetFallbackFolder\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
