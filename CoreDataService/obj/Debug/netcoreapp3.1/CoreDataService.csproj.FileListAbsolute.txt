@@ -1,0 +1,12 @@
+C:\My\Developement\WebCore\CoreDataService\obj\Debug\netcoreapp3.1\CoreDataService.csprojAssemblyReference.cache
+C:\My\Developement\WebCore\CoreDataService\obj\Debug\netcoreapp3.1\CoreDataService.AssemblyInfoInputs.cache
+C:\My\Developement\WebCore\CoreDataService\obj\Debug\netcoreapp3.1\CoreDataService.AssemblyInfo.cs
+C:\My\Developement\WebCore\CoreDataService\obj\Debug\netcoreapp3.1\CoreDataService.csproj.CoreCompileInputs.cache
+C:\My\Developement\WebCore\CoreDataService\bin\Debug\netcoreapp3.1\CoreDataService.deps.json
+C:\My\Developement\WebCore\CoreDataService\bin\Debug\netcoreapp3.1\CoreDataService.dll
+C:\My\Developement\WebCore\CoreDataService\bin\Debug\netcoreapp3.1\CoreApiModel.dll
+C:\My\Developement\WebCore\CoreDataService\bin\Debug\netcoreapp3.1\CoreApiModel.pdb
+C:\My\Developement\WebCore\CoreDataService\obj\Debug\netcoreapp3.1\CoreDataService.csproj.CopyComplete
+C:\My\Developement\WebCore\CoreDataService\bin\Debug\netcoreapp3.1\CoreDataService.pdb
+C:\My\Developement\WebCore\CoreDataService\obj\Debug\netcoreapp3.1\CoreDataService.dll
+C:\My\Developement\WebCore\CoreDataService\obj\Debug\netcoreapp3.1\CoreDataService.pdb

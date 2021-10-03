@@ -16,3 +16,12 @@ C:\My\Developement\AspNetCore\obj\Debug\netstandard2.0\CoreApiModel.AssemblyInfo
 C:\My\Developement\AspNetCore\obj\Debug\netstandard2.0\CoreApiModel.csproj.CoreCompileInputs.cache
 C:\My\Developement\AspNetCore\obj\Debug\netstandard2.0\CoreApiModel.dll
 C:\My\Developement\AspNetCore\obj\Debug\netstandard2.0\CoreApiModel.pdb
+C:\My\Developement\WebCore\AspNetCore\bin\Debug\netstandard2.0\CoreApiModel.deps.json
+C:\My\Developement\WebCore\AspNetCore\bin\Debug\netstandard2.0\CoreApiModel.dll
+C:\My\Developement\WebCore\AspNetCore\bin\Debug\netstandard2.0\CoreApiModel.pdb
+C:\My\Developement\WebCore\AspNetCore\obj\Debug\netstandard2.0\CoreApiModel.AssemblyInfoInputs.cache
+C:\My\Developement\WebCore\AspNetCore\obj\Debug\netstandard2.0\CoreApiModel.AssemblyInfo.cs
+C:\My\Developement\WebCore\AspNetCore\obj\Debug\netstandard2.0\CoreApiModel.csproj.CoreCompileInputs.cache
+C:\My\Developement\WebCore\AspNetCore\obj\Debug\netstandard2.0\CoreApiModel.dll
+C:\My\Developement\WebCore\AspNetCore\obj\Debug\netstandard2.0\CoreApiModel.pdb
+C:\My\Developement\WebCore\AspNetCore\obj\Debug\netstandard2.0\CoreApiModel.csprojAssemblyReference.cache
