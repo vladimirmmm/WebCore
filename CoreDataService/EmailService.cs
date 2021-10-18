@@ -215,16 +215,5 @@ namespace DataService.Models
         }
 
 
-        public void Test()
-        {
-            var msg = new EmailMessage();
-            ServerApp.Current = new TestServerApp();
-            ServerApp.Current.Load(@"C:\My\Developement\DyntellSPA\Partner\XPartnerApi\data\serverconfig.json");
-            var emailservice = new EmailService(ServerApp.Current.Settings.SmtpAccounts);
-            msg.To = new List<string>() { "cas_vladimir@yahoo.com" };
-            msg.Subject = "Test1";
-            msg.Body = "<div style=\"background: red\">message 2</div>";
-            var r= emailservice.SendEmail(msg);
-        }
     }
 }

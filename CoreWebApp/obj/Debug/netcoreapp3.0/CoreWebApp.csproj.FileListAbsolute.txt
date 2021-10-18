@@ -157,3 +157,8 @@ C:\My\Developement\WebCore\CoreWebApp\obj\Debug\netcoreapp3.0\staticwebassets\Co
 C:\My\Developement\WebCore\CoreWebApp\obj\Debug\netcoreapp3.0\CoreWebApp.dll
 C:\My\Developement\WebCore\CoreWebApp\obj\Debug\netcoreapp3.0\CoreWebApp.pdb
 C:\My\Developement\WebCore\CoreWebApp\obj\Debug\netcoreapp3.0\CoreWebApp.genruntimeconfig.cache
+C:\My\Developement\WebCore\CoreWebApp\bin\Debug\netcoreapp3.0\wwwroot\scripts\Application\Application.d.ts
+C:\My\Developement\WebCore\CoreWebApp\bin\Debug\netcoreapp3.0\wwwroot\scripts\Utils\Utils.d.ts
+C:\My\Developement\WebCore\CoreWebApp\bin\Debug\netcoreapp3.0\wwwroot\scripts\Application\Application.js
+C:\My\Developement\WebCore\CoreWebApp\bin\Debug\netcoreapp3.0\wwwroot\scripts\Utils\Utils.js
+C:\My\Developement\WebCore\CoreWebApp\bin\Debug\netcoreapp3.0\wwwroot\scripts\Utils\Utils.js.map

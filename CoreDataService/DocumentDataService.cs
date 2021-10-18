@@ -93,17 +93,6 @@ namespace DataService.Models
             throw new Exception("ChromeExecutionError_:"+e.Data);
         }
 
-        public void Test()
-        {
-      
-            var configpath = @"C:\My\Developement\DyntellSPA\Partner\XPartnerApi\data\serverconfig.json";
-            var htmlpath = @"C:\My\Developement\DyntellSPA\Partner\PartnerSPA\wwwroot\ws.html";
-            var pdfpath = @"C:\My\Developement\DyntellSPA\Partner\PartnerSPA\wwwroot\ws.pdf";
-            var app = new TestServerApp();
-            ServerApp.Current = app;
-            app.Load(configpath);
-            CreatePdfFromHtml(pdfpath, htmlpath);
-        }
 
         public List<Dictionary<string, object>> GetItems(string TypeName)
         {

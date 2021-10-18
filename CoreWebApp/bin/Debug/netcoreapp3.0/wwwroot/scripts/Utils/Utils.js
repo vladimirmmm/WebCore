@@ -4749,7 +4749,7 @@ class HtmlHelpers {
         var displayfield = Coalesce(Access(options, 'DisplayField'), "Name");
         var queryname = Coalesce(Access(options, 'QueryName'), "");
         var lkpfstr = "['" + lookupfields.join("','") + "']";
-        var datafunctionstr = 'function(a,b){ Partner.DataLayer.Instance.DataLookup(a,' + queryname + ',' + lkpfstr + ',' + valuefield + ',' + displayfield + ', b); }';
+        var datafunctionstr = 'function(a,b){ AppDataLayer.Instance.DataLookup(a,' + queryname + ',' + lkpfstr + ',' + valuefield + ',' + displayfield + ', b); }';
         var simplified = exprstr.substr(exprstr.indexOf(".") + 1).trim();
         //var mp: PropertyMeta = Access(model, simplified);
         var mp = MetaAccess(model, simplified);
@@ -4774,7 +4774,7 @@ class HtmlHelpers {
         var displayfield = Coalesce(Access(options, 'DisplayField'), "Name");
         var queryname = Coalesce(Access(options, 'QueryName'), "");
         var lkpfstr = "['" + lookupfields.join("','") + "']";
-        var datafunctionstr = 'function(a,b){ Partner.DataLayer.Instance.DataLookup(a,' + queryname + ',' + lkpfstr + ',' + valuefield + ',' + displayfield + ', b); }';
+        var datafunctionstr = 'function(a,b){ AppDataLayer.Instance.DataLookup(a,' + queryname + ',' + lkpfstr + ',' + valuefield + ',' + displayfield + ', b); }';
         var simplified = exprstr.substr(exprstr.indexOf(".") + 1).trim();
         //var mp: PropertyMeta = Access(model, simplified);
         var mp = MetaAccess(model, simplified);

@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "Sb5JMZZfYHhwgRUvraZGs0n2Km1ytkERRFxFu84X/wnEV5a3k04yXVnAMrqTyjLg5m0fyTNx6z9XmEMXEJISVA==",
+  "dgSpecHash": "+n8hLjq0QLZNWzP9K7kMd0+4M6jOqFy6dg9jQ8VqNYyjSwIPjEIYG4qmfl9vvuK2gG5QX5cW2K/hhThpzVrEBA==",
   "success": true,
   "projectFilePath": "C:\\My\\Developement\\WebCore\\CoreWebApp\\CoreWebApp.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\vladimir.balacescu\\.nuget\\packages\\microsoft.typescript.msbuild\\3.9.5\\microsoft.typescript.msbuild.3.9.5.nupkg.sha512",
+    "C:\\Users\\vladimir.balacescu\\.nuget\\packages\\microsoft.typescript.msbuild\\4.4.4\\microsoft.typescript.msbuild.4.4.4.nupkg.sha512",
     "C:\\Users\\vladimir.balacescu\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.0.1\\microsoft.aspnetcore.app.ref.3.0.1.nupkg.sha512",
     "C:\\Users\\vladimir.balacescu\\.nuget\\packages\\microsoft.netcore.app.host.win-x86\\3.0.3\\microsoft.netcore.app.host.win-x86.3.0.3.nupkg.sha512"
   ],

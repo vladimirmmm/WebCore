@@ -878,11 +878,13 @@ class Application
         waiter.SetTasks("layouts", ["metadata", "resources"]);
         for (var layout in me.Layouts.Templates)
         {
-            var layoutpath = layout;
-            waiter.StartTask("layouts", layoutpath);
+            var layoutpath = Access(window, "appbaseurl") + layout; 
+
+            waiter.StartTask("layouts", layout);
             me.localhttpClient.Get(layoutpath, {}, function (r) {
-                me.Layouts.Templates[r.OriginalRequestUrl] = r.responseText;
-                waiter.EndTask("layouts", r.OriginalRequestUrl);
+                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "")
+                me.Layouts.Templates[relurl] = r.responseText;
+                waiter.EndTask("layouts", relurl);
 
             });
         }
@@ -921,8 +923,7 @@ class Application
                                     vm.AddTemplate("razor", t)
                                     //vm.RazorTemplate = Razor.Complile(me.Layouts.Templates[razorpath]);
                                 } catch (ex) {
-                                    console.log("Error in " + vm.LayoutPath);
-                                    console.log(ex);
+                                    console.error("Error (" + ex + ") in " + vm.LayoutPath);
                     
                                 }
                             }
@@ -949,11 +950,13 @@ class Application
         })
         metawaiter.SetTasks("metas", metafiles);
         for (var i = 0; i < metafiles.length; i++) {
-            var metafile = metafiles[i];
+            var metafile = Access(window, "appbaseurl") + metafiles[i];
             me.httpClient.Get(metafile, {},function (r) {
                 var myArr = JSON.parse(r.responseText);
-                metadictionary[r.RequestUrl] = myArr;
-                metawaiter.EndTask("metas", r.RequestUrl);
+                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "")
+
+                metadictionary[relurl] = myArr;
+                metawaiter.EndTask("metas", relurl);
 
             });
         }
@@ -982,11 +985,13 @@ class Application
         })
         resourcewaiter.SetTasks("resources", resourcefiles);
         for (var i = 0; i < resourcefiles.length; i++) {
-            var resourcefile = resourcefiles[i];
+            var resourcefile = Access(window, "appbaseurl") + resourcefiles[i];
             me.httpClient.Get(resourcefile, {}, function (r) {
                 var myArr = JSON.parse(r.responseText);
-                resourcesdictionary[r.RequestUrl] = myArr;
-                resourcewaiter.EndTask("resources", r.RequestUrl);
+                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "")
+
+                resourcesdictionary[relurl] = myArr;
+                resourcewaiter.EndTask("resources", relurl);
 
             });
         }

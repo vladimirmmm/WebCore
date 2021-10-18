@@ -365,6 +365,7 @@ function TreeMenu(target: Element, obj: any):string {
     htmlbuilder.push("<ul>")
     children.forEach(function (child) {
         //<li binding-type="template" uid="@{model.Key}" url="@{model.Url}" rel="@{model.Name}">
+        //htmlbuilder.push(Format('<li uid="{0}" url="{1}" rel="{2}">', child["Key"], Access(window, "appbaseurl") +  child["Url"], child["Name"]));
         htmlbuilder.push(Format('<li uid="{0}" url="{1}" rel="{2}">', child["Key"], child["Url"], child["Name"]));
         htmlbuilder.push(Res("menu." + child["Key"]));
         htmlbuilder.push(TreeMenu(null, child));
@@ -404,12 +405,12 @@ function addCSSRule(sheet, selector, rules, index) {
     }
 }
 
-declare class ResizeObserver {
-    constructor(f: Function);
-    observe(target: Element, options?: Object);
-    unobserve(target: Element);
-    disconnect();
-};
+//declare class ResizeObserver {
+//    constructor(f: Function);
+//    observe(target: Element, options?: Object);
+//    unobserve(target: Element);
+//    disconnect();
+//};
 class App_FileUploader extends HTMLElement
 {
     private uploadelement: HTMLInputElement = null;
@@ -2168,6 +2169,11 @@ class App_AutoComplete extends HTMLElement
     {
         return this.c_display.placeholder; 
     }
+    public set label(val) {
+        if (!IsNull(this._input)) {
+            this._input.placeholder = val;
+        }
+    }
     public get value() {
         var me = this;
         return me._value;
@@ -2199,8 +2205,12 @@ class App_AutoComplete extends HTMLElement
         super();
 
     }
+
+    static get observedAttributes() {
+        return ["value","label"];
+    }
     public attributeChangedCallback(attrName, oldValue, newValue) {
-        this[attrName] = this.hasAttribute(attrName);
+        this[attrName] = newValue;
     }
 
     public GetDataItemDisplayText(item: object): string {
@@ -2936,9 +2946,9 @@ class UILogger
         }
         this.logbuilder.push(this.GetStringFromEvent(e, other));
     }
-    private GetStringFromEvent(e: Event,other:string="")
+    private GetStringFromEvent(e: Event,other:string="") 
     {
-        var targetstr = IsNull(e.target) ? "" : ("outerHTML" in e.target ? (this.GetStringFromHtmlElement(e.target)) : "");
+        var targetstr = IsNull(e.target) ? "" : ("outerHTML" in e.target ? (this.GetStringFromHtmlElement(<any>e.target)) : "");
         var msg = "EVENT(" + e.type + ") @" + other + " target: " + targetstr +" "+ e.timeStamp;
         return msg;
     }
@@ -2965,8 +2975,8 @@ class UILogger
         e.addEventListener('change', (e: UIEvent) => {
             me.logevent(e);
         });
-        e.addEventListener('textInput', (e: TextEvent) => {
-            me.logevent(e, e.data);
+        e.addEventListener('textInput', (e: Event) => {
+            me.logevent(e, e["data"]);
         });
         e.addEventListener('keydown', (e: KeyboardEvent) => {
             me.logevent(e);
@@ -3000,7 +3010,7 @@ class BarcodeScaner {
             items.push("class:" + e.getAttribute("class") + ";");
             return items.join(" ");
         }
-        var targetstr = IsNull(e.target) ? "" : ("outerHTML" in e.target ? (htos(e.target)) : "");
+        var targetstr = IsNull(e.target) ? "" : ("outerHTML" in e.target ? (htos(<any>e.target)) : "");
         var msg = "EVENT-"+e.type + " @" + e.timeStamp + " " + other + " target: " + targetstr;
         LogToast("log", "T", msg);
         //console.log(msg);
@@ -3017,8 +3027,8 @@ class BarcodeScaner {
         document.addEventListener('paste', (e: UIEvent) => {
             me.logevent(e);
         });
-        document.addEventListener('textInput', (e: TextEvent) => {
-            me.logevent(e, e.data);
+        document.addEventListener('textInput', (e: Event) => {
+            me.logevent(e, e["data"]);
         });
         document.addEventListener('keydown', (e: KeyboardEvent) => {
             //if (e.keyCode == 9) {

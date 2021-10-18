@@ -9,7 +9,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="3.9.5">
+    <Compile Remove="bin\**" />
+    <Content Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+    <TypeScriptCompile Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.4.4">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -17,9 +25,6 @@
 
   <ItemGroup>
     <Content Update="wwwroot\scripts\Application\Application.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="wwwroot\scripts\Application\Application.js.map">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Update="wwwroot\scripts\Application\tsconfig.json">
@@ -102,9 +107,12 @@
     </TypeScriptCompile>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\layout\" />
+  </ItemGroup>
+
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy /E /Y &quot;$(ProjectDir)wwwroot\scripts&quot; &quot;$(SolutionDir)PartnerSPA\wwwroot\scripts&quot;" />
   </Target>
 
 </Project>

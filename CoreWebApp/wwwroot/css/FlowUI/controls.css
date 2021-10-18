@@ -1,0 +1,199 @@
+﻿
+
+    .icon {
+        min-width: 1.3em;
+        /*min-height: 1.4em;*/
+        text-align: center;
+        display: inline-block;
+        cursor: pointer;
+        text-decoration: none !important;
+        /*line-height: normal;*/
+    }
+
+    .minmaxdate > label {
+        white-space: nowrap;
+    }
+
+    .minmaxdate,
+    .value.minmaxdate {
+        display: grid;
+        grid-template-columns: 196px;
+        grid-template-rows: auto auto;
+    }
+
+    .flexcontent {
+    }
+
+    
+
+    :host .tags {
+        display: inline-flex;
+        flex-flow: wrap;
+    }
+
+    :host .controls {
+        display: inline-flex;
+        width: min-content;
+        flex-grow: 1;
+    }
+
+
+
+    :host {
+        position: relative;
+        display: inline-block;
+        border: solid 1px var(--inputbordercolor);
+        background-color: var(--inputbgcolor);
+        color: black;
+    }
+
+        :host > .flexcontent {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        :host .controls {
+            display: inline-flex;
+        }
+
+            :host .controls > .icon,
+            app-objectpicker .controls > .icon {
+                background-color: var(--accent-color);
+                color: var(--accent-contrast);
+            }
+
+        :host .controls {
+            background-color: var(--inputbgcolor);
+        }
+
+            :host .controls > .close {
+                background-color: inherit;
+                color: unset;
+                visibility: hidden;
+                position: absolute;
+                right: 1.3em;
+                /*line-height: 160%;*/
+                height: 100%;
+            }
+
+    :host(:hover) .controls > .close {
+        visibility: visible;
+    }
+
+    :host > .controls > span {
+        min-width: 1em;
+        text-align: center;
+        cursor: pointer;
+    }
+
+:host .controls > input[type=text] {
+    border: solid 0px transparent;
+    width: 100%;
+    min-width: unset;
+    line-height: inherit;
+    border:solid 1px transparent;
+}
+
+
+    :host ul {
+        position: absolute;
+        background: #d3d3d3;
+        z-index: 100;
+        padding: 5px;
+        max-height: 150px;
+        overflow-y: auto;
+        left: 0;
+        right: 0;
+        color: black;
+        width: max-content;
+        margin: 0px;
+    }
+
+        :host ul li,
+        app-objectpicker ul li {
+            border-bottom: solid 1px #a9a9a9;
+            cursor: pointer
+        }
+
+            :host ul li:hover,
+            app-objectpicker ul li:hover {
+                filter: brightness(90%);
+            }
+            :host ul li.selected {
+                font-weight:bold;
+            }
+            :host ul:empty,
+            app-objectpicker ul:empty,
+            .contextmenulist:empty {
+                display: none
+            }
+
+    .icon > label {
+        display: block
+    }
+
+    .icon.activator {
+        background: var(--accent-color);
+        color: var(--accent-contrast);
+        right: 0px;
+    }
+
+
+    .icon.close {
+        /*position: absolute;*/
+        font-family: entypo;
+    }
+
+        .icon.close:hover {
+            filter: unset;
+        }
+
+        .icon.close:before {
+            content: "\2715"
+        }
+
+.icon.activator::before {
+    font-family: FabricMDL2Icons;
+    content: "\E972";
+}
+
+    @media screen and (min-width:900px) {
+        .minmaxdate, .value.minmaxdate {
+            display: grid;
+            grid-template-columns: auto;
+            grid-template-rows: auto auto;
+        }
+    }
+ul {
+    list-style-type: none;
+    margin-left: 0;
+    padding-left: 0;
+    margin-bottom: 0px;
+}
+.l0 {
+    margin-left: 0
+}
+
+.l1 {
+    margin-left: 15px
+}
+
+.l2 {
+    margin-left: 30px
+}
+
+.l3 {
+    margin-left: 45px
+}
+
+.l4 {
+    margin-left: 60px
+}
+
+.l5 {
+    margin-left: 75px
+}
+
+.l6 {
+    margin-left: 60px
+}

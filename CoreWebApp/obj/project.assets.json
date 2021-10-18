@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v3.0": {
-      "Microsoft.TypeScript.MSBuild/3.9.5": {
+      "Microsoft.TypeScript.MSBuild/4.4.4": {
         "type": "package",
         "build": {
           "build/Microsoft.TypeScript.MSBuild.props": {},
@@ -12,17 +12,18 @@
     }
   },
   "libraries": {
-    "Microsoft.TypeScript.MSBuild/3.9.5": {
-      "sha512": "zybG4D7qmWlnHlztpHX2UNy2s/IYHnGuVvM54SlQnWcOIrUsL0IpfS7hDLKTWRl9pg+Yqai5apXzNiRqg9x0mQ==",
+    "Microsoft.TypeScript.MSBuild/4.4.4": {
+      "sha512": "i8icKQvoxwt2th9y4kBXbNkN+Q9guYRFrNlaEOpBubkcCyX1RhIppVcFe7wM95qGCYCpFslmhidRPqnC9t1Ueg==",
       "type": "package",
-      "path": "microsoft.typescript.msbuild/3.9.5",
+      "path": "microsoft.typescript.msbuild/4.4.4",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
+        "License.txt",
         "build/Microsoft.TypeScript.MSBuild.props",
         "build/Microsoft.TypeScript.MSBuild.targets",
-        "microsoft.typescript.msbuild.3.9.5.nupkg.sha512",
+        "microsoft.typescript.msbuild.4.4.4.nupkg.sha512",
         "microsoft.typescript.msbuild.nuspec",
         "tools/Microsoft.TypeScript.Default.props",
         "tools/Microsoft.TypeScript.targets",
@@ -78,9 +79,16 @@
         "tools/tsc/lib.es2020.bigint.d.ts",
         "tools/tsc/lib.es2020.d.ts",
         "tools/tsc/lib.es2020.full.d.ts",
+        "tools/tsc/lib.es2020.intl.d.ts",
         "tools/tsc/lib.es2020.promise.d.ts",
+        "tools/tsc/lib.es2020.sharedmemory.d.ts",
         "tools/tsc/lib.es2020.string.d.ts",
         "tools/tsc/lib.es2020.symbol.wellknown.d.ts",
+        "tools/tsc/lib.es2021.d.ts",
+        "tools/tsc/lib.es2021.full.d.ts",
+        "tools/tsc/lib.es2021.promise.d.ts",
+        "tools/tsc/lib.es2021.string.d.ts",
+        "tools/tsc/lib.es2021.weakref.d.ts",
         "tools/tsc/lib.es5.d.ts",
         "tools/tsc/lib.es6.d.ts",
         "tools/tsc/lib.esnext.array.d.ts",
@@ -92,12 +100,15 @@
         "tools/tsc/lib.esnext.promise.d.ts",
         "tools/tsc/lib.esnext.string.d.ts",
         "tools/tsc/lib.esnext.symbol.d.ts",
+        "tools/tsc/lib.esnext.weakref.d.ts",
         "tools/tsc/lib.scripthost.d.ts",
         "tools/tsc/lib.webworker.d.ts",
         "tools/tsc/lib.webworker.importscripts.d.ts",
+        "tools/tsc/lib.webworker.iterable.d.ts",
         "tools/tsc/node_modules/@microsoft/typescript-etw/bin/ia32/typescript-etw.node",
         "tools/tsc/node_modules/@microsoft/typescript-etw/index.js",
         "tools/tsc/node_modules/@microsoft/typescript-etw/package.json",
+        "tools/tsc/node_modules/source-map-support.js",
         "tools/tsc/pl/diagnosticMessages.generated.json",
         "tools/tsc/pt-BR/diagnosticMessages.generated.json",
         "tools/tsc/ru/diagnosticMessages.generated.json",
@@ -114,7 +125,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.0": [
-      "Microsoft.TypeScript.MSBuild >= 3.9.5"
+      "Microsoft.TypeScript.MSBuild >= 4.4.4"
     ]
   },
   "packageFolders": {
@@ -164,7 +175,7 @@
             "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
             "suppressParent": "All",
             "target": "Package",
-            "version": "[3.9.5, )"
+            "version": "[4.4.4, )"
           }
         },
         "imports": [

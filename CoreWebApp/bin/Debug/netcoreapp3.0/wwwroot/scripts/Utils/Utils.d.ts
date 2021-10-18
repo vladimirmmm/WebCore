@@ -696,8 +696,8 @@ declare function GetHtml2(obj: any, span?: string): string;
 declare function GetHtml(obj: Object): string;
 declare function download(filename: any, data: any): void;
 declare function CsvLineSplit(text: string, delimiter?: string, enclose?: string): string[];
-declare function compareString(a: any, b: any): 1 | 0 | -1;
-declare function getStringCompareFunction(p: Function): (a: any, b: any) => 1 | 0 | -1;
+declare function compareString(a: any, b: any): 0 | 1 | -1;
+declare function getStringCompareFunction(p: Function): (a: any, b: any) => 0 | 1 | -1;
 declare function RestoreModel(item: object, fielddictionary: object): object;
 declare var dataURLToBlob: (dataURL: any) => Blob;
 declare class Timer {

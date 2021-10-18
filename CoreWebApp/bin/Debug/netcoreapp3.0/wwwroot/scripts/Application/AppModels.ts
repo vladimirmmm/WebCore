@@ -1539,37 +1539,6 @@ class HttpClient {
         return xhttp;
     }
 
-    public ExecuteApi(url: string, method: string, data: any, onSuccess: Function, onError?: Function, contenttype: string = "application/json", marker: string = "") {
-        var me = this;
-        var xurl = this.GetUrl("~/webui/api/xpartnerapi");
-        var xhttp = new XMLHttpRequest();
-        onError = IsNull(onError) ? this.OnError : onError;
-
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4) {
-                me.OnResponse(xurl);
-
-                if (this.status == 200) {
-                    onSuccess(this);
-                } else {
-                    onError.call(me, this)
-                }
-
-            }
-        };
-        xhttp["RequestUrl"] = xurl;
-        xhttp["marker"] = marker;
-        xhttp.open("POST", xurl, true);
-        if (!IsNull(contenttype)) {
-            xhttp.setRequestHeader("Content-Type", contenttype);
-        }
-        this.setHeaders(xhttp);
-        me.OnRequest(xurl);
-        var fdata = { data: data, url: url, method: method };
-        xhttp.send(JSON.stringify(fdata));
-        return xhttp;
-    }
-
 
     public PostOld(url: string, data: any, onSuccess: Function, onError?: Function, contenttype?: string, headers?: object) {
         var me = this;
@@ -1636,51 +1605,7 @@ class HttpClient {
         return xhttp;
     }
 
-    public Authenticate_PartnerAPI(success: Function, failure: Function) {
-        var me = this;
-        var onerror = function (err) {
-            me.OnError(err);
-            if (failure != null) { failure(); }
-        }
-        var webserviceid = GetParameter("WebServiceIdentifier");
-        if (IsNull(webserviceid)) {
-            Toast_Error("Please provide the WebServiceIdentifier");
-            failure();
-            return;
-        }
-        var me = this;
-        var form = {};
-        form["webserviceIdentifier"] = webserviceid;
-        var tokend = new Date(localStorage.getItem("tokend"));
-        var token = localStorage.getItem("token");
-        var isautenticated = false;
-        if (Date.now() < tokend.getTime() && token.length > 10) {
-            isautenticated = true;
-            me.token = token;
-        }
-        if (!isautenticated) {
-            this.Post("~/api/Authenticate", JSON.stringify(form), function (xhttp: XMLHttpRequest) {
-                try {
-                    var resp = JSON.parse(xhttp.responseText);
-                    me.token = resp["result"];
-                    var d = new Date();
-                    d.setTime(d.getTime() + 6 * 60 * 60 * 1000);
-                    localStorage.setItem("tokend", d.toString());
-                    localStorage.setItem("token", me.token);
-                    success();
-                } catch (ex) {
-                    ex["RequestUrl"] = xhttp["RequestUrl"];
-                    ex["responseText"] = "Invalid JSON Response";
-                    onerror(ex);
-                }
-
-            }, onerror, "application/json-patch+json");
-        } else {
-            success();
-
-        }
-    }
-
+   
     public Authenticate(success: Function, failure: Function) {
         var me = this;
         var onerror = function (err) {

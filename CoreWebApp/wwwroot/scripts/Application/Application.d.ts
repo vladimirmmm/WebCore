@@ -696,8 +696,8 @@ declare function GetHtml2(obj: any, span?: string): string;
 declare function GetHtml(obj: Object): string;
 declare function download(filename: any, data: any): void;
 declare function CsvLineSplit(text: string, delimiter?: string, enclose?: string): string[];
-declare function compareString(a: any, b: any): 1 | 0 | -1;
-declare function getStringCompareFunction(p: Function): (a: any, b: any) => 1 | 0 | -1;
+declare function compareString(a: any, b: any): 1 | -1 | 0;
+declare function getStringCompareFunction(p: Function): (a: any, b: any) => 1 | -1 | 0;
 declare function RestoreModel(item: object, fielddictionary: object): object;
 declare var dataURLToBlob: (dataURL: any) => Blob;
 declare class Timer {
@@ -913,10 +913,8 @@ declare class HttpClient {
     GetMultiData(queries: ClientQuery[], onSuccess: Function, onError?: Function, cachemaxage?: number): XMLHttpRequest;
     GetData(query: ClientQuery, onSuccess: Function, onError?: Function, cachemaxage?: number): XMLHttpRequest;
     Post(url: string, data: any, onSuccess: Function, onError?: Function, contenttype?: string, marker?: string): XMLHttpRequest;
-    ExecuteApi(url: string, method: string, data: any, onSuccess: Function, onError?: Function, contenttype?: string, marker?: string): XMLHttpRequest;
     PostOld(url: string, data: any, onSuccess: Function, onError?: Function, contenttype?: string, headers?: object): XMLHttpRequest;
     Put(url: string, data: any, onSuccess: Function, onError?: Function, contenttype?: string, marker?: string): XMLHttpRequest;
-    Authenticate_PartnerAPI(success: Function, failure: Function): void;
     Authenticate(success: Function, failure: Function): void;
 }
 declare function modelobj(element: Element): object;
@@ -1231,12 +1229,6 @@ declare function TreeMenu(target: Element, obj: any): string;
 declare function GetControlSheet(): CSSStyleSheet;
 declare function GetDynamicalSheet(): CSSStyleSheet;
 declare function addCSSRule(sheet: any, selector: any, rules: any, index: any): void;
-declare class ResizeObserver {
-    constructor(f: Function);
-    observe(target: Element, options?: Object): any;
-    unobserve(target: Element): any;
-    disconnect(): any;
-}
 declare class App_FileUploader extends HTMLElement {
     private uploadelement;
     get Files(): any[];
@@ -1425,10 +1417,12 @@ declare class App_AutoComplete extends HTMLElement {
     ShowDisplaynameInTextInput: boolean;
     private _value;
     get displayText(): string;
+    set label(val: any);
     get value(): string;
     set value(val: string);
     OnSelected(container: Element, dataitem: any): void;
     constructor();
+    static get observedAttributes(): string[];
     attributeChangedCallback(attrName: any, oldValue: any, newValue: any): void;
     GetDataItemDisplayText(item: object): string;
     GetDataItemValue(item: any): any;

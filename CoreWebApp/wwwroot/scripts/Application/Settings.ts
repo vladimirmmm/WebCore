@@ -85,7 +85,7 @@
             }
             var r_fs = function () {
         
-                application.Refresh(function () { window.location.reload(true); });
+                application.Refresh(function () { window.location.reload(); });
 
             }
             var options = {

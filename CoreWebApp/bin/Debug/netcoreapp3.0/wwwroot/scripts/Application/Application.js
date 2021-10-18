@@ -5796,34 +5796,6 @@ class HttpClient {
         xhttp.send(data instanceof Object ? JSON.stringify(data) : data);
         return xhttp;
     }
-    ExecuteApi(url, method, data, onSuccess, onError, contenttype = "application/json", marker = "") {
-        var me = this;
-        var xurl = this.GetUrl("~/webui/api/xpartnerapi");
-        var xhttp = new XMLHttpRequest();
-        onError = IsNull(onError) ? this.OnError : onError;
-        xhttp.onreadystatechange = function () {
-            if (this.readyState == 4) {
-                me.OnResponse(xurl);
-                if (this.status == 200) {
-                    onSuccess(this);
-                }
-                else {
-                    onError.call(me, this);
-                }
-            }
-        };
-        xhttp["RequestUrl"] = xurl;
-        xhttp["marker"] = marker;
-        xhttp.open("POST", xurl, true);
-        if (!IsNull(contenttype)) {
-            xhttp.setRequestHeader("Content-Type", contenttype);
-        }
-        this.setHeaders(xhttp);
-        me.OnRequest(xurl);
-        var fdata = { data: data, url: url, method: method };
-        xhttp.send(JSON.stringify(fdata));
-        return xhttp;
-    }
     PostOld(url, data, onSuccess, onError, contenttype, headers) {
         var me = this;
         var xurl = this.GetUrl(url);
@@ -5880,52 +5852,6 @@ class HttpClient {
         me.OnRequest(xurl);
         xhttp.send(data);
         return xhttp;
-    }
-    Authenticate_PartnerAPI(success, failure) {
-        var me = this;
-        var onerror = function (err) {
-            me.OnError(err);
-            if (failure != null) {
-                failure();
-            }
-        };
-        var webserviceid = GetParameter("WebServiceIdentifier");
-        if (IsNull(webserviceid)) {
-            Toast_Error("Please provide the WebServiceIdentifier");
-            failure();
-            return;
-        }
-        var me = this;
-        var form = {};
-        form["webserviceIdentifier"] = webserviceid;
-        var tokend = new Date(localStorage.getItem("tokend"));
-        var token = localStorage.getItem("token");
-        var isautenticated = false;
-        if (Date.now() < tokend.getTime() && token.length > 10) {
-            isautenticated = true;
-            me.token = token;
-        }
-        if (!isautenticated) {
-            this.Post("~/api/Authenticate", JSON.stringify(form), function (xhttp) {
-                try {
-                    var resp = JSON.parse(xhttp.responseText);
-                    me.token = resp["result"];
-                    var d = new Date();
-                    d.setTime(d.getTime() + 6 * 60 * 60 * 1000);
-                    localStorage.setItem("tokend", d.toString());
-                    localStorage.setItem("token", me.token);
-                    success();
-                }
-                catch (ex) {
-                    ex["RequestUrl"] = xhttp["RequestUrl"];
-                    ex["responseText"] = "Invalid JSON Response";
-                    onerror(ex);
-                }
-            }, onerror, "application/json-patch+json");
-        }
-        else {
-            success();
-        }
     }
     Authenticate(success, failure) {
         var me = this;
@@ -6699,11 +6625,12 @@ class Application {
         });
         waiter.SetTasks("layouts", ["metadata", "resources"]);
         for (var layout in me.Layouts.Templates) {
-            var layoutpath = layout;
-            waiter.StartTask("layouts", layoutpath);
+            var layoutpath = Access(window, "appbaseurl") + layout;
+            waiter.StartTask("layouts", layout);
             me.localhttpClient.Get(layoutpath, {}, function (r) {
-                me.Layouts.Templates[r.OriginalRequestUrl] = r.responseText;
-                waiter.EndTask("layouts", r.OriginalRequestUrl);
+                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "");
+                me.Layouts.Templates[relurl] = r.responseText;
+                waiter.EndTask("layouts", relurl);
             });
         }
         var f_loadviews = function () {
@@ -6740,8 +6667,7 @@ class Application {
                                     //vm.RazorTemplate = Razor.Complile(me.Layouts.Templates[razorpath]);
                                 }
                                 catch (ex) {
-                                    console.log("Error in " + vm.LayoutPath);
-                                    console.log(ex);
+                                    console.error("Error (" + ex + ") in " + vm.LayoutPath);
                                 }
                             }
                         }
@@ -6763,11 +6689,12 @@ class Application {
         });
         metawaiter.SetTasks("metas", metafiles);
         for (var i = 0; i < metafiles.length; i++) {
-            var metafile = metafiles[i];
+            var metafile = Access(window, "appbaseurl") + metafiles[i];
             me.httpClient.Get(metafile, {}, function (r) {
                 var myArr = JSON.parse(r.responseText);
-                metadictionary[r.RequestUrl] = myArr;
-                metawaiter.EndTask("metas", r.RequestUrl);
+                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "");
+                metadictionary[relurl] = myArr;
+                metawaiter.EndTask("metas", relurl);
             });
         }
         me.LoadResources(() => waiter.EndTask("layouts", "resources"));
@@ -6791,11 +6718,12 @@ class Application {
         });
         resourcewaiter.SetTasks("resources", resourcefiles);
         for (var i = 0; i < resourcefiles.length; i++) {
-            var resourcefile = resourcefiles[i];
+            var resourcefile = Access(window, "appbaseurl") + resourcefiles[i];
             me.httpClient.Get(resourcefile, {}, function (r) {
                 var myArr = JSON.parse(r.responseText);
-                resourcesdictionary[r.RequestUrl] = myArr;
-                resourcewaiter.EndTask("resources", r.RequestUrl);
+                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "");
+                resourcesdictionary[relurl] = myArr;
+                resourcewaiter.EndTask("resources", relurl);
             });
         }
     }
@@ -8378,6 +8306,7 @@ function TreeMenu(target, obj) {
     htmlbuilder.push("<ul>");
     children.forEach(function (child) {
         //<li binding-type="template" uid="@{model.Key}" url="@{model.Url}" rel="@{model.Name}">
+        //htmlbuilder.push(Format('<li uid="{0}" url="{1}" rel="{2}">', child["Key"], Access(window, "appbaseurl") +  child["Url"], child["Name"]));
         htmlbuilder.push(Format('<li uid="{0}" url="{1}" rel="{2}">', child["Key"], child["Url"], child["Name"]));
         htmlbuilder.push(Res("menu." + child["Key"]));
         htmlbuilder.push(TreeMenu(null, child));
@@ -8413,7 +8342,12 @@ function addCSSRule(sheet, selector, rules, index) {
         sheet.addRule(selector, rules, index);
     }
 }
-;
+//declare class ResizeObserver {
+//    constructor(f: Function);
+//    observe(target: Element, options?: Object);
+//    unobserve(target: Element);
+//    disconnect();
+//};
 class App_FileUploader extends HTMLElement {
     constructor() {
         super();
@@ -9955,6 +9889,11 @@ class App_AutoComplete extends HTMLElement {
     get displayText() {
         return this.c_display.placeholder;
     }
+    set label(val) {
+        if (!IsNull(this._input)) {
+            this._input.placeholder = val;
+        }
+    }
     get value() {
         var me = this;
         return me._value;
@@ -9977,8 +9916,11 @@ class App_AutoComplete extends HTMLElement {
         var me = this;
         me.value = me.GetDataItemValue(dataitem);
     }
+    static get observedAttributes() {
+        return ["value", "label"];
+    }
     attributeChangedCallback(attrName, oldValue, newValue) {
-        this[attrName] = this.hasAttribute(attrName);
+        this[attrName] = newValue;
     }
     GetDataItemDisplayText(item) {
         if (item["TypeName"] == "_Control") {
@@ -10633,7 +10575,7 @@ class UILogger {
             me.logevent(e);
         });
         e.addEventListener('textInput', (e) => {
-            me.logevent(e, e.data);
+            me.logevent(e, e["data"]);
         });
         e.addEventListener('keydown', (e) => {
             me.logevent(e);
@@ -10668,7 +10610,7 @@ class BarcodeScaner {
                 me.logevent(e);
             });
             document.addEventListener('textInput', (e) => {
-                me.logevent(e, e.data);
+                me.logevent(e, e["data"]);
             });
             document.addEventListener('keydown', (e) => {
                 //if (e.keyCode == 9) {
@@ -11469,7 +11411,7 @@ class HtmlHelpers {
         var displayfield = Coalesce(Access(options, 'DisplayField'), "Name");
         var queryname = Coalesce(Access(options, 'QueryName'), "");
         var lkpfstr = "['" + lookupfields.join("','") + "']";
-        var datafunctionstr = 'function(a,b){ Partner.DataLayer.Instance.DataLookup(a,' + queryname + ',' + lkpfstr + ',' + valuefield + ',' + displayfield + ', b); }';
+        var datafunctionstr = 'function(a,b){ AppDataLayer.Instance.DataLookup(a,' + queryname + ',' + lkpfstr + ',' + valuefield + ',' + displayfield + ', b); }';
         var simplified = exprstr.substr(exprstr.indexOf(".") + 1).trim();
         //var mp: PropertyMeta = Access(model, simplified);
         var mp = MetaAccess(model, simplified);
@@ -11494,7 +11436,7 @@ class HtmlHelpers {
         var displayfield = Coalesce(Access(options, 'DisplayField'), "Name");
         var queryname = Coalesce(Access(options, 'QueryName'), "");
         var lkpfstr = "['" + lookupfields.join("','") + "']";
-        var datafunctionstr = 'function(a,b){ Partner.DataLayer.Instance.DataLookup(a,' + queryname + ',' + lkpfstr + ',' + valuefield + ',' + displayfield + ', b); }';
+        var datafunctionstr = 'function(a,b){ AppDataLayer.Instance.DataLookup(a,' + queryname + ',' + lkpfstr + ',' + valuefield + ',' + displayfield + ', b); }';
         var simplified = exprstr.substr(exprstr.indexOf(".") + 1).trim();
         //var mp: PropertyMeta = Access(model, simplified);
         var mp = MetaAccess(model, simplified);
@@ -11668,7 +11610,7 @@ var Settings;
                 application.RefreshStaticData(function () { location.reload(); });
             };
             var r_fs = function () {
-                application.Refresh(function () { window.location.reload(true); });
+                application.Refresh(function () { window.location.reload(); });
             };
             var options = {
                 "ALL": function () {
