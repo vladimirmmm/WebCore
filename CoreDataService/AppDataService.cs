@@ -517,7 +517,7 @@ namespace DataService.Models
             var wsid = credentials != null ? credentials.GetValueAsString("WebServiceIdentifier") : "";
             var username = credentials != null ? credentials.GetValueAsString("UserName") : "";
             var password = credentials != null ? credentials.GetValueAsString("Password") : "";
-            var encryptedpassword = PWEncryptor.EncryptPassword(password, "pannonszoftver");
+            var encryptedpassword = password;// PWEncryptor.EncryptPassword(password, "psz");
             var keycontainer = Credentials[GetDomain()];
             var authresult = new Result<List<Dictionary<string, object>>>();
             authresult.Model = new List<Dictionary<string, object>>();

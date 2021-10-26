@@ -136,7 +136,12 @@ namespace DataService.Models.Data
             {
                 var querybuilder = new StringBuilder();
                 querybuilder.Append(" SET NOCOUNT ON; ");
-                querybuilder.Append(" DECLARE @generated_keys table([ID] int) ");
+                //[ID] int
+                var keyhitems =new List<string>();
+                foreach (var key in keydictionary.Keys) {
+                    keyhitems.Add("[" + key + "] int ");
+                }
+                querybuilder.Append(" DECLARE @generated_keys table("+Strings.ListToString(keyhitems)+") ");
 
                 querybuilder.Append(" INSERT INTO ");
                 querybuilder.Append(query.Source);

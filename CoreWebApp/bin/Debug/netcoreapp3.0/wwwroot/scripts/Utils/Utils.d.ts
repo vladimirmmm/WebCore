@@ -320,6 +320,59 @@ interface IViewTemplate {
     Extension: string;
     Copy(): IViewTemplate;
 }
+declare class Glyph {
+    Value: string;
+    Tag?: string;
+    Children: Glyph[];
+    Level?: number;
+    AddChild(item: string): void;
+    AddChildGlyph(item: Glyph): void;
+    static GetString(instance: Glyph, start?: string, end?: string, level?: number): string;
+    static All(instance: Glyph, level?: number): Glyph[];
+    static ForAll(instance: Glyph, action: Action2<Glyph, Glyph>, parent?: Glyph, level?: number): void;
+}
+declare class SimpleGlyph extends Glyph {
+}
+declare class GroupGlyph extends Glyph {
+}
+declare class Reference<T> {
+    value: T;
+}
+declare class GlyphParser {
+    private startstr;
+    private endstr;
+    constructor(startstr?: string, endstr?: string);
+    Parse(expression: string): Glyph;
+    private _Parse;
+    static Test(): void;
+}
+declare class RPart {
+    Value: string;
+}
+declare class RCodePart extends RPart {
+    constructor(value?: string);
+}
+declare class RUIPart extends RPart {
+}
+declare class RMixPart extends RPart {
+}
+declare class RImplicitpart extends RPart {
+}
+declare class RExplicitpart extends RPart {
+}
+declare class RazorMarkupParser {
+    CSwitch: string;
+    USwitch: string;
+    Inline_Start: string;
+    Inline_End: string;
+    Block_Start: string;
+    Block_End: string;
+    KeyWords: string[];
+    Parse(body: string): void;
+    HandleExppressions(item: string): void;
+    private StartsWithKeyWord;
+    static Test(): void;
+}
 declare const keyattribute = "datakey";
 declare class BindOptions {
     targetelement?: Element;
@@ -712,6 +765,49 @@ declare class Timer {
 declare function AsArrayOf<T>(obj: any): T[];
 declare function GetPropertyByShortname(properties: Object[], shortname: string): string;
 declare function TransformNumber(number: number, numberofdecimal: number): string;
+declare var HttpStatusCodes: {
+    '200': string;
+    '201': string;
+    '202': string;
+    '203': string;
+    '204': string;
+    '205': string;
+    '206': string;
+    '300': string;
+    '301': string;
+    '302': string;
+    '303': string;
+    '304': string;
+    '305': string;
+    '306': string;
+    '307': string;
+    '400': string;
+    '401': string;
+    '402': string;
+    '403': string;
+    '404': string;
+    '405': string;
+    '406': string;
+    '407': string;
+    '408': string;
+    '409': string;
+    '410': string;
+    '411': string;
+    '412': string;
+    '413': string;
+    '414': string;
+    '415': string;
+    '416': string;
+    '417': string;
+    '418': string;
+    '429': string;
+    '500': string;
+    '501': string;
+    '502': string;
+    '503': string;
+    '504': string;
+    '505': string;
+};
 interface QueryLookupOptions {
     QueryName?: string;
     LookupFields?: string[];

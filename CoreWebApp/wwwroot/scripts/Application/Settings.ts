@@ -182,13 +182,13 @@
             var url = (<any>_SelectFirst("#apiurl")).value;
             var method = (<any>_SelectFirst("#apimethod")).value;
 
-            AppDependencies.httpClient.ExecuteApi(url, method, q1, function (xhttp) {
-                var response = JSON.parse(xhttp.responseText);
-                console.log(response)
-            }, function (xhttp) {
-                var response = JSON.parse(xhttp.responseText);
-                console.log(response)
-            });
+            //AppDependencies.httpClient.ExecuteApi(url, method, q1, function (xhttp) {
+            //    var response = JSON.parse(xhttp.responseText);
+            //    console.log(response)
+            //}, function (xhttp) {
+            //    var response = JSON.parse(xhttp.responseText);
+            //    console.log(response)
+            //});
         }
     }
 
@@ -235,7 +235,11 @@
             var me = this;
             var loginobj = GetBoundObject(me.UIElement);
             var wsid = loginobj["WSID"];
+            var uname = loginobj["Username"];
+            var pw = loginobj["Password"];
             SetParameter("WebServiceIdentifier", wsid);
+            SetParameter("UserName", uname);
+            SetParameter("Password", pw);
             application.SetCulture(loginobj["Language"]);
             var success = function (model:any)
             {

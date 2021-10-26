@@ -479,7 +479,7 @@ class View {
         return Format("{0}_{1}_{2}", this.Name, area, IsNull(p) ? "" : p);
     }
     public Title(): string {
-        return "";
+        return this.LogicalModelName + "-" + this.Name;
         //throw "Identifier Not Implemented on " + this.Name;
     }
 
@@ -545,13 +545,6 @@ class View {
         application.SaveSettings();
     }
 
-    //public CreateAction(FunctionStr: string, CssClass: string, Key: string): AppActionOld
-    //{
-    //    var path = this.Controller.ModelName + "\\" + this.Name + "\\";
-    //    var appaction = AppActionOld.Create(FunctionStr, CssClass, Key);
-    //    appaction.Paths.push(path);
-    //    return appaction;
-    //}
 }
 
 
@@ -1012,26 +1005,6 @@ class ModelController {
     }
 
 
-
-    //private GetViewInstance(vm: View, p: Object): ViewInstance
-    //{
-    //    var me = this;
-    //    var id = vm.FormatIdentifier(p);
-    //    if (!IsNull(id)) {
-    //        var vi = new ViewInstance();
-
-    //        vi.Title = vm.Title();
-    //        vi.Id = id;
-    //        vi.Parameters = p;
-    //        vi.ViewModel = vm;
-    //        return vi;
-    //    } else
-    //    {
-    //        return null;
-    //    }
-
-    //}
-
     public Download(name: string, waiter: Waiter) {
 
     }
@@ -1427,47 +1400,6 @@ class HttpClient {
         return xhttp;
     }
 
-    //public GetMultiData(queries: ClientQuery[], onSuccess: Function, onError?: Function, cachemaxage: number = 0) {
-    //    var me = this;
-    //    var xurl = this.GetUrl("~/webui/api/xclientquery/?query=MultiData");
-    //    if (cachemaxage == 0) {
-    //        xurl = xurl + "&dt=" + Guid();
-    //    }
-    //    var xhttp = new XMLHttpRequest();
-    //    onError = IsNull(onError) ? this.OnError : onError;
-
-    //    xhttp.onreadystatechange = function () {
-    //        if (this.readyState == 4) {
-    //            me.OnResponse(xurl);
-
-    //            if (this.status == 200) {
-    //                var data = JSON.parse(this.responseText);
-    //                for (var key in data) {
-    //                    var ix = key.substring(key.indexOf("|") + 1);
-
-    //                    data[key].Model = me.Decompress(data[key]);
-    //                    data[ix] = data[key];
-    //                }
-    //                onSuccess(data);
-    //            } else {
-    //                onError.call(me, this)
-    //            }
-
-    //        }
-    //    };
-    //    xhttp["RequestUrl"] = xurl;
-    //    xhttp.open("GET", xurl, true);
-    //    this.setHeaders(xhttp);
-    //    xhttp.setRequestHeader("ClientQueries", encodeURIComponent(JSON.stringify(queries)))
-    //    xhttp.setRequestHeader("Content-Type", "application/json");
-    //    xhttp.setRequestHeader("CanCache", Format("{0}", cachemaxage));
-
-    //    me.OnRequest(xurl);
-
-    //    xhttp.send();
-    //    return xhttp;
-    //} 
-
 
     public GetData(query: ClientQuery, onSuccess: Function, onError?: Function, cachemaxage: number = 0) {
         var me = this;
@@ -1606,26 +1538,31 @@ class HttpClient {
     }
 
    
-    public Authenticate(success: Function, failure: Function) {
+    public Authenticate(success: Function, failure: Function, credentials = {}) {
         var me = this;
         var onerror = function (err) {
             me.OnError(err);
             if (failure != null) { failure(); }
         }
-        var webserviceid = GetParameter("WebServiceIdentifier");
+        var webserviceid = Coalesce(credentials["WebServiceIdentifier"], GetParameter("WebServiceIdentifier") );
+        var uname = Coalesce(credentials["UserName"], GetParameter("UserName"));
+        var pw = Coalesce(credentials["Password"], GetParameter("Password"));
+
         var urlParams = new URLSearchParams(window.location.search);
         var urlwsid = urlParams.get("WebServiceIdentifier");
         //var wsid = Coalesce(webserviceid, urlwsid);
         var wsid = Coalesce(urlwsid, webserviceid);
 
-        if (IsNull(wsid)) {
-            Toast_Error("Please provide the WebServiceIdentifier");
-            failure();
+        if (IsNull(wsid) && IsNull(uname)) {
+            Toast_Error("Please provide the Username or WSI");
+            failure(); 
             return;
         }
         var me = this;
         var form = {};
         form["WebServiceIdentifier"] = wsid;
+        form["UserName"] = uname;
+        form["Password"] = pw;
 
         var isautenticated = false;
         //var tokend = new Date(localStorage.getItem("uitokend"));
@@ -1647,6 +1584,10 @@ class HttpClient {
                     onerror(ex);
                 }
                 if (ok) {
+                    let token = Access(resp, "Model.Token");
+                    if (!IsNull(token)) {
+                        me.token = token;
+                    }
                     if (IsNull(webserviceid)) {
                         SetParameter("WebServiceIdentifier", urlwsid);
                     }

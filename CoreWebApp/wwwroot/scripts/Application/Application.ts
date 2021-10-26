@@ -302,38 +302,7 @@ class AppUICommand
         return command;
     }
 }
-//class AppActionOld
-//{
-//    public UrlFormat: string;
-//    public FunctionStr: string;
-//    public Function: Function = function (obj) { };
-//    public HtmlFor: Function = function (obj) { };
-//    public LabelKey: string;
-//    public Key: string;
-//    public CssClass: string;
-//    public Paths: string[] = [];
-//    public TypeNames: string[] = [];
 
-//    public static GetTemplate(action: AppActionOld,model:any=null): string
-//    {
-//        var htmlformat = '<span class="button {3}" title="{2}" onclick="{0}" rel="{1}" ></span>';
-//        if (!IsNull(action.UrlFormat)) {
-//            htmlformat = '<a class="button {3}" title="{2}" href="{1}" rel="{0}" ></a>';
-
-//        }
-//        return htmlformat;
-//    }
-
-//    public static Create(FunctionStr: string, CssClass: string, Key: string): AppActionOld
-//    {
-//        var appaction = new AppActionOld();
-//        appaction.CssClass = CssClass;
-//        appaction.FunctionStr = FunctionStr;
-//        appaction.Key = Key;
-//        appaction.LabelKey = Format("UI.Actions.{0}", Key);
-//        return appaction;
-//    }
-//}
 interface AppScript
 {
     script: string;
@@ -407,7 +376,7 @@ class Application
         var me = this;
         delete me.Commands[key];
     }
-
+ 
     public ScriptsReady()
     {
         var me = this;
@@ -453,6 +422,7 @@ class Application
     public constructor()
     {
         var me = this;
+        window["appsettings"] = Coalesce(window["appsettings"], { Imports: [] });
         me.scriptwaiter.SetWaiter("scripts", function () {
             me.LoadX();
         })
@@ -782,7 +752,7 @@ class Application
     public get Settings(): AppSettings
     {
         var me = this;
-        var defaultsettings = window["appsettings"];
+        var defaultsettings = Coalesce(window["appsettings"], {}); 
         if (IsNull(defaultsettings["Scripts"])) {
             defaultsettings["Scripts"] = [];
         }
@@ -828,8 +798,8 @@ class Application
     public SaveSettings(settings: AppSettings=null)
     {
         var me = this;
-        var defaultsettings = window["appsettings"];
-        var domain = defaultsettings.Domain;
+        var defaultsettings = Coalesce(window["appsettings"], {});
+        var domain = defaultsettings.Domain; 
         var domainsettingskey = domain + ".Settings";
         var settingsstr = JSON.stringify(IsNull(settings) ? me.Settings : settings);
         localStorage.setItem(domainsettingskey, settingsstr);
