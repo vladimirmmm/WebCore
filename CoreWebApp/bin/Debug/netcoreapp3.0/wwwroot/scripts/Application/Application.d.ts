@@ -348,17 +348,22 @@ declare class GlyphParser {
 }
 declare class RPart {
     Value: string;
+    Copy(): RPart;
 }
 declare class RCodePart extends RPart {
     constructor(value?: string);
+    Copy(): RCodePart;
 }
 declare class RUIPart extends RPart {
+    Copy(): RUIPart;
 }
 declare class RMixPart extends RPart {
 }
 declare class RImplicitpart extends RPart {
+    Copy(): RImplicitpart;
 }
 declare class RExplicitpart extends RPart {
+    Copy(): RExplicitpart;
 }
 declare class RazorMarkupParser {
     CSwitch: string;
@@ -368,8 +373,9 @@ declare class RazorMarkupParser {
     Block_Start: string;
     Block_End: string;
     KeyWords: string[];
-    Parse(body: string): void;
-    HandleExppressions(item: string): void;
+    Parse(body: string): any[];
+    Simplify(items: RPart[]): RPart[];
+    HandleExppressions(item: string): any[];
     private StartsWithKeyWord;
     static Test(): void;
 }
@@ -1505,6 +1511,11 @@ declare class App_DictionaryEditor extends HTMLElement {
     get value(): string;
     set value(val: string);
 }
+declare class App_ModalWindow extends HTMLElement {
+    connectedCallback(): void;
+    load(): void;
+    ContentChanged(): void;
+}
 declare class App_AutoComplete extends HTMLElement {
     options: AutoCompleteOption;
     private _input;
@@ -1621,6 +1632,7 @@ declare function LoadBarcodes(): void;
 declare function GetFiltersFromUI(filtercontainer: Element): IClientFilter[];
 declare function resizableGrid(tbl: any, headonly?: boolean): void;
 declare function ResizeImages(file: any, maxsize: number, callback: Function): void;
+declare function LabelProxy(prefixes?: string[]): {};
 declare module ErpApp.Model {
     class AppMessage {
         Id: number;

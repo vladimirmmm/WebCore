@@ -4125,6 +4125,9 @@ function Access(obj, key, context) {
             console.error(err);
         }
     }
+    if (IsObject(obj) && key in obj) {
+        return obj[key];
+    }
     if (key == "this") {
         result = obj;
     }

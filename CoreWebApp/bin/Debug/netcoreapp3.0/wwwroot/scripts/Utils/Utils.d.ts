@@ -348,17 +348,22 @@ declare class GlyphParser {
 }
 declare class RPart {
     Value: string;
+    Copy(): RPart;
 }
 declare class RCodePart extends RPart {
     constructor(value?: string);
+    Copy(): RCodePart;
 }
 declare class RUIPart extends RPart {
+    Copy(): RUIPart;
 }
 declare class RMixPart extends RPart {
 }
 declare class RImplicitpart extends RPart {
+    Copy(): RImplicitpart;
 }
 declare class RExplicitpart extends RPart {
+    Copy(): RExplicitpart;
 }
 declare class RazorMarkupParser {
     CSwitch: string;
@@ -368,8 +373,9 @@ declare class RazorMarkupParser {
     Block_Start: string;
     Block_End: string;
     KeyWords: string[];
-    Parse(body: string): void;
-    HandleExppressions(item: string): void;
+    Parse(body: string): any[];
+    Simplify(items: RPart[]): RPart[];
+    HandleExppressions(item: string): any[];
     private StartsWithKeyWord;
     static Test(): void;
 }

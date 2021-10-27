@@ -1709,20 +1709,45 @@ class GlyphParser {
     }
 }
 class RPart {
+    Copy() {
+        var result = new RPart();
+        result.Value = this.Value;
+        return result;
+    }
 }
 class RCodePart extends RPart {
     constructor(value) {
         super();
         this.Value = value;
     }
+    Copy() {
+        var result = new RCodePart();
+        result.Value = this.Value;
+        return result;
+    }
 }
 class RUIPart extends RPart {
+    Copy() {
+        var result = new RUIPart();
+        result.Value = this.Value;
+        return result;
+    }
 }
 class RMixPart extends RPart {
 }
 class RImplicitpart extends RPart {
+    Copy() {
+        var result = new RImplicitpart();
+        result.Value = this.Value;
+        return result;
+    }
 }
 class RExplicitpart extends RPart {
+    Copy() {
+        var result = new RExplicitpart();
+        result.Value = this.Value;
+        return result;
+    }
 }
 class RazorMarkupParser {
     constructor() {
@@ -1813,14 +1838,41 @@ class RazorMarkupParser {
             if (part instanceof RMixPart) {
                 var trimmedpart = part.Value.trim();
                 if (trimmedpart.startsWith(me.CSwitch)) {
-                    if (me.StartsWithKeyWord(trimmedpart.substring(1))) {
-                        bag[i] = new RCodePart();
+                    var partafterswitch = trimmedpart.substring(1);
+                    if (me.StartsWithKeyWord(partafterswitch)) {
+                        var cp = new RCodePart();
+                        cp.Value = partafterswitch; // Replace( part.Value,"@","");
+                        bag[i] = cp;
                         continue;
                     }
                 }
+                var items = me.HandleExppressions(part.Value);
+                var sitems = me.Simplify(items);
+                if (sitems.length > 0) {
+                    bag[i] = sitems;
+                }
             }
         }
-        console.log("Bag", bag);
+        //console.log("Bag", bag);
+        return bag;
+    }
+    Simplify(items) {
+        var result = [];
+        if (items.length > 0) {
+            var cpart = items[0].Copy();
+            for (var i = 1; i < items.length; i++) {
+                var part = items[i];
+                if (cpart.constructor.name == part.constructor.name) {
+                    cpart.Value = cpart.Value + part.Value;
+                }
+                else {
+                    result.push(cpart);
+                    cpart = part.Copy();
+                }
+            }
+            result.push(cpart);
+        }
+        return result;
     }
     HandleExppressions(item) {
         var me = this;
@@ -1836,7 +1888,7 @@ class RazorMarkupParser {
                         prec.Value = prec.Value.substring(0, prec.Value.length - 1);
                         newg.Tag = "Explicit";
                         newg.Value = Glyph.GetString(item, me.Inline_Start, me.Inline_End, 0);
-                        console.log(expr);
+                        //console.log(expr);
                     }
                     else {
                         newg.Value = Glyph.GetString(item, me.Inline_Start, me.Inline_End, 1);
@@ -1865,11 +1917,38 @@ class RazorMarkupParser {
                         var ix = parentitem.Children.indexOf(item);
                         parentitem.Children[ix] = gg;
                     }
+                    //console.log("changes", parentitem);
                 }
-                console.log("matches", matches);
-                console.log("items", items);
             }
         });
+        var result = [];
+        var fadd = (g) => {
+            var part = null;
+            if (g.Tag == "Implicit") {
+                part = new RImplicitpart();
+            }
+            if (g.Tag == "Explicit") {
+                part = new RExplicitpart();
+            }
+            if (IsNull(g.Tag)) {
+                part = new RUIPart();
+            }
+            part.Value = g.Value;
+            result.push(part);
+        };
+        for (var i = 0; i < expr.Children.length; i++) {
+            let current = expr.Children[i];
+            if (current instanceof GroupGlyph) {
+                for (var gi = 0; gi < current.Children.length; gi++) {
+                    var gitem = current.Children[gi];
+                    fadd(gitem);
+                }
+            }
+            else {
+                fadd(current);
+            }
+        }
+        return result;
     }
     StartsWithKeyWord(item) {
         var me = this;

@@ -1718,20 +1718,45 @@ class GlyphParser {
     }
 }
 class RPart {
+    Copy() {
+        var result = new RPart();
+        result.Value = this.Value;
+        return result;
+    }
 }
 class RCodePart extends RPart {
     constructor(value) {
         super();
         this.Value = value;
     }
+    Copy() {
+        var result = new RCodePart();
+        result.Value = this.Value;
+        return result;
+    }
 }
 class RUIPart extends RPart {
+    Copy() {
+        var result = new RUIPart();
+        result.Value = this.Value;
+        return result;
+    }
 }
 class RMixPart extends RPart {
 }
 class RImplicitpart extends RPart {
+    Copy() {
+        var result = new RImplicitpart();
+        result.Value = this.Value;
+        return result;
+    }
 }
 class RExplicitpart extends RPart {
+    Copy() {
+        var result = new RExplicitpart();
+        result.Value = this.Value;
+        return result;
+    }
 }
 class RazorMarkupParser {
     constructor() {
@@ -1822,14 +1847,41 @@ class RazorMarkupParser {
             if (part instanceof RMixPart) {
                 var trimmedpart = part.Value.trim();
                 if (trimmedpart.startsWith(me.CSwitch)) {
-                    if (me.StartsWithKeyWord(trimmedpart.substring(1))) {
-                        bag[i] = new RCodePart();
+                    var partafterswitch = trimmedpart.substring(1);
+                    if (me.StartsWithKeyWord(partafterswitch)) {
+                        var cp = new RCodePart();
+                        cp.Value = partafterswitch; // Replace( part.Value,"@","");
+                        bag[i] = cp;
                         continue;
                     }
                 }
+                var items = me.HandleExppressions(part.Value);
+                var sitems = me.Simplify(items);
+                if (sitems.length > 0) {
+                    bag[i] = sitems;
+                }
             }
         }
-        console.log("Bag", bag);
+        //console.log("Bag", bag);
+        return bag;
+    }
+    Simplify(items) {
+        var result = [];
+        if (items.length > 0) {
+            var cpart = items[0].Copy();
+            for (var i = 1; i < items.length; i++) {
+                var part = items[i];
+                if (cpart.constructor.name == part.constructor.name) {
+                    cpart.Value = cpart.Value + part.Value;
+                }
+                else {
+                    result.push(cpart);
+                    cpart = part.Copy();
+                }
+            }
+            result.push(cpart);
+        }
+        return result;
     }
     HandleExppressions(item) {
         var me = this;
@@ -1845,7 +1897,7 @@ class RazorMarkupParser {
                         prec.Value = prec.Value.substring(0, prec.Value.length - 1);
                         newg.Tag = "Explicit";
                         newg.Value = Glyph.GetString(item, me.Inline_Start, me.Inline_End, 0);
-                        console.log(expr);
+                        //console.log(expr);
                     }
                     else {
                         newg.Value = Glyph.GetString(item, me.Inline_Start, me.Inline_End, 1);
@@ -1874,11 +1926,38 @@ class RazorMarkupParser {
                         var ix = parentitem.Children.indexOf(item);
                         parentitem.Children[ix] = gg;
                     }
+                    //console.log("changes", parentitem);
                 }
-                console.log("matches", matches);
-                console.log("items", items);
             }
         });
+        var result = [];
+        var fadd = (g) => {
+            var part = null;
+            if (g.Tag == "Implicit") {
+                part = new RImplicitpart();
+            }
+            if (g.Tag == "Explicit") {
+                part = new RExplicitpart();
+            }
+            if (IsNull(g.Tag)) {
+                part = new RUIPart();
+            }
+            part.Value = g.Value;
+            result.push(part);
+        };
+        for (var i = 0; i < expr.Children.length; i++) {
+            let current = expr.Children[i];
+            if (current instanceof GroupGlyph) {
+                for (var gi = 0; gi < current.Children.length; gi++) {
+                    var gitem = current.Children[gi];
+                    fadd(gitem);
+                }
+            }
+            else {
+                fadd(current);
+            }
+        }
+        return result;
     }
     StartsWithKeyWord(item) {
         var me = this;
@@ -10229,6 +10308,43 @@ class App_DictionaryEditor extends HTMLElement {
     }
 }
 window.customElements.define("app-dictionaryeditor", App_DictionaryEditor);
+class App_ModalWindow extends HTMLElement {
+    connectedCallback() {
+        var element = this;
+        element.style.display = "none";
+        this.load();
+    }
+    load() {
+        var element = this;
+        var title = Coalesce(element.getAttribute("title"), " ");
+        var div = document.createElement("div");
+        var e_title = document.createElement("span");
+        e_title.innerText = title;
+        var e_close = document.createElement("span");
+        e_close.classList.add("a-Close");
+        e_close.classList.add("icon");
+        e_close.setAttribute("onclick", "_Hide(customcontrol(this))");
+        div.appendChild(e_title);
+        div.appendChild(e_close);
+        let e_slot = document.createElement("slot");
+        if (IsNull(this.shadowRoot)) {
+            let shadowRoot = this.attachShadow({ mode: 'open' });
+            var sheet = GetControlSheet();
+            var cssText = Array.from(sheet.cssRules).Select(i => i.cssText).join("\n");
+            var e_Style = document.createElement("style");
+            e_Style.innerHTML = cssText;
+            shadowRoot.appendChild(e_Style);
+            shadowRoot.appendChild(div);
+            shadowRoot.appendChild(e_slot);
+        }
+        //element.prepend(div);
+    }
+    ContentChanged() {
+        var me = this;
+        me.load();
+    }
+}
+window.customElements.define("app-modalwindow", App_ModalWindow);
 class App_AutoComplete extends HTMLElement {
     constructor() {
         super();
@@ -11483,6 +11599,24 @@ function ResizeImages(file, maxsize = 150, callback) {
         };
         reader.readAsDataURL(file);
     }
+}
+function LabelProxy(prefixes = [""]) {
+    var pr = new Proxy({}, {
+        has: function (target, prop) {
+            return true;
+        },
+        get: function (target, prop) {
+            for (var i = 0; i < prefixes.length; i++) {
+                var prefix = prefixes[i].length > 0 ? prefixes[i] + "." : "";
+                var key = prefix + prop;
+                if (ResExists(key)) {
+                    return Res(key);
+                }
+                return Res(prop);
+            }
+        }
+    });
+    return pr;
 }
 var ErpApp;
 (function (ErpApp) {

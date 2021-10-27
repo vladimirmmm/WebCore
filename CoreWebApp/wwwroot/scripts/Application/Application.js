@@ -4134,6 +4134,9 @@ function Access(obj, key, context) {
             console.error(err);
         }
     }
+    if (IsObject(obj) && key in obj) {
+        return obj[key];
+    }
     if (key == "this") {
         result = obj;
     }
@@ -11600,6 +11603,24 @@ function ResizeImages(file, maxsize = 150, callback) {
         reader.readAsDataURL(file);
     }
 }
+function LabelProxy(prefixes = [""]) {
+    var pr = new Proxy({}, {
+        has: function (target, prop) {
+            return true;
+        },
+        get: function (target, prop) {
+            for (var i = 0; i < prefixes.length; i++) {
+                var prefix = prefixes[i].length > 0 ? prefixes[i] + "." : "";
+                var key = prefix + prop;
+                if (ResExists(key)) {
+                    return Res(key);
+                }
+                return Res(prop);
+            }
+        }
+    });
+    return pr;
+}
 var ErpApp;
 (function (ErpApp) {
     var Model;
@@ -12272,6 +12293,66 @@ class ValidationFuntionContainer {
         //    funcs.push(<Function>me[f]);
         //}
         return funcs;
+    }
+}
+class AppSelectorOptions {
+    constructor() {
+        this.MinLengtToSearch = "";
+        this.Modes = [""];
+        this.DataFunction = "";
+    }
+}
+class App_Selector extends HTMLElement {
+    constructor() {
+        super();
+    }
+    get value() {
+        return this._value;
+    }
+    set value(val) {
+        this.value = val;
+    }
+    static get observedAttributes() {
+        return ["value", "label"];
+    }
+    attributeChangedCallback(attrName, oldValue, newValue) {
+        this[attrName] = newValue;
+    }
+    connectedCallback() {
+        var element = this;
+        if (!IsNull(element.shadowRoot)) {
+            return;
+        }
+        var sheet = GetControlSheet();
+        var cssText = Array.from(sheet.cssRules).Select(i => i.cssText).join("\n");
+        var html = '' +
+            '<style>' + cssText + '</style>' +
+            '<div class="flexcontent">' +
+            '<input class="value" type="hidden"/>' +
+            '<div class="controls">' +
+            '<input class="textbox" type="text"/>' +
+            '<span class="icon close"></span>' +
+            '<span class="icon activator"></span>' +
+            '</div>' +
+            '</div>' +
+            '<ul class="list"></ul>' +
+            '';
+        let shadowRoot = this.attachShadow({ mode: 'open' });
+        shadowRoot.innerHTML = html;
+    }
+    SetDataItem(obj) {
+    }
+    SetDisplayText(txt) {
+    }
+    Clear() {
+    }
+    ClearInput() {
+    }
+    SelectNext() {
+    }
+    SelectPrev() {
+    }
+    SelectElement(el) {
     }
 }
 //# sourceMappingURL=Application.js.map

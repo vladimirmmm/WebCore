@@ -3648,3 +3648,23 @@ function ResizeImages(file: any, maxsize: number = 150, callback: Function) {
     }
 }
 
+function LabelProxy(prefixes: string[]=[""]) {
+    var pr = new Proxy({}, {
+        has: function (target, prop) {
+            return true;
+        },
+
+        get: function (target, prop:any) {
+            for (var i = 0; i < prefixes.length; i++) {
+                var prefix = prefixes[i].length > 0 ? prefixes[i] + "." : "";
+                var key = prefix + prop
+                if (ResExists(key)) {
+                    return Res(key);
+                }
+                return Res(prop);
+
+            }
+        }
+    });
+    return pr;
+}
