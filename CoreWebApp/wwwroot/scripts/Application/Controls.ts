@@ -2159,6 +2159,48 @@ class App_DictionaryEditor extends HTMLElement
 }
 window.customElements.define("app-dictionaryeditor", App_DictionaryEditor);
 
+class App_ModalWindow extends HTMLElement {
+    public connectedCallback() {
+        var element = this;
+        element.style.display = "none";
+        this.load();
+    }
+
+    public load() {
+        var element = this;
+        var title = Coalesce(element.getAttribute("title"), " ");
+        var div = document.createElement("div");
+        var e_title = document.createElement("span");
+        e_title.innerText = title;
+        var e_close = document.createElement("span");
+        e_close.classList.add("a-Close");
+        e_close.classList.add("icon");
+        e_close.setAttribute("onclick", "_Hide(customcontrol(this))");
+        div.appendChild(e_title);
+        div.appendChild(e_close);
+        let e_slot = document.createElement("slot");
+        if (IsNull(this.shadowRoot)) {
+            let shadowRoot = this.attachShadow({ mode: 'open' });
+            var sheet = GetControlSheet();
+            var cssText = Array.from(sheet.cssRules).Select(i => i.cssText).join("\n");
+            var e_Style = document.createElement("style");
+            e_Style.innerHTML = cssText;
+            shadowRoot.appendChild(e_Style);
+            shadowRoot.appendChild(div);
+            shadowRoot.appendChild(e_slot);
+
+        }
+
+        //element.prepend(div);
+    }
+
+    public ContentChanged() {
+        var me = this;
+        me.load();
+    }
+}
+window.customElements.define("app-modalwindow", App_ModalWindow);
+
 class App_AutoComplete extends HTMLElement
 {
     public options: AutoCompleteOption = new AutoCompleteOption();

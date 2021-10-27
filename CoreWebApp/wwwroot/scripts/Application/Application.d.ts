@@ -1511,6 +1511,11 @@ declare class App_DictionaryEditor extends HTMLElement {
     get value(): string;
     set value(val: string);
 }
+declare class App_ModalWindow extends HTMLElement {
+    connectedCallback(): void;
+    load(): void;
+    ContentChanged(): void;
+}
 declare class App_AutoComplete extends HTMLElement {
     options: AutoCompleteOption;
     private _input;
