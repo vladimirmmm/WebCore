@@ -110,10 +110,6 @@
     </TypeScriptCompile>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\layout\" />
-  </ItemGroup>
-
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
   </Target>

@@ -466,6 +466,46 @@ class App_FileUploader extends HTMLElement
 }
 window.customElements.define("app-fileuploader", App_FileUploader);
 
+class App_Field extends HTMLElement {
+    private label: HTMLLabelElement = null;
+    static get observedAttributes() {
+        return ["value", "label"];
+    }
+    public attributeChangedCallback(attrName, oldValue, newValue) {
+        if (attrName == "label") {
+            if (!IsNull(this.label)) {
+                this.label.innerText = newValue;
+            }
+        }
+    }
+
+    public connectedCallback() {
+        var element = this;
+        this.load();
+    }
+
+    public load() {
+        var element = this;
+        if (IsNull(this.shadowRoot)) {
+            let shadowRoot = this.attachShadow({ mode: 'open' });
+            var label = document.createElement("label");
+            element.label = label;
+            label.innerText = element.getAttribute("label");
+            label.style.display = "block";
+            shadowRoot.appendChild(label);
+
+            var slot = document.createElement("slot");
+            shadowRoot.appendChild(slot);
+
+
+        }
+    }
+
+
+
+}
+window.customElements.define("app-field", App_Field);
+
 class App_Header extends HTMLElement
 {
     constructor() {
@@ -2189,7 +2229,45 @@ class App_ModalWindow extends HTMLElement {
             shadowRoot.appendChild(div);
             shadowRoot.appendChild(e_slot);
 
+
+            var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            div.onmousedown = dragMouseDown;
+         
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // get the mouse cursor position at startup:
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                // call a function whenever the cursor moves:
+                document.onmousemove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // calculate the new cursor position:
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // set the element's new position:
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+                element.style.right = "auto";
+                element.style.bottom = "auto"; 
+            }
+
+            function closeDragElement() {
+                // stop moving when mouse button is released:
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
         }
+
+
 
         //element.prepend(div);
     }
@@ -3240,10 +3318,10 @@ function GetMinMaxDate(inputhtml: string)
 
 function SetMinDate(source: HTMLInputElement, target: HTMLInputElement)
 {
-    var dvalue = new Date(source.value);
-    var value = FormatDate(dvalue, application.Settings.DateFormat);
+    var dvalue: Date = IsNull(source.value) ? null : new Date(source.value);
+    var value = IsNull(dvalue)? "": FormatDate(dvalue, application.Settings.DateFormat);
     var parts = target.value.split("..");
-    if (parts.length == 1) { target.value = Format("[{0}..", value) }
+    if (parts.length == 1) { target.value = IsNull(value)? value: Format("[{0}..", value) }
     else
     {
      
@@ -3252,10 +3330,10 @@ function SetMinDate(source: HTMLInputElement, target: HTMLInputElement)
 }
 
 function SetMaxDate(source: HTMLInputElement, target: HTMLInputElement) {
-    var dvalue = new Date(source.value);
-    var value = FormatDate(dvalue, application.Settings.DateFormat);
+    var dvalue: Date = IsNull(source.value) ? null : new Date(source.value);
+    var value = IsNull(dvalue)? "": FormatDate(dvalue, application.Settings.DateFormat);
     var parts = target.value.split("..");
-    if (parts.length == 1) { target.value = Format("..{0}]", value) }
+    if (parts.length == 1) { target.value = IsNull(value) ? value : Format("[{0}..", value) }
     else {
         target.value = Format("{0}..{1}]", parts[0], value);
     }
@@ -3270,8 +3348,8 @@ function CreatePager(container: Element, options: Object)
     var onclick = FirstNotNull(options["onclick"], function () { });
     var urlformat = options["urlformat"];
     var pagecount = Math.ceil(totalrecords / pagesize);
-    var next: string = '<a class="next icon entypo-right-open-big"></a>';
-    var prev: string = '<a class="prev icon entypo-left-open-big"></a>';
+    var next: string = '<a class="next icon "></a>';
+    var prev: string = '<a class="prev icon "></a>';
     var label: string = Format('<span>/{0}</span>', pagecount);
     var jumpto: string = '<input class="jumpto" type="number"/>';
     var label2: string = Format('<span> ({0})</span>', totalrecords);
@@ -3661,9 +3739,10 @@ function LabelProxy(prefixes: string[]=[""]) {
                 if (ResExists(key)) {
                     return Res(key);
                 }
-                return Res(prop);
 
             }
+            return Res(prop);
+
         }
     });
     return pr;

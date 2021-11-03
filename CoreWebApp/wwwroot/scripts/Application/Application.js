@@ -8837,6 +8837,40 @@ class App_FileUploader extends HTMLElement {
     }
 }
 window.customElements.define("app-fileuploader", App_FileUploader);
+class App_Field extends HTMLElement {
+    constructor() {
+        super(...arguments);
+        this.label = null;
+    }
+    static get observedAttributes() {
+        return ["value", "label"];
+    }
+    attributeChangedCallback(attrName, oldValue, newValue) {
+        if (attrName == "label") {
+            if (!IsNull(this.label)) {
+                this.label.innerText = newValue;
+            }
+        }
+    }
+    connectedCallback() {
+        var element = this;
+        this.load();
+    }
+    load() {
+        var element = this;
+        if (IsNull(this.shadowRoot)) {
+            let shadowRoot = this.attachShadow({ mode: 'open' });
+            var label = document.createElement("label");
+            element.label = label;
+            label.innerText = element.getAttribute("label");
+            label.style.display = "block";
+            shadowRoot.appendChild(label);
+            var slot = document.createElement("slot");
+            shadowRoot.appendChild(slot);
+        }
+    }
+}
+window.customElements.define("app-field", App_Field);
 class App_Header extends HTMLElement {
     constructor() {
         super();
@@ -10339,6 +10373,37 @@ class App_ModalWindow extends HTMLElement {
             shadowRoot.appendChild(e_Style);
             shadowRoot.appendChild(div);
             shadowRoot.appendChild(e_slot);
+            var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            div.onmousedown = dragMouseDown;
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // get the mouse cursor position at startup:
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                // call a function whenever the cursor moves:
+                document.onmousemove = elementDrag;
+            }
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                // calculate the new cursor position:
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                // set the element's new position:
+                element.style.top = (element.offsetTop - pos2) + "px";
+                element.style.left = (element.offsetLeft - pos1) + "px";
+                element.style.right = "auto";
+                element.style.bottom = "auto";
+            }
+            function closeDragElement() {
+                // stop moving when mouse button is released:
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
         }
         //element.prepend(div);
     }
@@ -11256,22 +11321,22 @@ function GetMinMaxDate(inputhtml) {
     return htmlbulder.join("\n");
 }
 function SetMinDate(source, target) {
-    var dvalue = new Date(source.value);
-    var value = FormatDate(dvalue, application.Settings.DateFormat);
+    var dvalue = IsNull(source.value) ? null : new Date(source.value);
+    var value = IsNull(dvalue) ? "" : FormatDate(dvalue, application.Settings.DateFormat);
     var parts = target.value.split("..");
     if (parts.length == 1) {
-        target.value = Format("[{0}..", value);
+        target.value = IsNull(value) ? value : Format("[{0}..", value);
     }
     else {
         target.value = Format("[{0}..{1}", value, parts[1]);
     }
 }
 function SetMaxDate(source, target) {
-    var dvalue = new Date(source.value);
-    var value = FormatDate(dvalue, application.Settings.DateFormat);
+    var dvalue = IsNull(source.value) ? null : new Date(source.value);
+    var value = IsNull(dvalue) ? "" : FormatDate(dvalue, application.Settings.DateFormat);
     var parts = target.value.split("..");
     if (parts.length == 1) {
-        target.value = Format("..{0}]", value);
+        target.value = IsNull(value) ? value : Format("[{0}..", value);
     }
     else {
         target.value = Format("{0}..{1}]", parts[0], value);
@@ -11285,8 +11350,8 @@ function CreatePager(container, options) {
     var onclick = FirstNotNull(options["onclick"], function () { });
     var urlformat = options["urlformat"];
     var pagecount = Math.ceil(totalrecords / pagesize);
-    var next = '<a class="next icon entypo-right-open-big"></a>';
-    var prev = '<a class="prev icon entypo-left-open-big"></a>';
+    var next = '<a class="next icon "></a>';
+    var prev = '<a class="prev icon "></a>';
     var label = Format('<span>/{0}</span>', pagecount);
     var jumpto = '<input class="jumpto" type="number"/>';
     var label2 = Format('<span> ({0})</span>', totalrecords);
@@ -11615,11 +11680,71 @@ function LabelProxy(prefixes = [""]) {
                 if (ResExists(key)) {
                     return Res(key);
                 }
-                return Res(prop);
             }
+            return Res(prop);
         }
     });
     return pr;
+}
+class AppSelectorOptions {
+    constructor() {
+        this.MinLengtToSearch = "";
+        this.Modes = [""];
+        this.DataFunction = "";
+    }
+}
+class App_Selector extends HTMLElement {
+    constructor() {
+        super();
+    }
+    get value() {
+        return this._value;
+    }
+    set value(val) {
+        this.value = val;
+    }
+    static get observedAttributes() {
+        return ["value", "label"];
+    }
+    attributeChangedCallback(attrName, oldValue, newValue) {
+        this[attrName] = newValue;
+    }
+    connectedCallback() {
+        var element = this;
+        if (!IsNull(element.shadowRoot)) {
+            return;
+        }
+        var sheet = GetControlSheet();
+        var cssText = Array.from(sheet.cssRules).Select(i => i.cssText).join("\n");
+        var html = '' +
+            '<style>' + cssText + '</style>' +
+            '<div class="flexcontent">' +
+            '<input class="value" type="hidden"/>' +
+            '<div class="controls">' +
+            '<input class="textbox" type="text"/>' +
+            '<span class="icon close"></span>' +
+            '<span class="icon activator"></span>' +
+            '</div>' +
+            '</div>' +
+            '<ul class="list"></ul>' +
+            '';
+        let shadowRoot = this.attachShadow({ mode: 'open' });
+        shadowRoot.innerHTML = html;
+    }
+    SetDataItem(obj) {
+    }
+    SetDisplayText(txt) {
+    }
+    Clear() {
+    }
+    ClearInput() {
+    }
+    SelectNext() {
+    }
+    SelectPrev() {
+    }
+    SelectElement(el) {
+    }
 }
 var ErpApp;
 (function (ErpApp) {
@@ -11654,6 +11779,9 @@ var ErpApp;
     })(Model = ErpApp.Model || (ErpApp.Model = {}));
 })(ErpApp || (ErpApp = {}));
 class HtmlHelpers {
+    GetMinMaxDateControl(bind, udt) {
+        return HtmlHelpers.GetMinMaxDate('<input type="hidden" bind="' + bind + '" uidatatype="' + udt + '"/>');
+    }
     Res(Key) {
         return GetResource(Key);
     }
@@ -12293,66 +12421,6 @@ class ValidationFuntionContainer {
         //    funcs.push(<Function>me[f]);
         //}
         return funcs;
-    }
-}
-class AppSelectorOptions {
-    constructor() {
-        this.MinLengtToSearch = "";
-        this.Modes = [""];
-        this.DataFunction = "";
-    }
-}
-class App_Selector extends HTMLElement {
-    constructor() {
-        super();
-    }
-    get value() {
-        return this._value;
-    }
-    set value(val) {
-        this.value = val;
-    }
-    static get observedAttributes() {
-        return ["value", "label"];
-    }
-    attributeChangedCallback(attrName, oldValue, newValue) {
-        this[attrName] = newValue;
-    }
-    connectedCallback() {
-        var element = this;
-        if (!IsNull(element.shadowRoot)) {
-            return;
-        }
-        var sheet = GetControlSheet();
-        var cssText = Array.from(sheet.cssRules).Select(i => i.cssText).join("\n");
-        var html = '' +
-            '<style>' + cssText + '</style>' +
-            '<div class="flexcontent">' +
-            '<input class="value" type="hidden"/>' +
-            '<div class="controls">' +
-            '<input class="textbox" type="text"/>' +
-            '<span class="icon close"></span>' +
-            '<span class="icon activator"></span>' +
-            '</div>' +
-            '</div>' +
-            '<ul class="list"></ul>' +
-            '';
-        let shadowRoot = this.attachShadow({ mode: 'open' });
-        shadowRoot.innerHTML = html;
-    }
-    SetDataItem(obj) {
-    }
-    SetDisplayText(txt) {
-    }
-    Clear() {
-    }
-    ClearInput() {
-    }
-    SelectNext() {
-    }
-    SelectPrev() {
-    }
-    SelectElement(el) {
     }
 }
 //# sourceMappingURL=Application.js.map

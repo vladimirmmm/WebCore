@@ -1338,6 +1338,13 @@ declare class App_FileUploader extends HTMLElement {
     connectedCallback(): void;
     private OnChange;
 }
+declare class App_Field extends HTMLElement {
+    private label;
+    static get observedAttributes(): string[];
+    attributeChangedCallback(attrName: any, oldValue: any, newValue: any): void;
+    connectedCallback(): void;
+    load(): void;
+}
 declare class App_Header extends HTMLElement {
     constructor();
     connectedCallback(): void;
@@ -1633,6 +1640,34 @@ declare function GetFiltersFromUI(filtercontainer: Element): IClientFilter[];
 declare function resizableGrid(tbl: any, headonly?: boolean): void;
 declare function ResizeImages(file: any, maxsize: number, callback: Function): void;
 declare function LabelProxy(prefixes?: string[]): {};
+declare class AppSelectorOptions {
+    DisplayProperty: string;
+    ValueProperty: string;
+    OnSelected: string;
+    MinLengtToSearch: string;
+    Modes: string[];
+    DataFunction: string;
+}
+declare class App_Selector extends HTMLElement {
+    private TextInput;
+    private List;
+    private Activator;
+    private Clearer;
+    private _value;
+    get value(): any;
+    set value(val: any);
+    static get observedAttributes(): string[];
+    constructor();
+    attributeChangedCallback(attrName: any, oldValue: any, newValue: any): void;
+    connectedCallback(): void;
+    SetDataItem(obj: any): void;
+    SetDisplayText(txt: string): void;
+    Clear(): void;
+    ClearInput(): void;
+    private SelectNext;
+    private SelectPrev;
+    private SelectElement;
+}
 declare module ErpApp.Model {
     class AppMessage {
         Id: number;
@@ -1688,6 +1723,7 @@ declare class HtmlHelpers {
     static MonetaryFormat: string;
     static ResNvl: Function;
     static GetMinMaxDate: Function;
+    GetMinMaxDateControl(bind: string, udt: any): any;
     Res(Key: string): string;
     ModelRes(Key: string): string;
     Encode(txt: string): string;
@@ -1747,32 +1783,4 @@ declare class ValidationFuntionContainer {
     Number: (item: any, regex: any) => boolean;
     Functions(): Function[];
     constructor();
-}
-declare class AppSelectorOptions {
-    DisplayProperty: string;
-    ValueProperty: string;
-    OnSelected: string;
-    MinLengtToSearch: string;
-    Modes: string[];
-    DataFunction: string;
-}
-declare class App_Selector extends HTMLElement {
-    private TextInput;
-    private List;
-    private Activator;
-    private Clearer;
-    private _value;
-    get value(): any;
-    set value(val: any);
-    static get observedAttributes(): string[];
-    constructor();
-    attributeChangedCallback(attrName: any, oldValue: any, newValue: any): void;
-    connectedCallback(): void;
-    SetDataItem(obj: any): void;
-    SetDisplayText(txt: string): void;
-    Clear(): void;
-    ClearInput(): void;
-    private SelectNext;
-    private SelectPrev;
-    private SelectElement;
 }

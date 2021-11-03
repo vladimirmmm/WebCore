@@ -4978,6 +4978,9 @@ var HttpStatusCodes = {
     '505': 'HTTP Version Not Supported',
 };
 class HtmlHelpers {
+    GetMinMaxDateControl(bind, udt) {
+        return HtmlHelpers.GetMinMaxDate('<input type="hidden" bind="' + bind + '" uidatatype="' + udt + '"/>');
+    }
     Res(Key) {
         return GetResource(Key);
     }

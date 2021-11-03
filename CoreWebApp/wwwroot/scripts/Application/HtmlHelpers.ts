@@ -15,6 +15,9 @@ class HtmlHelpers
     public static MonetaryFormat = "";
     public static ResNvl: Function;
     public static GetMinMaxDate: Function;
+    public GetMinMaxDateControl(bind: string,udt:any) {
+        return HtmlHelpers.GetMinMaxDate('<input type="hidden" bind="' + bind + '" uidatatype="' + udt+'"/>');
+    }
     public Res(Key: string): string 
     {
         return GetResource(Key);

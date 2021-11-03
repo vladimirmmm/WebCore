@@ -829,6 +829,7 @@ declare class HtmlHelpers {
     static MonetaryFormat: string;
     static ResNvl: Function;
     static GetMinMaxDate: Function;
+    GetMinMaxDateControl(bind: string, udt: any): any;
     Res(Key: string): string;
     ModelRes(Key: string): string;
     Encode(txt: string): string;
