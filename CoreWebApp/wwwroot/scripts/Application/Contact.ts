@@ -2,8 +2,8 @@
 
 module Common.Contact {
     export class MessageCollection {
-        public Incoming: ErpApp.Model.AppMessage[] = [];
-        public Outgoing: ErpApp.Model.AppMessage[] = [];
+        public Incoming: Models.AppMessage[] = [];
+        public Outgoing: Models.AppMessage[] = [];
         public get All()
         {
             return this.Incoming.concat(this.Outgoing);
@@ -136,7 +136,7 @@ module Common.Contact {
                 _Hide(msg);
             }
         }
-        public NewMessage(msg: ErpApp.Model.AppMessage)
+        public NewMessage(msg: Models.AppMessage)
         {
             var me = this;
          
@@ -167,7 +167,7 @@ module Common.Contact {
             var viewmessage = _SelectFirst(".modal .msg.view", me.UIElement);
 
             var msg_original = me.Model.All.FirstOrDefault(i => i.Id == id);
-            var msg_reply = new ErpApp.Model.AppMessage();
+            var msg_reply = new Models.AppMessage();
             msg_reply.ParentId = msg_original.Id;
             msg_reply.Subject = Format("Re: {0}", msg_original.Subject); 
             msg_reply.TargetUserId = msg_original.CreatedByUserId;
@@ -181,7 +181,7 @@ module Common.Contact {
             var modal = _SelectFirst(".modal", me.UIElement);
             var message = _SelectFirst(".msg.new", modal);
             var msg = GetBoundObject(modal);
-            var command = BaseModel.GetUpdateCommand(msg, "AppMessage", "INSERT");
+            var command = GetUpdateCommand(msg, "AppMessage", "INSERT");
             var tbcompany = <HTMLInputElement>_SelectFirst(".autocomplete.company .textbox", message);
             command["ToName"] = tbcompany.placeholder;
             command["Keys"] = "Id";
@@ -279,6 +279,5 @@ module Common.Contact {
 
     }
 }
+RegisterController(application, () => new Common.Contact.Controller());
 
-
-AddControllerToApplication(application, new Common.Contact.Controller());

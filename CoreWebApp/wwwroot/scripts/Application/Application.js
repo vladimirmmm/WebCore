@@ -1611,6 +1611,218 @@ class Waiter {
         }
     }
 }
+var OdataQueryOptions;
+(function (OdataQueryOptions) {
+    class Operators {
+    }
+    Operators.Dictionary = {
+        "eq": null,
+        "ne": null,
+        "gt": null,
+        "ge": null,
+        "lt": null,
+        "le": null,
+        "and": null,
+        "or": null,
+        "not": null,
+        "add": null,
+        "sub": null,
+        "mul": null,
+        "div": null,
+        "mod": null
+    };
+    OdataQueryOptions.Operators = Operators;
+    class Functions {
+    }
+    Functions.Dictionary = {
+        "endswith": null,
+        "startswith": null,
+        "substringof": null,
+        "indexof": null,
+        "replace": null,
+        "substring": null,
+        "tolower": null,
+        "toupper": null,
+        "trim": null,
+        "concat": null,
+        "round": null,
+        "floor": null,
+        "div": null,
+        "ceiling": null,
+        "day": null,
+        "hour": null,
+        "minute": null,
+        "month": null,
+        "second": null,
+        "year": null
+    };
+    OdataQueryOptions.Functions = Functions;
+    class E {
+    }
+    OdataQueryOptions.E = E;
+    class E_Reference extends E {
+    }
+    OdataQueryOptions.E_Reference = E_Reference;
+    class E_Value extends E {
+    }
+    OdataQueryOptions.E_Value = E_Value;
+    class E_Operator extends E {
+    }
+    OdataQueryOptions.E_Operator = E_Operator;
+    class E_Function extends E {
+    }
+    OdataQueryOptions.E_Function = E_Function;
+    class Query extends E {
+        constructor() {
+            super(...arguments);
+            this.Select = new Select();
+        }
+    }
+    OdataQueryOptions.Query = Query;
+    class Filter extends E {
+        constructor() {
+            super(...arguments);
+            this.Items = [];
+        }
+    }
+    OdataQueryOptions.Filter = Filter;
+    class Expand {
+    }
+    OdataQueryOptions.Expand = Expand;
+    class Select {
+        constructor() {
+            this.Fields = ["*"];
+        }
+    }
+    OdataQueryOptions.Select = Select;
+    class OrderBy {
+    }
+    OdataQueryOptions.OrderBy = OrderBy;
+    class Top {
+    }
+    OdataQueryOptions.Top = Top;
+    class Skip {
+    }
+    OdataQueryOptions.Skip = Skip;
+    class Count {
+    }
+    OdataQueryOptions.Count = Count;
+})(OdataQueryOptions || (OdataQueryOptions = {}));
+class Odataparser {
+    Parse(item) {
+        var me = this;
+        var parts = Split(item, "&", true);
+        var gparser = new GlyphParser();
+        var gmain = new Glyph();
+        parts.forEach(p => {
+            gmain.AddChild(p);
+        });
+        console.log("Glyph", gmain);
+        var qry = new OdataQueryOptions.Query();
+        gmain.Children.forEach(g => {
+            var eix = g.Value.indexOf("=");
+            var key = g.Value.substring(1, eix);
+            var value = g.Value.substring(eix + 1);
+            switch (key) {
+                case "select":
+                    qry.Select = { raw: value, Fields: [] };
+                    break;
+                case "filter":
+                    qry.Filter = { raw: value, filters: me.GetClientFilters(value) };
+                    break;
+                case "expand":
+                    qry.Expand = { raw: value };
+                    break;
+                case "orderby":
+                    qry.OrderBy = { raw: value };
+                    break;
+                case "count":
+                    qry.Count = { va: value };
+                    break;
+                case "top":
+                    qry.Select = { raw: value };
+                    break;
+                case "skip":
+                    qry.Select = { raw: value };
+                    break;
+            }
+        });
+    }
+    GetClientFilters(value) {
+        var filters = [];
+        var ls = GetStringWithLiterals(value, "'");
+        var gp = new GlyphParser();
+        var g = gp.Parse(ls.aliasedtext);
+        Glyph.ForAll(g, (gl, p) => {
+            if (gl instanceof SimpleGlyph) {
+                var parts = Split(gl.Value, [" ", ","], true);
+                var gparsed = new Glyph();
+                for (var i = 0; i < parts.length; i++) {
+                    var part = parts[i].trim();
+                    var sg = new SimpleGlyph();
+                    sg.Value = part;
+                    if (part in OdataQueryOptions.Functions.Dictionary) {
+                        sg.Tag = Odataparser.GlyphTags.Function;
+                        gparsed.AddChildGlyph(sg);
+                        continue;
+                    }
+                    if (part in OdataQueryOptions.Operators.Dictionary) {
+                        sg.Tag = Odataparser.GlyphTags.Operator;
+                        gparsed.AddChildGlyph(sg);
+                        continue;
+                    }
+                    if (part.startsWith("'") && part.endsWith("'")) {
+                        sg.Tag = Odataparser.GlyphTags.SValue;
+                        gparsed.AddChildGlyph(sg);
+                        continue;
+                    }
+                    if (part.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/) != null) {
+                        sg.Tag = Odataparser.GlyphTags.Variable;
+                        gparsed.AddChildGlyph(sg);
+                        continue;
+                    }
+                    if (part.indexOf("-") > -1) {
+                        sg.Tag = Odataparser.GlyphTags.TValue;
+                        gparsed.AddChildGlyph(sg);
+                        continue;
+                    }
+                    if (part.indexOf(".") > -1) {
+                        sg.Tag = Odataparser.GlyphTags.DValue;
+                        gparsed.AddChildGlyph(sg);
+                        continue;
+                    }
+                    sg.Tag = Odataparser.GlyphTags.IValue;
+                    gparsed.AddChildGlyph(sg);
+                }
+                gl.Slot = gparsed;
+            }
+        });
+        console.log("FG", g);
+        return filters;
+    }
+    BuildQuery(g, q) {
+        var result = {};
+        return result;
+    }
+    static test() {
+        var q = "$select=Rating,ReleaseDate&$expand=Products($orderby=ReleaseDate asc, Rating desc $count=true)&$filter=(FirstName ne 'Mary' or LastName eq 'White') and UserName eq 'marywhite'&$top=10&$skip=10";
+        this.testquery(q);
+    }
+    static testquery(q) {
+        var parser = new Odataparser();
+        var qry = parser.Parse(q);
+        console.log("Query", qry);
+    }
+}
+Odataparser.GlyphTags = {
+    Function: "Function",
+    Operator: "Operator",
+    Variable: "Variable",
+    DValue: "DValue",
+    TValue: "TValue",
+    IValue: "IValue",
+    SValue: "SValue"
+};
 class Glyph {
     constructor() {
         this.Children = [];
@@ -4349,6 +4561,9 @@ function OuterHtml(item) {
     //return item.wrapAll('<div>').parent().html(); 
 }
 function Replace(text, texttoreplace, textwithreplace) {
+    if (IsNull(text)) {
+        return text;
+    }
     textwithreplace = IsNull(textwithreplace) ? "" : textwithreplace;
     return "" + text.split(texttoreplace).join(textwithreplace);
 }
@@ -4800,6 +5015,35 @@ function download(filename, data) {
     element.click();
     document.body.removeChild(element);
 }
+var _TrimLeft = function (item, chars) {
+    //debugger;
+    var re = chars ? new RegExp("^[" + chars + "]+/", "g")
+        : new RegExp(/^\s+/);
+    return item.replace(re, "");
+};
+var _TrimRight = function (item, chars) {
+    var re = chars ? new RegExp("[" + chars + "]+$/", "g")
+        : new RegExp(/\s+$/);
+    return item.replace(re, "");
+};
+var _Trim = function (item, chars) {
+    return _TrimRight(_TrimLeft(item, chars), chars);
+};
+function GetStringWithLiterals(text, literalstr = "\"") {
+    var result = {
+        aliasedtext: text, literaldictionary: {}
+    };
+    var rs = literalstr + "(?:\\\\.|[^" + literalstr + "\\\\])*" + literalstr;
+    var regex = new RegExp(rs, 'g');
+    var matches = Coalesce(text.match(regex), []);
+    matches.forEach((m, mix) => {
+        var literal = _Trim(m, '"');
+        var literalkey = "literal_" + mix;
+        result[literalkey] = m;
+        result.aliasedtext = Replace(result.aliasedtext, m, literalkey);
+    });
+    return result;
+}
 function CsvLineSplit(text, delimiter = ",", enclose = '"') {
     var result = [];
     text = Format("{0}", text);
@@ -5030,6 +5274,92 @@ class ExcelImport extends ImportScript {
     Clear() {
     }
 }
+function GetDbCommandForObject(obj, commandname, keys = "Id", excludes = []) {
+    var meta = GetMeta(obj);
+    var updateobj = {};
+    for (var i = 0; i < meta.Fields.length; i++) {
+        var field = meta.Fields[i];
+        if (!field.IsArray && !field.IsObject
+            && excludes.indexOf(field.MetaKey) == -1) {
+            if (field.MetaKey in obj) {
+                var val = obj[field.MetaKey];
+                if (!IsNull(val)) {
+                    updateobj[field.MetaKey] = val;
+                }
+            }
+        }
+        updateobj["Keys"] = keys;
+        updateobj["TypeName"] = meta.MetaKey;
+        updateobj["CommandName"] = commandname;
+    }
+    FIxUpdateObj(updateobj);
+    return updateobj;
+}
+function GetUpdateCommand(obj, typename, commandname, keys = "Id", excludes = ["Id"]) {
+    var meta = GetMetaByTypeName(typename);
+    var updateobj = {};
+    for (var i = 0; i < meta.Fields.length; i++) {
+        var field = meta.Fields[i];
+        if (!field.IsArray && !field.IsObject
+            && excludes.indexOf(field.MetaKey) == -1) {
+            if (field.MetaKey in obj) {
+                var val = obj[field.MetaKey];
+                if (!IsNull(val)) {
+                    updateobj[field.MetaKey] = val;
+                }
+            }
+        }
+        updateobj["Keys"] = keys;
+        updateobj["TypeName"] = typename;
+        updateobj["CommandName"] = commandname;
+    }
+    return updateobj;
+}
+function GetDeleteCommand(typename, id) {
+    var command = {};
+    command["TypeName"] = typename;
+    command["CommandName"] = "Delete";
+    command["Keys"] = "Id";
+    command["Id"] = id;
+    return command;
+}
+function FIxUpdateObj(obj) {
+    var mt = GetMeta(obj);
+    for (var key in obj) {
+        if (!IsNull(obj[key]) && !IsNull(mt) && (key in mt)) {
+            var pmt = mt[key];
+            if (pmt != null && In(pmt.SourceType, "Date")) {
+                var d = IsDate(obj[key]) ? obj[key] : StringToDate(obj[key], application.Settings.DateFormat);
+                obj[key] = Format("{0:yyyy-MM-dd}", d);
+            }
+            if (pmt != null && In(pmt.SourceType, "DateTime")) {
+                var d = IsDate(obj[key]) ? obj[key] : StringToDate(obj[key], application.Settings.DateFormat);
+                obj[key] = Format("{0:yyyy-MM-ddTHH:mm:ss}", d);
+            }
+            if (pmt != null && In(pmt.SourceType, "double", "integer", "money")) {
+                obj[key] = Number(obj[key]);
+            }
+        }
+        if (IsNull(obj[key])) {
+            delete obj[key];
+        }
+        else {
+            if (IsArray(obj[key])) {
+                for (var i = 0; i < obj[key].length; i++) {
+                    FIxUpdateObj(obj[key][i]);
+                }
+            }
+        }
+    }
+}
+class Dependencies {
+    static Container() { return null; }
+    ;
+    static LoadContent(element) { }
+    ;
+}
+Dependencies.ClientValidation = true;
+Dependencies.DataLayer = null;
 class AppDataLayer {
     static Link() { }
     static GetQueryForAutoComplete(queryname) {
@@ -5047,7 +5377,7 @@ class AppDataLayer {
     }
     static GetDataDetails(query, id, callback) {
         query.SetFilters(ClientFilter.Create(UIDataType.Number, "Id", id));
-        BaseModel.Dependencies.httpClient.GetData(query, function (r) {
+        Dependencies.httpClient.GetData(query, function (r) {
             var data = r;
             var items = data["Model"];
             callback(items[0]);
@@ -5392,7 +5722,8 @@ class View {
         return Format("{0}_{1}_{2}", this.Name, area, IsNull(p) ? "" : p);
     }
     Title() {
-        return this.LogicalModelName + "-" + this.Name;
+        //return this.LogicalModelName + "-" + this.Name;
+        return Res("UI." + this.LogicalModelName + "-" + this.Name + "");
         //throw "Identifier Not Implemented on " + this.Name;
     }
     Copy() {
@@ -6400,1632 +6731,9 @@ function controller(element) {
         }
     }
 }
-class AppDependencies {
-    static Container() { return null; }
-    ;
-    static LoadContent(element) { }
-    ;
-}
-AppDependencies.ClientValidation = true;
-AppDependencies.DataLayer = null;
-function OnAuthenticated(result) {
-    Toast_Success("Authentication successful.");
-    application.LoadData(result);
-}
-function GetParameter(key) {
-    return localStorage.getItem(application.Settings.Domain + "." + key);
-}
-function SetParameter(key, value) {
-    localStorage.setItem(application.Settings.Domain + "." + key, value);
-}
-function SetWebServiceIdentifier() {
-    var input = document.getElementById("WebServiceIdentifier");
-    var label = document.querySelector("span.WebServiceIdentifier");
-    if (input.value.indexOf("*") == -1) {
-        SetParameter("WebServiceIdentifier", input.value);
-        //localStorage.setItem("WebServiceIdentifier", input.value);
-        application.Authenticate(OnAuthenticated);
-    }
-}
-function SetDataEntryPoint() {
-    var input = document.getElementById("DataEntryPoint");
-    var label = document.querySelector("span.DataEntryPoint");
-    application.Settings.DataEntryPoint = input.value;
-    application.httpClient.EntryPointBase = input.value;
-    application.SaveSettings();
-    application.Authenticate(OnAuthenticated);
-}
-function Login() {
-    var view = application.CurrentView();
-    var username = _SelectFirst("[name=username]", view.UIElement);
-    var email = _SelectFirst("[name=email]", view.UIElement);
-}
-GetResource = function (key, culture) {
-    return Res(key, culture);
-};
-var missingresources = {};
-function RetrieveResource(key) {
-    if (ResExists(key)) {
-        return Res(key);
-    }
-    return "";
-}
-function ResNvl(keys, key = "") {
-    if (IsNull(keys) || keys.length == 0) {
-        return "";
-    }
-    var firstkey = keys.FirstOrDefault();
-    for (var i = 0; i < keys.length; i++) {
-        var key = keys[i];
-        if (ResExists(key)) {
-            return Res(key);
-        }
-    }
-    if (firstkey.indexOf(".") > -1) {
-        var lastkeypart = firstkey.substring(firstkey.lastIndexOf(".") + 1);
-        return lastkeypart;
-    }
-    return FirstNotNull(key, firstkey);
-}
-ModelRes = function (key, viewpath = "") {
-    var culture = application.Settings.Culture;
-    var parts = key.split('.');
-    var typename = parts.FirstOrDefault();
-    var mkey = parts.slice(1).join('.');
-    var mp = MetaAccess({ TypeName: typename }, mkey);
-    var mc = GetMetaByTypeName(typename);
-    var dotix = mkey.lastIndexOf(".");
-    if (dotix > -1) {
-        var s1 = mkey.substring(0, dotix);
-        var s2 = mkey.substring(dotix + 1);
-        mc = MetaAccess({ TypeName: mc.MetaKey }, s1);
-        mkey = s2;
-    }
-    typename = IsNull(mc) ? null : mc.MetaKey;
-    var labelaccessors = [
-        () => RetrieveResource(Format("UI.{0}.{1}", viewpath, key)),
-        () => Res(Format("models.{0}.{1}", typename, mkey)),
-        () => RetrieveResource(Format("models.BaseModel.{0}", mkey)),
-        () => mkey,
-        () => key
-    ];
-    for (var i = 0; i < labelaccessors.length; i++) {
-        let label = labelaccessors[i]();
-        if (!IsNull(label)) {
-            return label;
-        }
-    }
-};
-Res = function (key, culture) {
-    if (IsNull(culture)) {
-        culture = application.Settings.Culture;
-    }
-    var appres = application.Resources[culture][key];
-    if (IsNull(appres) && appres != "") {
-        appres = key.substr(key.lastIndexOf('.') + 1);
-        if (!(key in missingresources)) {
-            missingresources[key] = appres;
-        }
-    }
-    return appres;
-};
-ResExists = function (key, culture) {
-    if (IsNull(culture)) {
-        culture = application.Settings.Culture;
-    }
-    var appres = application.Resources[culture][key];
-    return !IsNull(appres);
-};
-class ResourceContainer {
-    constructor() {
-        this.Cultures = {};
-    }
-    Load(culture, obj, key) {
-        var me = this;
-        me[culture] = IsNull(me[culture]) ? {} : me[culture];
-        me.Cultures[culture] = IsNull(me.Cultures[culture]) ? {} : me.Cultures[culture];
-        var keys = Object.keys(me.Cultures[culture]);
-        var rkey = Format("{0}_{1}", keys.length, key);
-        me.Cultures[culture][rkey] = {};
-        var container = me.Cultures[culture][rkey];
-        var reourceobj = me[culture];
-        var paths = ObjToPathValueList(obj);
-        paths.forEach(function (path) {
-            reourceobj[path[0]] = path[1];
-            container[path[0]] = path[1];
-        });
-    }
-}
-class AppUICommand {
-    constructor() {
-        this.Key = "";
-        this.CssClass = "";
-        this.Url = (model, view, command) => "";
-        this.IsInContext = (model, view) => true;
-        this.OnClick = (model, view, command) => "";
-        this.Prefix = "";
-        this.Action = "";
-        this.AppearsIn = [];
-        this.Label = "";
-        this.Html = "";
-    }
-    Render(model, control) {
-        var me = this;
-        var html = "";
-        var uielement = null;
-        if (me.IsInContext(model, control)) {
-            var url = me.Url(model, control, me);
-            var onclick = me.OnClick(model, control, me);
-            if (!IsNull(url)) {
-                uielement = _CreateElement("a", { class: me.CssClass, href: url });
-            }
-            if (!IsNull(onclick)) {
-                uielement = _CreateElement("span", { class: me.CssClass, onclick: onclick });
-            }
-            if (uielement != null) {
-                var text = Res("UI.Commands." + me.Prefix + me.Key);
-                var label = _CreateElement("label", {}, text);
-                uielement.setAttribute("title", text);
-                uielement.appendChild(label);
-                me.Html = uielement.outerHTML;
-                html = me.Html;
-            }
-        }
-        return html;
-    }
-    static GetFunctions(condition) {
-        var result = [];
-        if (condition != null) {
-            var isview = condition.startsWith("view");
-            var partsofcondition = TextsBetween(condition, "[", "]", false);
-            for (var i = 0; i < partsofcondition.length; i++) {
-                var partofcondition = partsofcondition[i];
-                var conditionparts = partofcondition.split("=");
-                var key = conditionparts.FirstOrDefault();
-                var value = conditionparts.length > 1 ? conditionparts[1] : null;
-                if (value == null) {
-                    result.push((model, view) => {
-                        var val = isview ? Access(view, key) : Access(model, key);
-                        return !IsNull(val);
-                    });
-                }
-                else {
-                    result.push((model, view) => {
-                        var val = isview ? Access(view, key) : Access(model, key);
-                        return val == value;
-                    });
-                }
-            }
-        }
-        return result;
-    }
-    static CreateFrom(obj) {
-        var command = new AppUICommand();
-        for (var key in obj) {
-            command[key] = obj[key];
-        }
-        return command;
-    }
-    static Create(condition, appearsin, key, action, classprefix = "a-") {
-        var command = new AppUICommand();
-        command.Prefix = classprefix;
-        command.Action = action;
-        command.AppearsIn = appearsin;
-        var conditions = CsvLineSplit(condition, ",", '"');
-        var viewpart = conditions.FirstOrDefault(i => i.startsWith("view"));
-        var modelpart = conditions.FirstOrDefault(i => i.startsWith("model"));
-        var functions = [];
-        if (viewpart != null) {
-            functions = functions.concat(AppUICommand.GetFunctions(viewpart));
-        }
-        if (modelpart != null) {
-            functions = functions.concat(AppUICommand.GetFunctions(modelpart));
-        }
-        var allfunction = (model, view) => {
-            var result = true;
-            for (var i = 0; i < functions.length; i++) {
-                if (!functions[i](model, view)) {
-                    return false;
-                }
-            }
-            return result;
-        };
-        command.IsInContext = allfunction;
-        command.CssClass = "icon " + classprefix + key;
-        if (action.startsWith("#") || action.startsWith("http://")) {
-            command.Url = (model, view, c) => Format(c.Action, Access(model, "Id"));
-        }
-        else {
-            command.OnClick = (model, view, c) => Format(c.Action, Access(model, "Id"));
-        }
-        command.Key = key;
-        //command.Label = Res("UI.Commands." + key);
-        return command;
-    }
-    static CreateFromHtml(key, Render, isincontext) {
-        var command = new AppUICommand();
-        command.Key = key;
-        command.Render = Render;
-        if (!IsNull(isincontext)) {
-            command.IsInContext = isincontext;
-        }
-        return command;
-    }
-}
-const default_MoneyFormat = "### ##0.00";
-function FormatCurrencyAmount(value) {
-    if (!IsNull(value)) {
-        return Number(Format("{0:" + default_MoneyFormat + "}", value));
-    }
-    return 0;
-}
-class Application {
-    constructor() {
-        //public Settings: AppSettings = <AppSettings>{};
-        this.Resources = new ResourceContainer();
-        this.data = {};
-        this._Container = null;
-        this._ScriptsReady = false;
-        this._scriptwaiter = null;
-        this.Commands = {};
-        this.StaticDataQueryActions = {};
-        this.ImportScripts = [];
-        this.Controllers = [];
-        this.Waiter = new Waiter();
-        this.httpClient = new HttpClient();
-        this.localhttpClient = new HttpClient();
-        this.Menu = null;
-        this._storename = ["SD", "Data", "Sync", "Files", "Info"];
-        this._Settings = null;
-        this.NavigationItems = {};
-        this.Layouts = {
-            Dictionary: {},
-            Templates: {},
-            load: function () {
-                var me = this;
-                var views = window["base_viewfiles"].concat(application.Settings.Views);
-                views.forEach(function (layoutpath) {
-                    var ix = layoutpath.lastIndexOf("\\");
-                    var name = layoutpath.substring(ix + 1);
-                    var nameparts = name.split(".");
-                    var controlviewname = nameparts[0] + "." + nameparts[1];
-                    var folder = layoutpath.substring(0, ix);
-                    if (!(controlviewname in me.Dictionary)) {
-                        me.Dictionary[controlviewname] = [];
-                    }
-                    else {
-                        console.log('');
-                    }
-                    me.Dictionary[controlviewname].push(layoutpath);
-                    me.Templates[layoutpath] = "";
-                });
-            }
-        };
-        this._idb = null;
-        this.Refresh = window["_RefreshFiles"];
-        var me = this;
-        window["appsettings"] = Coalesce(window["appsettings"], { Imports: [] });
-        me.scriptwaiter.SetWaiter("scripts", function () {
-            me.LoadX();
-        });
-        me.scriptwaiter.SetTasks("scripts", ["appscripts", "customscripts"]);
-        var db_name = Format("DB_{0}", me.Settings.Domain);
-        me._idb = new IDB(db_name, me._storename);
-    }
-    get scriptwaiter() {
-        if (this._scriptwaiter == null) {
-            this._scriptwaiter = new Waiter();
-        }
-        return this._scriptwaiter;
-    }
-    RegisterCommand(command) {
-        var me = this;
-        me.Commands[command.Key] = command;
-    }
-    UnRegisterCommand(key) {
-        var me = this;
-        delete me.Commands[key];
-    }
-    ScriptsReady() {
-        var me = this;
-        HtmlHelpers.GetMinMaxDate = GetMinMaxDate;
-        HtmlHelpers.ResNvl = ResNvl;
-        HtmlHelpers.dataentrypoint = application.Settings.DataEntryPoint;
-        HtmlHelpers.dataentrypoint = application.Settings.DataEntryPoint;
-        HtmlHelpers.DateFormat = application.Settings.DateFormat;
-        HtmlHelpers.DateTimeFormat = application.Settings.DateTimeFormat;
-        HtmlHelpers.DecimalFormat = application.Settings.DecimalFormat;
-        HtmlHelpers.MonetaryFormat = application.Settings.MonetaryFormat;
-        ClientFilter.DateFormat = application.Settings.DateFormat;
-        Controls.DateFormat = application.Settings.DateFormat;
-        me._ScriptsReady = true;
-        console.log("ScriptsReady");
-        me.scriptwaiter.EndTask("scripts", "appscripts");
-        AppDependencies.ClientValidation = application.Settings.ClientValidation;
-        AppDependencies.LoadContent = function (item) { application.LoadContent.call(application, item); };
-        AppDependencies.httpClient = application.httpClient;
-        AppDependencies.DataLayer = new AppDataLayer();
-    }
-    IsInDebugMode() {
-        return getUrlParameter('debug') == "1";
-    }
-    IsAdmin() {
-        var me = this;
-        var result = false;
-        if (me.Settings.Company != null) {
-            return me.Settings.Company["WebserviceUserId"] == 1;
-        }
-        return result;
-    }
-    get Container() {
-        this._Container = _SelectFirst(".container");
-        return this._Container;
-    }
-    get AppName() {
-        var name = window.location.pathname;
-        var appname = name.substr(name.lastIndexOf("/") + 1);
-        if (appname.indexOf('.')) {
-            appname = appname.substring(0, appname.lastIndexOf('.'));
-        }
-        return appname;
-    }
-    //private _RegisteredActions: AppActionOld[]=[];
-    //public RegisterAction(action: AppActionOld) {
-    //    var me = this;
-    //    me._RegisteredActions.push(action);
-    //}
-    ReloadSettings() {
-        var me = this;
-        var dataentry = application.Settings.DataEntryPoint;
-        me._Settings = null;
-        var defaultsettings = window["appsettings"];
-        var domain = defaultsettings.Domain;
-        var domainsettingskey = domain + ".Settings";
-        localStorage.removeItem(domainsettingskey);
-        me.Settings.DataEntryPoint = dataentry;
-        me.SaveSettings();
-    }
-    menuElement() {
-        return _SelectFirst(".navigation");
-    }
-    LoadContent(item) {
-        this.Container.appendChild(item);
-    }
-    DataPipe(data, v) {
-    }
-    Delete(element, args) {
-        var toremove = element.parentElement;
-        toremove.remove();
-        if (!IsNull(toremove["OnRemove"])) {
-            toremove["OnRemove"]();
-        }
-    }
-    GetContainer() {
-        return _SelectFirst(".container");
-    }
-    GetController(name) {
-        return this.Controllers.FirstOrDefault((c) => c.ModelName == name);
-    }
-    Authenticate(callback) {
-        var me = this;
-        var waiter = new Waiter();
-        //ShowProgress("p-Authenticate");
-        waiter.SetWaiter("app", function () {
-            //HideProgress();
-        });
-        waiter.SetTasks("app", ["login"]);
-        var oldurl = window.location.origin + window.location.pathname;
-        var px = "#Settings\\Login\\";
-        var hash = window.location.hash.replace(px, "");
-        var newhash = "#Settings\\Login\\" + encodeURI(hash);
-        //var newurl = window.location.origin + window.location.pathname + "#Settings\\Login\\" + encodeURI(hash);
-        application.Settings.Company = null;
-        application.SaveSettings();
-        me.httpClient.Authenticate(function (r) {
-            application.Settings.Company = r.Model[0];
-            application.SaveSettings();
-            waiter.EndTask("app", "login");
-            application.LoadMenu();
-            callback.call(me, r.Model[0]);
-        }, () => {
-            window.location.hash = newhash;
-        });
-    }
-    Navigate(source, args) {
-        var me = this;
-        var e = args[0];
-        if (e.target != null && e.target.tagName == "LI") {
-            application.menuElement().classList.remove('visible');
-            var uid = e.target.getAttribute("uid");
-            var url = e.target.getAttribute("url");
-            var rp = this.GetRouteProperties(url);
-            var controllername = rp.controller;
-            var action = rp.view;
-            if (!IsNull(url) && window.location.hash != url) {
-                window.location.href = url;
-            }
-            else {
-                me.NavigateTo(controllername, action, "");
-            }
-        }
-    }
-    NavigateTo(controller, view, p, area = "") {
-        console.log(Format("NavigateTo({0},{1},{2},{2})", controller, view, p, area));
-        var me = this;
-        var mc = this.Controllers.FirstOrDefault((c) => c.ModelName == controller);
-        if (mc != null) {
-            var vm = mc.ViewDictionary[view];
-            if (vm != null) {
-                for (var i = 0; i < this.Container.children.length; i++) {
-                    var node = this.Container.children[i];
-                    _Hide(node);
-                }
-                var xvm = mc.Load(vm, p, "", area);
-            }
-        }
-        else {
-            var bc = this.Controllers.FirstOrDefault((c) => c.ModelName == "BaseModel");
-            if (bc.IsAvailable(controller)) {
-                var meta = GetMetaByTypeName(controller);
-                if (!IsNull(meta)) {
-                    mc = this.Controllers.FirstOrDefault((c) => c.ModelName == "BaseModel");
-                    if (mc != null) {
-                        var vm = mc.ViewDictionary[view];
-                        if (vm != null) {
-                            for (var i = 0; i < this.Container.children.length; i++) {
-                                var node = this.Container.children[i];
-                                _Hide(node);
-                            }
-                            var xvm = mc.Load(vm, p, meta.MetaKey, area);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    GetView(controllername, viewname, viewid = "") {
-        var mc = this.Controllers.FirstOrDefault((c) => c.ModelName == controllername);
-        if (mc != null) {
-            var vm = mc.ViewDictionary[viewname];
-            if (vm != null) {
-                if (!IsNull(viewid)) {
-                    if (viewid in mc.Instances) {
-                        return mc.Instances[viewid].ViewModel;
-                    }
-                }
-                return vm;
-            }
-        }
-        return null;
-    }
-    GetRouteProperties(url = "") {
-        var url = IsNull(url) ? window.location.hash : url;
-        if (url.indexOf("#") == 0) {
-            url = url.substr(1);
-        }
-        var paths = url.split("\\");
-        var result = {
-            area: "",
-            controller: paths[0],
-            view: paths[1],
-            parameters: paths[2]
-        };
-        if (paths.length == 4) {
-            result.area = paths[0];
-            result.controller = paths[1];
-            result.view = paths[2];
-            result.parameters = paths[3];
-        }
-        return result;
-    }
-    NavigateUrl(url) {
-        var me = this;
-        if (url.indexOf("#") == 0) {
-            url = url.substr(1);
-        }
-        for (var key in me.Settings.RouteSymbols) {
-            if (url.indexOf(key) == 0) {
-                url = url.replace(key, me.Settings.RouteSymbols[key]);
-                window.location.hash = url;
-                return;
-                break;
-            }
-        }
-        var rp = me.GetRouteProperties(url);
-        me.NavigateTo(rp.controller, rp.view, rp.parameters, rp.area);
-    }
-    LoadX() {
-        var me = this;
-        me.LoadLayouts();
-        me.ClearFloats();
-        window.addEventListener("hashchange", function () {
-            me.CloseHovering(document.body);
-            me.NavigateUrl(window.location.hash);
-        });
-        var maingrid = _SelectFirst(".main.grid");
-        var printarea = _SelectFirst("#printarea");
-        window.addEventListener("beforeprint", function () {
-            var currentview = me.CurrentView();
-            if (!IsNull(currentview)) {
-                _Hide(maingrid);
-                printarea.innerHTML = "";
-                currentview.BeforePrint(printarea);
-                _Show(printarea);
-            }
-        });
-        window.addEventListener("afterprint", function () {
-            _Show(maingrid);
-            _Hide(printarea);
-        });
-    }
-    Load() {
-        var me = this;
-        document.body.addEventListener("load", function () {
-            application.LoadX();
-        });
-        //this.Settings = me.GetSettings();
-        var customscripts = []; // me.Settings.CustomFiles.Where(i => i.endsWith(".js"));
-        var customstyles = []; //me.Settings.CustomFiles.Where(i => i.endsWith(".css"));
-        for (var i = 0; i < customstyles.length; i++) {
-            var customcss = customstyles[i];
-            var lelement = document.createElement('link');
-            lelement.setAttribute('href', customcss);
-            lelement.rel = "stylesheet";
-            document.head.appendChild(lelement);
-        }
-        me.Settings.Imports.forEach(function (importscript) {
-            var selement = document.createElement('script');
-            selement.setAttribute('src', importscript);
-            selement.type = "text/javascript";
-            document.head.appendChild(selement);
-        });
-        var loadscript = function (selement) {
-            //console.log("Loading " + selement.src);
-            document.head.appendChild(selement);
-        };
-        if (customscripts.length == 0) {
-            me.scriptwaiter.EndTask("scripts", "customscripts");
-        }
-        else {
-            var customscriptwaiter = new Waiter();
-            customscriptwaiter.SetWaiter("customscripts", function () {
-                me.scriptwaiter.EndTask("scripts", "customscripts");
-            });
-            customscriptwaiter.SetTasks("customscripts", customscripts);
-            for (var i = 0; i < customscripts.length; i++) {
-                var src = customscripts[i];
-                var selement = document.createElement('script');
-                selement.setAttribute('src', src);
-                selement.defer = true;
-                selement.type = "text/javascript";
-                selement.onload = function () {
-                    var src = this.getAttribute("src");
-                    customscriptwaiter.EndTask("customscripts", src);
-                    console.log("---script loadded " + src + "");
-                };
-                loadscript(selement);
-            }
-        }
-        this.httpClient.EntryPointBase = me.Settings.DataEntryPoint;
-        this.localhttpClient.EntryPointBase = "";
-    }
-    get Settings() {
-        var me = this;
-        var defaultsettings = Coalesce(window["appsettings"], {});
-        if (IsNull(defaultsettings["Scripts"])) {
-            defaultsettings["Scripts"] = [];
-        }
-        var domain = defaultsettings.Domain;
-        var domainsettingskey = domain + ".Settings";
-        if (me._Settings == null) {
-            var clientsettingsstr = localStorage.getItem(domainsettingskey);
-            if (IsNull(clientsettingsstr)) {
-                me.SaveSettings(defaultsettings);
-            }
-            var lssettings = JSON.parse(localStorage.getItem(domainsettingskey));
-            if (!("HashCodeappsettings" in lssettings)) {
-                lssettings["HashCodeappsettings"] = HashCode(JSON.stringify(defaultsettings));
-                me.SaveSettings(lssettings);
-                me._Settings = lssettings;
-            }
-            else {
-                var newhash = HashCode(JSON.stringify(defaultsettings));
-                if (newhash != lssettings["HashCodeappsettings"]) {
-                    var dentry = lssettings["DataEntryPoint"];
-                    var defaultsettingscopy = JsonCopy(defaultsettings);
-                    defaultsettingscopy["DataEntryPoint"] = dentry;
-                    defaultsettingscopy["HashCodeappsettings"] = newhash;
-                    me.SaveSettings(defaultsettingscopy);
-                    lssettings["HashCodeappsettings"] = HashCode(JSON.stringify(defaultsettingscopy));
-                    me._Settings = defaultsettingscopy;
-                }
-                else {
-                    me._Settings = lssettings;
-                }
-            }
-        }
-        //me._storename = "SD_" + me._Settings.Domain;
-        return me._Settings;
-    }
-    SaveSettings(settings = null) {
-        var me = this;
-        var defaultsettings = Coalesce(window["appsettings"], {});
-        var domain = defaultsettings.Domain;
-        var domainsettingskey = domain + ".Settings";
-        var settingsstr = JSON.stringify(IsNull(settings) ? me.Settings : settings);
-        localStorage.setItem(domainsettingskey, settingsstr);
-    }
-    LoadLayouts() {
-        //this.httpClient.EntryPointBase = this.entrypoint;
-        var me = this;
-        me.Layouts.load();
-        var items = [];
-        var waiter = new Waiter();
-        waiter.SetWaiter("layouts", function () {
-            f_loadviews();
-            me.LoadUI.call(me);
-            me.Authenticate(me.LoadData);
-        });
-        waiter.SetTasks("layouts", ["metadata", "resources"]);
-        for (var layout in me.Layouts.Templates) {
-            var layoutpath = Access(window, "appbaseurl") + layout;
-            waiter.StartTask("layouts", layout);
-            me.localhttpClient.Get(layoutpath, {}, function (r) {
-                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "");
-                me.Layouts.Templates[relurl] = r.responseText;
-                waiter.EndTask("layouts", relurl);
-            });
-        }
-        var f_loadviews = function () {
-            me.Controllers.forEach((controller) => {
-                if (controller.ModelName == "BaseModel") {
-                    console.log("BM");
-                }
-                controller.Views.forEach(function (vm) {
-                    if (IsNull(vm.TemplateHtml)) {
-                        var modelname = FirstNotNull(vm.LogicalModelName, vm.Controller.ModelName);
-                        var controlviewname = Format("{0}.{1}", modelname, vm.Name);
-                        var layouts = FirstNotNull(me.Layouts.Dictionary[controlviewname], []);
-                        for (var i = 0; i < layouts.length; i++) {
-                            var layoutpath = layouts[i];
-                            var customlayoutpath = layoutpath.replace("layout\\", "Customisations\\" + application.Settings.Domain + "\\layout\\");
-                            if (customlayoutpath in me.Layouts.Templates) {
-                                vm.TemplateHtml = me.Layouts.Templates[customlayoutpath];
-                                vm.LayoutPath = customlayoutpath;
-                            }
-                            else {
-                                vm.TemplateHtml = me.Layouts.Templates[layoutpath];
-                                vm.LayoutPath = layoutpath;
-                            }
-                            vm.OriginalTemplateHtml = vm.TemplateHtml;
-                            var xpath = vm.LayoutPath.substring(0, vm.LayoutPath.lastIndexOf("."));
-                            var extension = "";
-                            if (xpath.endsWith(".razor")) {
-                                extension = "razor";
-                                try {
-                                    var t = new RazorTemplate();
-                                    t.LayoutPath = vm.LayoutPath;
-                                    t.Compile(me.Layouts.Templates[vm.LayoutPath]);
-                                    vm.AddTemplate("razor", t);
-                                    //vm.RazorTemplate = Razor.Complile(me.Layouts.Templates[razorpath]);
-                                }
-                                catch (ex) {
-                                    console.error("Error (" + ex + ") in " + vm.LayoutPath);
-                                }
-                            }
-                        }
-                    }
-                });
-            });
-            Log("Views Loaded.");
-        };
-        me.Menu = application.Settings.Navigation;
-        var metafiles = ["configdata\\meta.json", "configdata\\extendedmeta.json"];
-        metafiles = metafiles.concat(me.Settings.CustomFiles.Where(i => i.endsWith("meta.json")));
-        var metadictionary = {};
-        var metawaiter = new Waiter();
-        metawaiter.SetWaiter("metas", function () {
-            metafiles.forEach(function (metafile) {
-                metaModels.Load(metadictionary[metafile]);
-            });
-            waiter.EndTask("layouts", "metadata");
-        });
-        metawaiter.SetTasks("metas", metafiles);
-        for (var i = 0; i < metafiles.length; i++) {
-            var metafile = Access(window, "appbaseurl") + metafiles[i];
-            me.httpClient.Get(metafile, {}, function (r) {
-                var myArr = JSON.parse(r.responseText);
-                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "");
-                metadictionary[relurl] = myArr;
-                metawaiter.EndTask("metas", relurl);
-            });
-        }
-        me.LoadResources(() => waiter.EndTask("layouts", "resources"));
-    }
-    SetCulture(culture) {
-        var me = this;
-        me.LoadResources(function () { });
-    }
-    LoadResources(callback) {
-        var me = this;
-        var resourcefilename = "resources-" + me.Settings.Culture + ".json";
-        var resourcefiles = ["configdata\\" + resourcefilename];
-        resourcefiles = resourcefiles.concat(me.Settings.CustomFiles.Where(i => i.endsWith(resourcefilename)));
-        var resourcesdictionary = {};
-        var resourcewaiter = new Waiter();
-        resourcewaiter.SetWaiter("resources", function () {
-            resourcefiles.forEach(function (resourcefile) {
-                me.Resources.Load(me.Settings.Culture, resourcesdictionary[resourcefile], resourcefile);
-            });
-            callback();
-        });
-        resourcewaiter.SetTasks("resources", resourcefiles);
-        for (var i = 0; i < resourcefiles.length; i++) {
-            var resourcefile = Access(window, "appbaseurl") + resourcefiles[i];
-            me.httpClient.Get(resourcefile, {}, function (r) {
-                var myArr = JSON.parse(r.responseText);
-                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "");
-                resourcesdictionary[relurl] = myArr;
-                resourcewaiter.EndTask("resources", relurl);
-            });
-        }
-    }
-    LoadData(company) {
-        var me = this;
-        var cachemaxage = 3600;
-        var datawaiter = new Waiter();
-        //ShowProgress("LoadData");
-        datawaiter.SetWaiter("data", function () {
-            DataLookup.LookupFunction = AppDataLayer.DataLookup;
-            if (window.location.hash.length > 1) {
-                me.NavigateUrl(window.location.hash);
-            }
-        });
-        var dcounter = 0;
-        var savetoIDB = function () { };
-        var retrievedata = function (callback) { callback([]); };
-        var sd_storename = "SD";
-        if (me._idb.IsAvailable()) {
-            savetoIDB = function () {
-                me._idb.Save(AppDataLayer.Data, sd_storename, function () {
-                    var d = new Date();
-                    SetParameter("DBDate", d.toString());
-                });
-            };
-            retrievedata = function (callback) {
-                var storedate = GetParameter("DBDate");
-                var sdate = new Date(storedate);
-                var cdate = new Date();
-                var h = 1;
-                sdate.setTime(sdate.getTime() + (h * 60 * 60 * 1000));
-                if (isNaN(sdate.getTime())
-                    || sdate < cdate) {
-                    callback([]);
-                }
-                else {
-                    me._idb.GetData(sd_storename, function (r) {
-                        callback(r);
-                    });
-                }
-            };
-        }
-        var queryswithactions = Object.keys(me.StaticDataQueryActions).Select(i => me.StaticDataQueryActions[i]);
-        var querylist = queryswithactions.Select(i => i.query);
-        datawaiter.StartTask("data", "obtain");
-        retrievedata(function (r) {
-            var idbdata = FirstNotNull(r, []);
-            if (idbdata.length > 0) {
-                AppDataLayer.Data = idbdata.FirstOrDefault();
-                Log("data retrieved from IDB");
-                datawaiter.EndTask("data", "obtain");
-            }
-            else {
-                Log("retrieving data from server");
-                me.httpClient.GetMultiData(querylist, function (r) {
-                    var data = r;
-                    console.log(r);
-                    for (var key in data) {
-                        if (key.indexOf("|") > -1) {
-                            var queryname = key.split("|")[0];
-                            var queryix = key.split("|")[1];
-                            var queryitem = queryswithactions[queryix];
-                            if (!IsNull(queryitem)) {
-                                var onready = queryitem.onready;
-                                onready(data[key].Model);
-                            }
-                            else {
-                                Toast_Error(Format("Handler for query {0} was not found!", queryname));
-                            }
-                        }
-                    }
-                    AppDataLayer.Link();
-                    Log("data retrieved from server");
-                    datawaiter.EndTask("data", "obtain");
-                    savetoIDB();
-                }, null, 0);
-            }
-        });
-    }
-    LoadMenu() {
-        var menuelement = _SelectFirst("#menu");
-        var children = application.Settings.Navigation.Children;
-        var adminnode = children.FirstOrDefault(i => i["Key"] == "Admin");
-        var menuobj = { Children: [] };
-        menuobj.Children = children;
-        if (!this.IsAdmin()) {
-            menuobj.Children = children.Where(i => i != adminnode);
-        }
-        TreeMenu(menuelement, menuobj);
-    }
-    LoadUI() {
-        var footerelement = _SelectFirst(".main.grid>.footer");
-        footerelement.innerHTML = Res("general.FooterHTML");
-        this.LoadMenu();
-        //application.Container = document.getElementsByClassName("container")[0];
-        //StartJS();
-        var settings = '<a id="action-center-button" class="icon entypo-cog" href="#Settings\\List"> </a>';
-        var fragment = document.createElement("template");
-        fragment.innerHTML = settings;
-        var r_actions = _SelectFirst(".r-actions");
-        r_actions.appendChild(fragment.content.children[0]);
-        var onlineindicator = document.createElement("span");
-        onlineindicator.classList.add("button");
-        r_actions.appendChild(onlineindicator);
-        var me = this;
-        function updateIndicator() {
-            if (!navigator.onLine) {
-                onlineindicator.classList.add("entypo-block");
-                _Show(onlineindicator);
-            }
-            else {
-                onlineindicator.classList.remove("entypo-block");
-                _Hide(onlineindicator);
-            }
-        }
-        updateIndicator();
-        window.addEventListener('online', updateIndicator);
-        window.addEventListener('offline', updateIndicator);
-    }
-    ClearFloats(except = null) {
-        var nav = _SelectFirst(".navigation");
-        if (except != nav) {
-            nav.classList.remove("visible");
-            var e = nav;
-            e["A_Show"] = function () {
-                this.classList.add("visible");
-                _Show(this);
-            };
-            e["A_Hide"] = function () {
-                this.classList.remove("visible");
-            };
-        }
-        var ac = document.querySelector("#action-center");
-        if (except != ac) {
-            ac.classList.add("hidden");
-            var e = ac;
-            e["A_Show"] = function () {
-                this.classList.remove("hidden");
-                _Show(this);
-            };
-            e["A_Hide"] = function () {
-                this.classList.add("hidden");
-            };
-        }
-        var vi = document.querySelector(".viewinstances");
-        if (except != vi) {
-            vi.classList.remove("pop");
-            var e = vi;
-            e["A_Show"] = function () {
-                this.classList.add("pop");
-                _Show(this);
-            };
-            e["A_Hide"] = function () {
-                this.classList.remove("pop");
-            };
-        }
-    }
-    ToggleFloat(selector, ev) {
-        var me = this;
-        var e = _SelectFirst(selector);
-        ev.stopPropagation();
-        //HoverBox(e);
-        //_Show(e);
-        me.ClearFloats(e);
-        if (selector == ".navigation") {
-            e.classList.contains("visible") ? e["A_Hide"]() : e["A_Show"]();
-        }
-        if (selector == "#action-center") {
-            e.classList.contains("hidden") ? e["A_Show"]() : e["A_Hide"]();
-        }
-        if (selector == ".viewinstances") {
-            e.classList.contains("pop") ? e["A_Hide"]() : e["A_Show"]();
-        }
-    }
-    CloseHovering(element, path = []) {
-        //console.log("CloseHovering");
-        var hovers = Array.from(document.querySelectorAll(".hovering"));
-        var objects = document.querySelectorAll("app-objectpicker, app-autocomplete");
-        objects.forEach(o => {
-            let hs = o.shadowRoot.querySelectorAll(".hovering");
-            if (hs.length > 0) {
-                hovers.push(hs[0]);
-            }
-        });
-        var parents = _Parents(element);
-        if (path != null && path.length > 0) {
-            parents = path.slice(1);
-        }
-        var hoveringparents = parents.Where(i => !IsNull(i.classList) && i.classList.contains("hovering"));
-        if (element.classList.contains("hovering")) {
-            hoveringparents.push(element);
-        }
-        var shouldclose = element.classList.contains("hoverclose") ? true : false;
-        var hoverstoclose = hovers.Where(i => hoveringparents.indexOf(i) == -1);
-        for (var i = 0; i < hoverstoclose.length; i++) {
-            var htc = hoverstoclose[i];
-            //if (!hovers[i].contains(element) || shouldclose) {
-            if ("A_Hide" in htc) {
-                htc["A_Hide"]();
-            }
-            else {
-                if (htc.style.display != "none") {
-                    console.log("Hiding: ");
-                    console.log(htc);
-                    _Hide(htc);
-                }
-            }
-            //}
-        }
-    }
-    UIClick(e) {
-        var me = this;
-        var target = e.target;
-        var path = e["path"];
-        if (IsArray(path) && path.length > 0 && !IsNull(path[0])) {
-            target = path[0];
-        }
-        me.CloseHovering(target, Coalesce(path, []));
-    }
-    CurrentView() {
-        var elements = _Select(".container>div");
-        var element = null;
-        elements.forEach(function (el) {
-            if (el.style.display != "none") {
-                element = el;
-            }
-        });
-        if (element != null) {
-            return view(element);
-        }
-        return null;
-    }
-    SaveToClient(data, storename, callback) {
-        var me = this;
-        me._idb.Save(data, storename, callback);
-    }
-    GetFromClient(storename, callback, filter = null) {
-        var me = this;
-        me._idb.GetData(storename, callback, filter);
-    }
-    RefreshStaticData(callback) {
-        var me = this;
-        me._idb.ClearStore("SD", function (r) {
-            me.LoadData(application.Settings.Company);
-            callback();
-        });
-    }
-}
-class App_ActionCenter extends HTMLElement {
-    constructor() {
-        super();
-    }
-    attributeChangedCallback(attrName, oldValue, newValue) {
-        this[attrName] = this.hasAttribute(attrName);
-    }
-    connectedCallback() {
-        var element = this;
-        var htmlbuilder = [];
-        htmlbuilder.push('<fieldset class="controller">');
-        htmlbuilder.push('<legend>Action Center</legend>');
-        htmlbuilder.push('<span class="button" rel="#log">Logs</span>');
-        htmlbuilder.push('<span class="button" rel="#toasts">Messages</span>');
-        htmlbuilder.push('</fieldset>');
-        htmlbuilder.push('<div id="log" class="tab"></div>');
-        htmlbuilder.push('<div id="toasts" class="tab" style="display:none"></div>');
-        element.innerHTML = htmlbuilder.join('\n');
-        var fieldset_e = _SelectFirst("fieldset", element);
-        fieldset_e.addEventListener("click", function (event) {
-            var target = event.target;
-            if (target.tagName == "SPAN") {
-                var tabs = _Select(".tab", element);
-                tabs.forEach(function (tab) { _Hide(tab); });
-                var tab = _SelectFirst(target.getAttribute("rel"), element);
-                var links = _Select(".button", target.parentElement);
-                links.forEach(function (link) { link.classList.remove("Selected"); });
-                target.classList.add("Selected");
-                _Show(tab);
-            }
-        });
-    }
-}
-window.customElements.define("app-actioncenter", App_ActionCenter);
-var application = new Application();
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("register app-actioncenter");
-});
-function AddImportToApplication(s) {
-    var existing = application.ImportScripts.FirstOrDefault(i => i.Name == s.Name);
-    if (existing == null) {
-        application.ImportScripts.push(s);
-    }
-}
-function AddControllerToApplication(app, controller) {
-    controller.Container = app.GetContainer;
-    var exisingcontroller = application.GetController(controller.ModelName);
-    if (exisingcontroller == null) {
-        //console.log("  >adding controller " + Format("{0}.{1}", controller.NS, controller.ModelName));
-        app.Controllers.push(controller);
-    }
-    else {
-        //console.log("  >extending controller " + Format("{0}.{1}", controller.NS, controller.ModelName));
-        for (var i = 0; i < controller.Views.length; i++) {
-            var view = controller.Views[i];
-            exisingcontroller.AddView(view);
-        }
-        for (var key in controller.Commands) {
-            exisingcontroller.Commands[key] = controller.Commands[key];
-        }
-    }
-}
-application.Load();
-var Common;
-(function (Common) {
-    var Article;
-    (function (Article) {
-        class List extends ListViewModel {
-            Identifier() {
-                return Format("{0}_{1}", this.Name, this.Area);
-            }
-            Title() {
-                var parameters = this.GetParameterDictionary();
-                var typestr = IsNull(parameters.type) ? "Plural" : parameters.type;
-                return Format("{0}", Res("models.Article." + typestr));
-            }
-            FormatIdentifier(p, area = "") {
-                var parameters = this.GetParameterDictionary(p);
-                return Format("{0}_{1}_{2}", this.Name, area, parameters.type);
-            }
-            constructor(controller) {
-                super("List", controller);
-            }
-            Action(p) {
-                var viewmodel = this;
-                var me = this;
-                me.Bind(me.UIElement, {});
-                var parameters = me.GetParameterDictionary(p);
-                var titleelement = _SelectFirst("h2", viewmodel.UIElement);
-                titleelement.innerHTML = Res("UI.Article." + parameters.type);
-                me.FilterUIElement = _SelectFirst(".filter", viewmodel.UIElement);
-                this.Search();
-            }
-            Search(parameters = {}) {
-                var me = this;
-                parameters = SearchParameters.Ensure(parameters, me.GetParameterDictionary());
-                var page = Coalesce(parameters.page, 1);
-                var paramfilters = [];
-                var code = parameters.type;
-                if (!IsNull(code)) {
-                    paramfilters = ClientFilter.Create(UIDataType.Text, "Category.Code", "[" + code + "]");
-                }
-                page = parseInt(parameters.page);
-                page = isNaN(page) ? 1 : page;
-                var pagesize = me.PageSize();
-                var viewmodel = this;
-                var listelement = _SelectFirst(".body", viewmodel.UIElement);
-                //_Hide(voucherlistelement);
-                var filterelement = _SelectFirst(".filter", me.UIElement);
-                var uifilters = GetFiltersFromUI(filterelement);
-                //var query = <any>{ TypeName: "Article" };
-                var pageroptions = {
-                    page: page,
-                    pagesize: pagesize,
-                    urlformat: "#Article\\List\\" + code + "-{0}"
-                };
-                //ShowProgress();
-                var query = AppDataLayer.CreateListQueryByName("Article");
-                query.SetFields(["Category.Id", "Category.Title", "Category.Code", "Translations.*"]);
-                query.SetFilters(uifilters);
-                query.SetFilters(paramfilters);
-                query.Skip = (page - 1) * pagesize;
-                query.Take = pagesize;
-                query.GetCount = true;
-                query.Ordering = { "Id": "DESC" };
-                AppDependencies.httpClient.GetData(query, function (r) {
-                    me.Model = r.Model;
-                    var count = r.ViewData["Count"];
-                    me.Bind(".body", me.Model);
-                    pageroptions["total"] = count;
-                    CreatePager(_SelectFirst(".pager", viewmodel.UIElement), pageroptions);
-                });
-            }
-        }
-        Article.List = List;
-        class Details extends ViewModel {
-            Identifier() {
-                return Format("{0}_{1}", this.Name, this.Model.Id);
-            }
-            Title() {
-                return Format("{0}", this.Model == null ? "" : this.Model.Title);
-            }
-            constructor(controller) {
-                super("Details", controller);
-            }
-            Action(p) {
-                var me = this;
-                var id = Format("{0}", p);
-                var load = function () {
-                    me.Bind(me.UIElement, me.Model);
-                };
-                if (!IsNull(me.Model) && me.Model.Id == id) {
-                    load();
-                }
-                else {
-                    var query = AppDataLayer.CreateDetailsQueryByName("Article", id);
-                    AppDependencies.httpClient.GetData(query, function (r) {
-                        me.Model = r.Model.FirstOrDefault();
-                        load();
-                    });
-                }
-            }
-        }
-        Article.Details = Details;
-        class Save extends ViewModel {
-            constructor(controller) {
-                super("Save", controller);
-                this.Files = [];
-                this._Title = "";
-                this.IsMultiInstance = true;
-                var me = this;
-                var commandobj = {
-                    Key: "Create",
-                    AppearsIn: ["header"],
-                    Prefix: "v-",
-                    IsInContext: function (model, view) {
-                        var route = application.GetRouteProperties();
-                        if (application.IsAdmin()) {
-                            return view.Name == "List";
-                        }
-                        return false;
-                    },
-                    Render: function (model, view) {
-                        var parameters = me.GetParameterDictionary();
-                        var labeltext = Res("UI.Commands.v-Create");
-                        var html = Format('<a class="icon v-Create" href="#Admin\\Article\\Save\\{0}-"><label>{1}</label></a>', parameters.type, labeltext);
-                        return html;
-                    }
-                };
-                controller.RegisterCommand(AppUICommand.CreateFrom(commandobj));
-            }
-            Identifier() {
-                return Format("{0}_{1}", this.Name, this.Model.Id);
-            }
-            Title() {
-                var parameters = this.GetParameterDictionary();
-                var typestr = IsNull(parameters.type) ? "Plural" : parameters.type;
-                var title = Access(this, "Model.Title");
-                return Format("{0} {1}", Res("general.New"), FirstNotNull(title, Res("UI.Article." + typestr)));
-            }
-            Action(p) {
-                var me = this;
-                var parameters = me.GetParameterDictionary(p);
-                var id = parameters.id;
-                var me = this;
-                //var query = <any>{ TypeName: "Article", Id: pstr};
-                var load = function () {
-                    me.Bind(me.UIElement, me.Model);
-                    var htmleditors = _Select(".htmleditor", me.UIElement);
-                    if (htmleditors.length > 0) {
-                        var tinyscriptelement = _SelectFirst("#tinyscript");
-                        if (IsNull(tinyscriptelement)) {
-                            tinyscriptelement = document.createElement('script');
-                            tinyscriptelement.src = "tinymce/tinymce.min.js";
-                            tinyscriptelement.id = "tinyscript";
-                            tinyscriptelement.type = "text/javascript";
-                            document.head.appendChild(tinyscriptelement);
-                            tinyscriptelement.onload = function () { tinymce.init({ selector: '.htmleditor' }); };
-                        }
-                        else {
-                            tinymce.init({ selector: '.htmleditor' });
-                        }
-                    }
-                };
-                if (!IsNull(me.Model) && me.Model.Id == id) {
-                    load();
-                }
-                else {
-                    if (IsNull(id)) {
-                        me.Model = { TypeName: "Article" };
-                        if (!IsNull(parameters.type)) {
-                            var category = AppDataLayer.Data.AppCategorys.FirstOrDefault(i => i.Code == parameters.type);
-                            if (category != null) {
-                                me.Model.CategoryId = category.Id;
-                                me.Model.Category = category;
-                            }
-                        }
-                        load();
-                        me.AfterBind();
-                    }
-                    else {
-                        var query = AppDataLayer.CreateDetailsQueryByName("Article", id);
-                        query.SetField("Category.*");
-                        AppDependencies.httpClient.GetData(query, function (r) {
-                            me.Model = r.Model.FirstOrDefault();
-                            //BindX(me.UIElement, me.Model);
-                            load();
-                            me.AfterBind();
-                        });
-                    }
-                }
-            }
-            HandleUploadedFiles(element) {
-                var me = view(element);
-                var files = event.target.files;
-                var filecontainer = _SelectFirst(".files", me.UIElement);
-                var imageurlelement = _SelectFirst("[bind=ImageUrl]", me.UIElement);
-                var GetThumbnailFilename = function (filename) {
-                    return Format("thmbn.{0}", filename);
-                };
-                var AddFile = function (p) {
-                    var divelement = document.createElement("div");
-                    filecontainer.appendChild(divelement);
-                    divelement.classList.add("file");
-                    var img = document.createElement("img");
-                    img.src = "images/file_256x256-32.png";
-                    divelement.appendChild(img);
-                    var label = document.createElement("label");
-                    divelement.appendChild(label);
-                    divelement.setAttribute("filename", p.filename);
-                    var deletebutton = document.createElement("span");
-                    deletebutton.classList.add("button");
-                    deletebutton.classList.add("delete");
-                    deletebutton.classList.add("entypo-cancel");
-                    divelement.appendChild(deletebutton);
-                    divelement.addEventListener("click", function (e) {
-                        var targetlement = e.target;
-                        var el = targetlement.parentElement;
-                        if (targetlement.classList.contains("delete")) {
-                            var filename = el.getAttribute("filename");
-                            var thumbnailfilename = GetThumbnailFilename(p.filename);
-                            var files = me.Files.Where(i => i.Filename == thumbnailfilename || i.Filename == filename);
-                            for (var i = 0; i < files.length; i++) {
-                                RemoveFrom(files[i], me.Files);
-                            }
-                            if (imageurlelement.value == thumbnailfilename) {
-                                imageurlelement.value = "";
-                                var imagefile = me.Files.FirstOrDefault(i => i.Type.match(/image.*/));
-                                if (imagefile != null) {
-                                    var thumbfilename = imagefile.Filename.startsWith("thmbn.") ? thumbfilename : GetThumbnailFilename(imagefile.Filename);
-                                    imageurlelement.value = thumbfilename;
-                                }
-                            }
-                            el.remove();
-                            return;
-                        }
-                        if (p.type.match(/image.*/)) {
-                            var spanelement = _SelectFirst("span", el);
-                            imageurlelement.value = spanelement.getAttribute("clickvalue");
-                        }
-                    });
-                    if (p.type.match(/image.*/)) {
-                        var thumbnailfilename = GetThumbnailFilename(p.filename);
-                        img.setAttribute("src", p.url);
-                        var fd = new FileData();
-                        fd.File = p.blob;
-                        fd.Filename = thumbnailfilename;
-                        fd.Type = p.type;
-                        me.Files.push(fd);
-                        if (IsNull(imageurlelement.value)) {
-                            imageurlelement.value = thumbnailfilename;
-                        }
-                        label.setAttribute("clickvalue", thumbnailfilename);
-                    }
-                    label.innerHTML = p.filename;
-                };
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    if (file.type.match(/image.*/)) {
-                        ResizeImages(file, 150, AddFile);
-                    }
-                    else {
-                        AddFile({ type: file.type, filename: file.name });
-                    }
-                    var fd = new FileData();
-                    fd.File = file;
-                    fd.Filename = file.name;
-                    fd.Type = file.type;
-                    me.Files.push(fd);
-                }
-            }
-            SavePost(element) {
-                var me = this;
-                var obj = GetBoundObject(me.UIElement);
-                var fileuploader = _SelectFirst(".fileuploader", me.UIElement);
-                //var files = IsNull(fileuploader) ? [] : fileuploader.files;
-                var files = me.Files;
-                var formdata = new FormData();
-                var hasfile = files.length > 0;
-                //var file;
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    formdata.append("file" + i.toString(), file.File, file.Filename);
-                }
-                var command = "INSERT";
-                if (_SelectFirst(".htmleditor", me.UIElement) != null) {
-                    obj.Content = tinymce.activeEditor.getContent();
-                }
-                var model = JsonCopy(me.Model);
-                MapObject(obj, model);
-                var updateobj = BaseModel.GetUpdateCommand(model, "Article", command);
-                var commandmessage = "created";
-                if (!IsNull(me.Model.Id)) {
-                    command = "UPDATE";
-                    updateobj = BaseModel.GetUpdateCommand(model, "Article", command);
-                    updateobj["Id"] = me.Model.Id;
-                    var commandmessage = "saved";
-                }
-                var category = AppDataLayer.Data["AppCategorys"].FirstOrDefault(i => i.Id == model.CategoryId);
-                updateobj["Keys"] = "Id";
-                var commands = [updateobj];
-                formdata.append("commands", JSON.stringify(commands));
-                AppDependencies.httpClient.PostOld("~/webui/api/xclientcommandmultipart", formdata, function (xhttp) {
-                    var response = JSON.parse(xhttp.responseText);
-                    var model = IsArray(response.Model) ? response.Model.FirstOrDefault() : response.Model;
-                    var id = model["Model"]["Value"];
-                    var itemlink = Format('<a href="#Article\\Details\\{0}">{1}</a>', id, id);
-                    if (command == "INSERT") {
-                        commandmessage = "Article " + itemlink + " was created successfully";
-                    }
-                    else {
-                        commandmessage = "Article was saved successfully";
-                    }
-                    Toast_Success(commandmessage);
-                }, null, null);
-            }
-            AddCategory() {
-                var category = { Id: 5, Code: "CNT", Title: "Content" };
-                var updateobj = BaseModel.GetUpdateCommand(category, "AppCategory", "UPDATE");
-                updateobj["Keys"] = "Id";
-                updateobj["Id"] = category.Id;
-                AppDependencies.httpClient.Post("~/webui/api/xclientcommand", JSON.stringify([updateobj]), function (xhttp) {
-                    var response = JSON.parse(xhttp.responseText);
-                    var model = response.Model.FirstOrDefault();
-                    var id = model.Model["Value"];
-                    Toast_Success("Category added", id);
-                }, null, "application/json");
-            }
-        }
-        Article.Save = Save;
-        class Controller extends ModelController {
-            constructor() {
-                super();
-                var me = this;
-                this.ModelName = "Article";
-                this.Views = [
-                    new Article.List(me),
-                    new Article.Details(me),
-                    new Article.Save(me),
-                ];
-                this.Views.forEach(function (v) {
-                    v.Controller = me;
-                });
-            }
-            GetControllerSpecificActions(model) {
-                // 
-                var commands = [];
-                if (!IsNull(model.Id)) {
-                    var deletecommand = AppUICommand.Create("model[TypeName=Article]", ["item", "header"], "Delete", "controller(this).Delete(this,'{0}')");
-                    deletecommand.IsInContext((model) => !IsNull(model.Id));
-                    commands.push(deletecommand);
-                }
-                return commands;
-            }
-            Delete(uielement, id) {
-                if (confirm(Res("general.SureDelete"))) {
-                    var commands = [];
-                    var commandobj = BaseModel.GetDeleteCommand("Article", id);
-                    commands.push(commandobj);
-                    var formdata = new FormData();
-                    formdata.append("commands", JSON.stringify(commands));
-                    AppDependencies.httpClient.PostOld("~/webui/api/xclientcommandmultipart", formdata, function (xhttp) {
-                        var response = JSON.parse(xhttp.responseText);
-                        var model = IsArray(response.Model) ? response.Model.FirstOrDefault() : response.Model;
-                        Toast_Success("Article with " + id + " was deleted successfully");
-                    }, null, null);
-                }
-                var item = _Parents(uielement).FirstOrDefault(i => i.classList.contains("item"));
-                if (!IsNull(item)) {
-                    item.remove();
-                }
-            }
-            TransformActionHtml(action, model, html, area) {
-                if (action == "Save") {
-                    var url = TextBetween(html, 'href="', '"');
-                    var category = AppDataLayer.Data.AppCategorys.FirstOrDefault(i => i.Id == model.CategoryId);
-                    if (category != null) {
-                        var newurl = Format("#{0}\\{1}\\{2}-{3}", model.TypeName, "Save", category.Code, model.Id);
-                        if (area.length > 0) {
-                            newurl = Format("#{0}\\{1}\\{2}\\{3}-{4}", area, model.TypeName, "Save", category.Code, model.Id);
-                        }
-                        var ix = html.indexOf(url);
-                        var newhtml = html.substring(0, ix) + newurl + html.substring(ix + url.length);
-                        return newhtml;
-                    }
-                }
-                if (action == "List") {
-                    var url = TextBetween(html, 'href="', '"');
-                    var category = AppDataLayer.Data.AppCategorys.FirstOrDefault(i => i.Id == model.CategoryId);
-                    if (category != null) {
-                        var newurl = Format("#{0}\\{1}\\{2}-", model.TypeName, "List", category.Code);
-                        if (area.length > 0) {
-                            newurl = Format("#{0}\\{1}\\{2}\\{3}-", area, model.TypeName, "List", category.Code);
-                        }
-                        var ix = html.indexOf(url);
-                        var newhtml = html.substring(0, ix) + newurl + html.substring(ix + url.length);
-                        return newhtml;
-                    }
-                }
-                return html;
-            }
-            PrepareView(vm, p = null) {
-                var me = this;
-                var parameters = vm.GetParameterDictionary(p);
-                var rp = application.GetRouteProperties();
-                var roottlayouts = [
-                    Format("layout\\{0}.{1}.{2}.razor.html", vm.LogicalModelName, vm.Name, parameters.type),
-                    Format("layout\\{0}.{1}.razor.html", vm.LogicalModelName, vm.Name)
-                ];
-                var arealayouts = (rp.area.length > 0) ? roottlayouts.Select(i => i.replace("layout\\", "layout\\" + rp.area + "\\")) : [];
-                var defaultlayouts = arealayouts.length > 0 ? arealayouts : roottlayouts;
-                var customisedlayouts = [];
-                for (var i = 0; i < defaultlayouts.length; i++) {
-                    var customlayoutpath = defaultlayouts[i].replace("layout\\", "Customisations\\" + application.Settings.Domain + "\\layout\\");
-                    customisedlayouts.push(customlayoutpath);
-                }
-                var layouts = customisedlayouts.concat(defaultlayouts);
-                var existinglayouts = layouts.Where(i => i in application.Layouts.Templates);
-                console.log(existinglayouts);
-                var templates = layouts.Select(i => { return { layoutpath: i, content: application.Layouts.Templates[i] }; });
-                var template = templates.FirstOrDefault(i => !IsNull(i.content));
-                if (!IsNull(template)) {
-                    //vm.TemplateHtml = html;
-                    //vm.OriginalTemplateHtml = html;
-                    var t = new RazorTemplate();
-                    t.LayoutPath = template.layoutpath;
-                    t.Compile(template.content);
-                    vm.AddTemplate("razor", t);
-                }
-            }
-        }
-        Article.Controller = Controller;
-    })(Article = Common.Article || (Common.Article = {}));
-})(Common || (Common = {}));
-AddControllerToApplication(application, new Common.Article.Controller());
+/// <reference path="appmodels.ts" />
 var BaseModel;
 (function (BaseModel) {
-    function GetDbCommandForObject(obj, commandname, keys = "Id", excludes = []) {
-        var meta = GetMeta(obj);
-        var updateobj = {};
-        for (var i = 0; i < meta.Fields.length; i++) {
-            var field = meta.Fields[i];
-            if (!field.IsArray && !field.IsObject
-                && excludes.indexOf(field.MetaKey) == -1) {
-                if (field.MetaKey in obj) {
-                    var val = obj[field.MetaKey];
-                    if (!IsNull(val)) {
-                        updateobj[field.MetaKey] = val;
-                    }
-                }
-            }
-            updateobj["Keys"] = keys;
-            updateobj["TypeName"] = meta.MetaKey;
-            updateobj["CommandName"] = commandname;
-        }
-        FIxUpdateObj(updateobj);
-        return updateobj;
-    }
-    BaseModel.GetDbCommandForObject = GetDbCommandForObject;
-    function GetUpdateCommand(obj, typename, commandname, keys = "Id", excludes = ["Id"]) {
-        var meta = GetMetaByTypeName(typename);
-        var updateobj = {};
-        for (var i = 0; i < meta.Fields.length; i++) {
-            var field = meta.Fields[i];
-            if (!field.IsArray && !field.IsObject
-                && excludes.indexOf(field.MetaKey) == -1) {
-                if (field.MetaKey in obj) {
-                    var val = obj[field.MetaKey];
-                    if (!IsNull(val)) {
-                        updateobj[field.MetaKey] = val;
-                    }
-                }
-            }
-            updateobj["Keys"] = keys;
-            updateobj["TypeName"] = typename;
-            updateobj["CommandName"] = commandname;
-        }
-        return updateobj;
-    }
-    BaseModel.GetUpdateCommand = GetUpdateCommand;
-    function GetDeleteCommand(typename, id) {
-        var command = {};
-        command["TypeName"] = typename;
-        command["CommandName"] = "Delete";
-        command["Keys"] = "Id";
-        command["Id"] = id;
-        return command;
-    }
-    BaseModel.GetDeleteCommand = GetDeleteCommand;
-    function FIxUpdateObj(obj) {
-        var mt = GetMeta(obj);
-        for (var key in obj) {
-            if (!IsNull(obj[key]) && !IsNull(mt) && (key in mt)) {
-                var pmt = mt[key];
-                if (pmt != null && In(pmt.SourceType, "Date")) {
-                    var d = IsDate(obj[key]) ? obj[key] : StringToDate(obj[key], application.Settings.DateFormat);
-                    obj[key] = Format("{0:yyyy-MM-dd}", d);
-                }
-                if (pmt != null && In(pmt.SourceType, "DateTime")) {
-                    var d = IsDate(obj[key]) ? obj[key] : StringToDate(obj[key], application.Settings.DateFormat);
-                    obj[key] = Format("{0:yyyy-MM-ddTHH:mm:ss}", d);
-                }
-                if (pmt != null && In(pmt.SourceType, "double", "integer", "money")) {
-                    obj[key] = Number(obj[key]);
-                }
-            }
-            if (IsNull(obj[key])) {
-                delete obj[key];
-            }
-            else {
-                if (IsArray(obj[key])) {
-                    for (var i = 0; i < obj[key].length; i++) {
-                        FIxUpdateObj(obj[key][i]);
-                    }
-                }
-            }
-        }
-    }
-    BaseModel.FIxUpdateObj = FIxUpdateObj;
-    function SaveCompanyAddress(element) {
-        var uiobj = GetBoundObject(element);
-        var commands = [];
-        var commandname = "INSERT";
-        var excludes = ["Id"];
-        if (!IsNull(uiobj["Id"])) {
-            excludes = [];
-            commandname = "UPDATE";
-        }
-        var updateobj = GetUpdateCommand(uiobj, "CompanyAddress", commandname, "Id", excludes);
-        if (!IsNull(uiobj["Address"])) {
-            updateobj = GetUpdateCommand(uiobj["Address"], "CompanyAddress", commandname, "Id", excludes);
-        }
-        updateobj["CompanyId"] = application.Settings.Company["Id"];
-        commands.push(updateobj);
-        BaseModel.Dependencies.httpClient.Post("~/webui/api/xclientcommand", JSON.stringify(commands), function (xhttp) {
-            var data = JSON.parse(xhttp.responseText);
-            if (!IsNull(data.Errors) && data.Errors.length == 0) {
-                Toast_Success(Res("UI.CompanyAddress.Saved"));
-            }
-        }, null, "application/json");
-    }
-    BaseModel.SaveCompanyAddress = SaveCompanyAddress;
-    class Dependencies {
-        static Container() { return null; }
-        ;
-        static LoadContent(element) { }
-        ;
-    }
-    Dependencies.ClientValidation = true;
-    Dependencies.DataLayer = null;
-    BaseModel.Dependencies = Dependencies;
     class List extends ListViewModel {
         Identifier() {
             return Format("{0}_{1}", this.Name, "");
@@ -8189,7 +6897,7 @@ var BaseModel;
     }
     BaseModel.Controller = Controller;
 })(BaseModel || (BaseModel = {}));
-AddControllerToApplication(application, new BaseModel.Controller());
+RegisterController(application, () => new BaseModel.Controller());
 var Common;
 (function (Common) {
     var Contact;
@@ -8330,7 +7038,7 @@ var Common;
                 var me = this;
                 var viewmessage = _SelectFirst(".modal .msg.view", me.UIElement);
                 var msg_original = me.Model.All.FirstOrDefault(i => i.Id == id);
-                var msg_reply = new ErpApp.Model.AppMessage();
+                var msg_reply = new Models.AppMessage();
                 msg_reply.ParentId = msg_original.Id;
                 msg_reply.Subject = Format("Re: {0}", msg_original.Subject);
                 msg_reply.TargetUserId = msg_original.CreatedByUserId;
@@ -8343,7 +7051,7 @@ var Common;
                 var modal = _SelectFirst(".modal", me.UIElement);
                 var message = _SelectFirst(".msg.new", modal);
                 var msg = GetBoundObject(modal);
-                var command = BaseModel.GetUpdateCommand(msg, "AppMessage", "INSERT");
+                var command = GetUpdateCommand(msg, "AppMessage", "INSERT");
                 var tbcompany = _SelectFirst(".autocomplete.company .textbox", message);
                 command["ToName"] = tbcompany.placeholder;
                 command["Keys"] = "Id";
@@ -8426,7 +7134,7 @@ var Common;
         Contact.Controller = Controller;
     })(Contact = Common.Contact || (Common.Contact = {}));
 })(Common || (Common = {}));
-AddControllerToApplication(application, new Common.Contact.Controller());
+RegisterController(application, () => new Common.Contact.Controller());
 //@keyattribute
 class Controls {
 }
@@ -8763,7 +7471,7 @@ function TreeMenu(target, obj) {
     return html;
 }
 function GetControlSheet() {
-    var sheet = Array.from(document.styleSheets).FirstOrDefault(i => i.href.endsWith("controls.css"));
+    var sheet = Array.from(document.styleSheets).FirstOrDefault(i => i.href.endsWith(".css") && i.href.toLowerCase().indexOf("controls") > -1);
     return sheet;
 }
 function GetDynamicalSheet() {
@@ -11746,38 +10454,6 @@ class App_Selector extends HTMLElement {
     SelectElement(el) {
     }
 }
-var ErpApp;
-(function (ErpApp) {
-    var Model;
-    (function (Model) {
-        class AppMessage {
-            constructor() {
-                this.TypeName = "AppMessage";
-            }
-        }
-        Model.AppMessage = AppMessage;
-        class BaseArticle {
-            constructor() {
-                this.TypeName = "Article";
-            }
-        }
-        Model.BaseArticle = BaseArticle;
-        class Article extends BaseArticle {
-            constructor() {
-                super(...arguments);
-                this.TypeName = "Article";
-                this.Files = [];
-            }
-        }
-        Model.Article = Article;
-        class Category {
-            constructor() {
-                this.TypeName = "AppCategory";
-            }
-        }
-        Model.Category = Category;
-    })(Model = ErpApp.Model || (ErpApp.Model = {}));
-})(ErpApp || (ErpApp = {}));
 class HtmlHelpers {
     GetMinMaxDateControl(bind, udt) {
         return HtmlHelpers.GetMinMaxDate('<input type="hidden" bind="' + bind + '" uidatatype="' + udt + '"/>');
@@ -12406,7 +11082,7 @@ var Settings;
     }
     Settings.Controller = Controller;
 })(Settings || (Settings = {}));
-AddControllerToApplication(application, new Settings.Controller());
+RegisterController(application, () => new Settings.Controller());
 class ValidationFuntionContainer {
     constructor() {
         this.Required = function (item) { return !IsNull(item); };
@@ -12423,4 +11099,1109 @@ class ValidationFuntionContainer {
         return funcs;
     }
 }
+class AppDependencies {
+    static Container() { return null; }
+    ;
+    static LoadContent(element) { }
+    ;
+}
+AppDependencies.ClientValidation = true;
+AppDependencies.DataLayer = null;
+function OnAuthenticated(result) {
+    Toast_Success("Authentication successful.");
+    application.LoadData(result);
+}
+function GetParameter(key) {
+    return localStorage.getItem(application.Settings.Domain + "." + key);
+}
+function SetParameter(key, value) {
+    localStorage.setItem(application.Settings.Domain + "." + key, value);
+}
+function SetWebServiceIdentifier() {
+    var input = document.getElementById("WebServiceIdentifier");
+    var label = document.querySelector("span.WebServiceIdentifier");
+    if (input.value.indexOf("*") == -1) {
+        SetParameter("WebServiceIdentifier", input.value);
+        //localStorage.setItem("WebServiceIdentifier", input.value);
+        application.Authenticate(OnAuthenticated);
+    }
+}
+function SetDataEntryPoint() {
+    var input = document.getElementById("DataEntryPoint");
+    var label = document.querySelector("span.DataEntryPoint");
+    application.Settings.DataEntryPoint = input.value;
+    application.httpClient.EntryPointBase = input.value;
+    application.SaveSettings();
+    application.Authenticate(OnAuthenticated);
+}
+function Login() {
+    var view = application.CurrentView();
+    var username = _SelectFirst("[name=username]", view.UIElement);
+    var email = _SelectFirst("[name=email]", view.UIElement);
+}
+GetResource = function (key, culture) {
+    return Res(key, culture);
+};
+var missingresources = {};
+function RetrieveResource(key) {
+    if (ResExists(key)) {
+        return Res(key);
+    }
+    return "";
+}
+function ResNvl(keys, key = "") {
+    if (IsNull(keys) || keys.length == 0) {
+        return "";
+    }
+    var firstkey = keys.FirstOrDefault();
+    for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        if (ResExists(key)) {
+            return Res(key);
+        }
+    }
+    if (firstkey.indexOf(".") > -1) {
+        var lastkeypart = firstkey.substring(firstkey.lastIndexOf(".") + 1);
+        return lastkeypart;
+    }
+    return FirstNotNull(key, firstkey);
+}
+ModelRes = function (key, viewpath = "") {
+    var culture = application.Settings.Culture;
+    var parts = key.split('.');
+    var typename = parts.FirstOrDefault();
+    var mkey = parts.slice(1).join('.');
+    var mp = MetaAccess({ TypeName: typename }, mkey);
+    var mc = GetMetaByTypeName(typename);
+    var dotix = mkey.lastIndexOf(".");
+    if (dotix > -1) {
+        var s1 = mkey.substring(0, dotix);
+        var s2 = mkey.substring(dotix + 1);
+        mc = MetaAccess({ TypeName: mc.MetaKey }, s1);
+        mkey = s2;
+    }
+    typename = IsNull(mc) ? null : mc.MetaKey;
+    var labelaccessors = [
+        () => RetrieveResource(Format("UI.{0}.{1}", viewpath, key)),
+        () => Res(Format("models.{0}.{1}", typename, mkey)),
+        () => RetrieveResource(Format("models.BaseModel.{0}", mkey)),
+        () => mkey,
+        () => key
+    ];
+    for (var i = 0; i < labelaccessors.length; i++) {
+        let label = labelaccessors[i]();
+        if (!IsNull(label)) {
+            return label;
+        }
+    }
+};
+Res = function (key, culture) {
+    if (IsNull(culture)) {
+        culture = application.Settings.Culture;
+    }
+    var appres = application.Resources[culture][key];
+    if (IsNull(appres) && appres != "") {
+        appres = key.substr(key.lastIndexOf('.') + 1);
+        if (!(key in missingresources)) {
+            missingresources[key] = appres;
+        }
+    }
+    return appres;
+};
+ResExists = function (key, culture) {
+    if (IsNull(culture)) {
+        culture = application.Settings.Culture;
+    }
+    var appres = application.Resources[culture][key];
+    return !IsNull(appres);
+};
+class ResourceContainer {
+    constructor() {
+        this.Cultures = {};
+    }
+    Load(culture, obj, key) {
+        var me = this;
+        me[culture] = IsNull(me[culture]) ? {} : me[culture];
+        me.Cultures[culture] = IsNull(me.Cultures[culture]) ? {} : me.Cultures[culture];
+        var keys = Object.keys(me.Cultures[culture]);
+        var rkey = Format("{0}_{1}", keys.length, key);
+        me.Cultures[culture][rkey] = {};
+        var container = me.Cultures[culture][rkey];
+        var reourceobj = me[culture];
+        var paths = ObjToPathValueList(obj);
+        paths.forEach(function (path) {
+            reourceobj[path[0]] = path[1];
+            container[path[0]] = path[1];
+        });
+    }
+}
+class AppUICommand {
+    constructor() {
+        this.Key = "";
+        this.CssClass = "";
+        this.Url = (model, view, command) => "";
+        this.IsInContext = (model, view) => true;
+        this.OnClick = (model, view, command) => "";
+        this.Prefix = "";
+        this.Action = "";
+        this.AppearsIn = [];
+        this.Label = "";
+        this.Html = "";
+    }
+    Render(model, control) {
+        var me = this;
+        var html = "";
+        var uielement = null;
+        if (me.IsInContext(model, control)) {
+            var url = me.Url(model, control, me);
+            var onclick = me.OnClick(model, control, me);
+            if (!IsNull(url)) {
+                uielement = _CreateElement("a", { class: me.CssClass, href: url });
+            }
+            if (!IsNull(onclick)) {
+                uielement = _CreateElement("span", { class: me.CssClass, onclick: onclick });
+            }
+            if (uielement != null) {
+                var text = Res("UI.Commands." + me.Prefix + me.Key);
+                var label = _CreateElement("label", {}, text);
+                uielement.setAttribute("title", text);
+                uielement.appendChild(label);
+                me.Html = uielement.outerHTML;
+                html = me.Html;
+            }
+        }
+        return html;
+    }
+    static GetFunctions(condition) {
+        var result = [];
+        if (condition != null) {
+            var isview = condition.startsWith("view");
+            var partsofcondition = TextsBetween(condition, "[", "]", false);
+            for (var i = 0; i < partsofcondition.length; i++) {
+                var partofcondition = partsofcondition[i];
+                var conditionparts = partofcondition.split("=");
+                var key = conditionparts.FirstOrDefault();
+                var value = conditionparts.length > 1 ? conditionparts[1] : null;
+                if (value == null) {
+                    result.push((model, view) => {
+                        var val = isview ? Access(view, key) : Access(model, key);
+                        return !IsNull(val);
+                    });
+                }
+                else {
+                    result.push((model, view) => {
+                        var val = isview ? Access(view, key) : Access(model, key);
+                        return val == value;
+                    });
+                }
+            }
+        }
+        return result;
+    }
+    static CreateFrom(obj) {
+        var command = new AppUICommand();
+        for (var key in obj) {
+            command[key] = obj[key];
+        }
+        return command;
+    }
+    static Create(condition, appearsin, key, action, classprefix = "a-") {
+        var command = new AppUICommand();
+        command.Prefix = classprefix;
+        command.Action = action;
+        command.AppearsIn = appearsin;
+        var conditions = CsvLineSplit(condition, ",", '"');
+        var viewpart = conditions.FirstOrDefault(i => i.startsWith("view"));
+        var modelpart = conditions.FirstOrDefault(i => i.startsWith("model"));
+        var functions = [];
+        if (viewpart != null) {
+            functions = functions.concat(AppUICommand.GetFunctions(viewpart));
+        }
+        if (modelpart != null) {
+            functions = functions.concat(AppUICommand.GetFunctions(modelpart));
+        }
+        var allfunction = (model, view) => {
+            var result = true;
+            for (var i = 0; i < functions.length; i++) {
+                if (!functions[i](model, view)) {
+                    return false;
+                }
+            }
+            return result;
+        };
+        command.IsInContext = allfunction;
+        command.CssClass = "icon " + classprefix + key;
+        if (action.startsWith("#") || action.startsWith("http://")) {
+            command.Url = (model, view, c) => Format(c.Action, Access(model, "Id"));
+        }
+        else {
+            command.OnClick = (model, view, c) => Format(c.Action, Access(model, "Id"));
+        }
+        command.Key = key;
+        //command.Label = Res("UI.Commands." + key);
+        return command;
+    }
+    static CreateFromHtml(key, Render, isincontext) {
+        var command = new AppUICommand();
+        command.Key = key;
+        command.Render = Render;
+        if (!IsNull(isincontext)) {
+            command.IsInContext = isincontext;
+        }
+        return command;
+    }
+}
+const default_MoneyFormat = "### ##0.00";
+function FormatCurrencyAmount(value) {
+    if (!IsNull(value)) {
+        return Number(Format("{0:" + default_MoneyFormat + "}", value));
+    }
+    return 0;
+}
+class Application {
+    constructor() {
+        //public Settings: AppSettings = <AppSettings>{};
+        this.Resources = new ResourceContainer();
+        this.data = {};
+        this._Container = null;
+        this._ScriptsReady = false;
+        this._scriptwaiter = null;
+        this.Commands = {};
+        this.StaticDataQueryActions = {};
+        this.ImportScripts = [];
+        this.Controllers = [];
+        this.Waiter = new Waiter();
+        this.httpClient = new HttpClient();
+        this.localhttpClient = new HttpClient();
+        this.Menu = null;
+        this._storename = ["SD", "Data", "Sync", "Files", "Info"];
+        this._Settings = null;
+        this.NavigationItems = {};
+        this.Layouts = {
+            Dictionary: {},
+            Templates: {},
+            load: function () {
+                var me = this;
+                var views = window["base_viewfiles"].concat(application.Settings.Views);
+                views.forEach(function (layoutpath) {
+                    var ix = layoutpath.lastIndexOf("\\");
+                    var name = layoutpath.substring(ix + 1);
+                    var nameparts = name.split(".");
+                    var controlviewname = nameparts[0] + "." + nameparts[1];
+                    var folder = layoutpath.substring(0, ix);
+                    if (!(controlviewname in me.Dictionary)) {
+                        me.Dictionary[controlviewname] = [];
+                    }
+                    else {
+                        console.log('');
+                    }
+                    me.Dictionary[controlviewname].push(layoutpath);
+                    me.Templates[layoutpath] = "";
+                });
+            }
+        };
+        this._idb = null;
+        this.Refresh = window["_RefreshFiles"];
+        var me = this;
+        window["appsettings"] = Coalesce(window["appsettings"], { Imports: [] });
+        me.scriptwaiter.SetWaiter("scripts", function () {
+            me.LoadX();
+        });
+        me.scriptwaiter.SetTasks("scripts", ["appscripts", "customscripts"]);
+        var db_name = Format("DB_{0}", me.Settings.Domain);
+        me._idb = new IDB(db_name, me._storename);
+    }
+    get scriptwaiter() {
+        if (this._scriptwaiter == null) {
+            this._scriptwaiter = new Waiter();
+        }
+        return this._scriptwaiter;
+    }
+    RegisterCommand(command) {
+        var me = this;
+        me.Commands[command.Key] = command;
+    }
+    UnRegisterCommand(key) {
+        var me = this;
+        delete me.Commands[key];
+    }
+    ScriptsReady() {
+        var me = this;
+        HtmlHelpers.GetMinMaxDate = GetMinMaxDate;
+        HtmlHelpers.ResNvl = ResNvl;
+        HtmlHelpers.dataentrypoint = application.Settings.DataEntryPoint;
+        HtmlHelpers.dataentrypoint = application.Settings.DataEntryPoint;
+        HtmlHelpers.DateFormat = application.Settings.DateFormat;
+        HtmlHelpers.DateTimeFormat = application.Settings.DateTimeFormat;
+        HtmlHelpers.DecimalFormat = application.Settings.DecimalFormat;
+        HtmlHelpers.MonetaryFormat = application.Settings.MonetaryFormat;
+        ClientFilter.DateFormat = application.Settings.DateFormat;
+        Controls.DateFormat = application.Settings.DateFormat;
+        me._ScriptsReady = true;
+        console.log("ScriptsReady");
+        me.scriptwaiter.EndTask("scripts", "appscripts");
+        AppDependencies.ClientValidation = application.Settings.ClientValidation;
+        AppDependencies.LoadContent = function (item) { application.LoadContent.call(application, item); };
+        AppDependencies.httpClient = application.httpClient;
+        AppDependencies.DataLayer = new AppDataLayer();
+    }
+    IsInDebugMode() {
+        return getUrlParameter('debug') == "1";
+    }
+    IsAdmin() {
+        var me = this;
+        var result = false;
+        if (me.Settings.Company != null) {
+            return me.Settings.Company["WebserviceUserId"] == 1;
+        }
+        return result;
+    }
+    get Container() {
+        this._Container = _SelectFirst(".container");
+        return this._Container;
+    }
+    get AppName() {
+        var name = window.location.pathname;
+        var appname = name.substr(name.lastIndexOf("/") + 1);
+        if (appname.indexOf('.')) {
+            appname = appname.substring(0, appname.lastIndexOf('.'));
+        }
+        return appname;
+    }
+    //private _RegisteredActions: AppActionOld[]=[];
+    //public RegisterAction(action: AppActionOld) {
+    //    var me = this;
+    //    me._RegisteredActions.push(action);
+    //}
+    ReloadSettings() {
+        var me = this;
+        var dataentry = application.Settings.DataEntryPoint;
+        me._Settings = null;
+        var defaultsettings = window["appsettings"];
+        var domain = defaultsettings.Domain;
+        var domainsettingskey = domain + ".Settings";
+        localStorage.removeItem(domainsettingskey);
+        me.Settings.DataEntryPoint = dataentry;
+        me.SaveSettings();
+    }
+    menuElement() {
+        return _SelectFirst(".navigation");
+    }
+    LoadContent(item) {
+        this.Container.appendChild(item);
+    }
+    DataPipe(data, v) {
+    }
+    Delete(element, args) {
+        var toremove = element.parentElement;
+        toremove.remove();
+        if (!IsNull(toremove["OnRemove"])) {
+            toremove["OnRemove"]();
+        }
+    }
+    GetContainer() {
+        return _SelectFirst(".container");
+    }
+    GetController(name) {
+        return this.Controllers.FirstOrDefault((c) => c.ModelName == name);
+    }
+    Authenticate(callback) {
+        var me = this;
+        var waiter = new Waiter();
+        //ShowProgress("p-Authenticate");
+        waiter.SetWaiter("app", function () {
+            //HideProgress();
+        });
+        waiter.SetTasks("app", ["login"]);
+        var oldurl = window.location.origin + window.location.pathname;
+        var px = "#Settings\\Login\\";
+        var hash = window.location.hash.replace(px, "");
+        var newhash = "#Settings\\Login\\" + encodeURI(hash);
+        //var newurl = window.location.origin + window.location.pathname + "#Settings\\Login\\" + encodeURI(hash);
+        application.Settings.Company = null;
+        application.SaveSettings();
+        me.httpClient.Authenticate(function (r) {
+            application.Settings.Company = r.Model[0];
+            application.SaveSettings();
+            waiter.EndTask("app", "login");
+            application.LoadMenu();
+            callback.call(me, r.Model[0]);
+        }, () => {
+            window.location.hash = newhash;
+        });
+    }
+    Navigate(source, args) {
+        var me = this;
+        var e = args[0];
+        if (e.target != null && e.target.tagName == "LI") {
+            application.menuElement().classList.remove('visible');
+            var uid = e.target.getAttribute("uid");
+            var url = e.target.getAttribute("url");
+            var rp = this.GetRouteProperties(url);
+            var controllername = rp.controller;
+            var action = rp.view;
+            if (!IsNull(url) && window.location.hash != url) {
+                window.location.href = url;
+            }
+            else {
+                me.NavigateTo(controllername, action, "");
+            }
+        }
+    }
+    NavigateTo(controller, view, p, area = "") {
+        console.log(Format("NavigateTo({0},{1},{2},{2})", controller, view, p, area));
+        var me = this;
+        var mc = this.Controllers.FirstOrDefault((c) => c.ModelName == controller);
+        if (mc != null) {
+            var vm = mc.ViewDictionary[view];
+            if (vm != null) {
+                for (var i = 0; i < this.Container.children.length; i++) {
+                    var node = this.Container.children[i];
+                    _Hide(node);
+                }
+                var xvm = mc.Load(vm, p, "", area);
+            }
+        }
+        else {
+            var bc = this.Controllers.FirstOrDefault((c) => c.ModelName == "BaseModel");
+            if (bc.IsAvailable(controller)) {
+                var meta = GetMetaByTypeName(controller);
+                if (!IsNull(meta)) {
+                    mc = this.Controllers.FirstOrDefault((c) => c.ModelName == "BaseModel");
+                    if (mc != null) {
+                        var vm = mc.ViewDictionary[view];
+                        if (vm != null) {
+                            for (var i = 0; i < this.Container.children.length; i++) {
+                                var node = this.Container.children[i];
+                                _Hide(node);
+                            }
+                            var xvm = mc.Load(vm, p, meta.MetaKey, area);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    GetView(controllername, viewname, viewid = "") {
+        var mc = this.Controllers.FirstOrDefault((c) => c.ModelName == controllername);
+        if (mc != null) {
+            var vm = mc.ViewDictionary[viewname];
+            if (vm != null) {
+                if (!IsNull(viewid)) {
+                    if (viewid in mc.Instances) {
+                        return mc.Instances[viewid].ViewModel;
+                    }
+                }
+                return vm;
+            }
+        }
+        return null;
+    }
+    GetRouteProperties(url = "") {
+        var url = IsNull(url) ? window.location.hash : url;
+        if (url.indexOf("#") == 0) {
+            url = url.substr(1);
+        }
+        var paths = url.split("\\");
+        var result = {
+            area: "",
+            controller: paths[0],
+            view: paths[1],
+            parameters: paths[2]
+        };
+        if (paths.length == 4) {
+            result.area = paths[0];
+            result.controller = paths[1];
+            result.view = paths[2];
+            result.parameters = paths[3];
+        }
+        return result;
+    }
+    NavigateUrl(url) {
+        var me = this;
+        if (url.indexOf("#") == 0) {
+            url = url.substr(1);
+        }
+        for (var key in me.Settings.RouteSymbols) {
+            if (url.indexOf(key) == 0) {
+                url = url.replace(key, me.Settings.RouteSymbols[key]);
+                window.location.hash = url;
+                return;
+                break;
+            }
+        }
+        var rp = me.GetRouteProperties(url);
+        me.NavigateTo(rp.controller, rp.view, rp.parameters, rp.area);
+    }
+    LoadX() {
+        var me = this;
+        me.LoadLayouts();
+        me.ClearFloats();
+        window.addEventListener("hashchange", function () {
+            me.CloseHovering(document.body);
+            me.NavigateUrl(window.location.hash);
+        });
+        var maingrid = _SelectFirst(".main.grid");
+        var printarea = _SelectFirst("#printarea");
+        window.addEventListener("beforeprint", function () {
+            var currentview = me.CurrentView();
+            if (!IsNull(currentview)) {
+                _Hide(maingrid);
+                printarea.innerHTML = "";
+                currentview.BeforePrint(printarea);
+                _Show(printarea);
+            }
+        });
+        window.addEventListener("afterprint", function () {
+            _Show(maingrid);
+            _Hide(printarea);
+        });
+    }
+    Load() {
+        var me = this;
+        let controller = Coalesce(window["_controllers"], []);
+        controller.forEach(fc => {
+            AddControllerToApplication(me, fc());
+        });
+        document.body.addEventListener("load", function () {
+            application.LoadX();
+        });
+        //this.Settings = me.GetSettings();
+        var customscripts = []; // me.Settings.CustomFiles.Where(i => i.endsWith(".js"));
+        var customstyles = []; //me.Settings.CustomFiles.Where(i => i.endsWith(".css"));
+        for (var i = 0; i < customstyles.length; i++) {
+            var customcss = customstyles[i];
+            var lelement = document.createElement('link');
+            lelement.setAttribute('href', customcss);
+            lelement.rel = "stylesheet";
+            document.head.appendChild(lelement);
+        }
+        me.Settings.Imports.forEach(function (importscript) {
+            var selement = document.createElement('script');
+            selement.setAttribute('src', importscript);
+            selement.type = "text/javascript";
+            document.head.appendChild(selement);
+        });
+        var loadscript = function (selement) {
+            //console.log("Loading " + selement.src);
+            document.head.appendChild(selement);
+        };
+        if (customscripts.length == 0) {
+            me.scriptwaiter.EndTask("scripts", "customscripts");
+        }
+        else {
+            var customscriptwaiter = new Waiter();
+            customscriptwaiter.SetWaiter("customscripts", function () {
+                me.scriptwaiter.EndTask("scripts", "customscripts");
+            });
+            customscriptwaiter.SetTasks("customscripts", customscripts);
+            for (var i = 0; i < customscripts.length; i++) {
+                var src = customscripts[i];
+                var selement = document.createElement('script');
+                selement.setAttribute('src', src);
+                selement.defer = true;
+                selement.type = "text/javascript";
+                selement.onload = function () {
+                    var src = this.getAttribute("src");
+                    customscriptwaiter.EndTask("customscripts", src);
+                    console.log("---script loadded " + src + "");
+                };
+                loadscript(selement);
+            }
+        }
+        this.httpClient.EntryPointBase = me.Settings.DataEntryPoint;
+        this.localhttpClient.EntryPointBase = "";
+    }
+    get Settings() {
+        var me = this;
+        var defaultsettings = Coalesce(window["appsettings"], {});
+        if (IsNull(defaultsettings["Scripts"])) {
+            defaultsettings["Scripts"] = [];
+        }
+        var domain = defaultsettings.Domain;
+        var domainsettingskey = domain + ".Settings";
+        if (me._Settings == null) {
+            var clientsettingsstr = localStorage.getItem(domainsettingskey);
+            if (IsNull(clientsettingsstr)) {
+                me.SaveSettings(defaultsettings);
+            }
+            var lssettings = JSON.parse(localStorage.getItem(domainsettingskey));
+            if (!("HashCodeappsettings" in lssettings)) {
+                lssettings["HashCodeappsettings"] = HashCode(JSON.stringify(defaultsettings));
+                me.SaveSettings(lssettings);
+                me._Settings = lssettings;
+            }
+            else {
+                var newhash = HashCode(JSON.stringify(defaultsettings));
+                if (newhash != lssettings["HashCodeappsettings"]) {
+                    var dentry = lssettings["DataEntryPoint"];
+                    var defaultsettingscopy = JsonCopy(defaultsettings);
+                    defaultsettingscopy["DataEntryPoint"] = dentry;
+                    defaultsettingscopy["HashCodeappsettings"] = newhash;
+                    me.SaveSettings(defaultsettingscopy);
+                    lssettings["HashCodeappsettings"] = HashCode(JSON.stringify(defaultsettingscopy));
+                    me._Settings = defaultsettingscopy;
+                }
+                else {
+                    me._Settings = lssettings;
+                }
+            }
+        }
+        //me._storename = "SD_" + me._Settings.Domain;
+        return me._Settings;
+    }
+    SaveSettings(settings = null) {
+        var me = this;
+        var defaultsettings = Coalesce(window["appsettings"], {});
+        var domain = defaultsettings.Domain;
+        var domainsettingskey = domain + ".Settings";
+        var settingsstr = JSON.stringify(IsNull(settings) ? me.Settings : settings);
+        localStorage.setItem(domainsettingskey, settingsstr);
+    }
+    LoadLayouts() {
+        //this.httpClient.EntryPointBase = this.entrypoint;
+        var me = this;
+        me.Layouts.load();
+        var items = [];
+        var waiter = new Waiter();
+        waiter.SetWaiter("layouts", function () {
+            f_loadviews();
+            me.LoadUI.call(me);
+            me.Authenticate(me.LoadData);
+        });
+        waiter.SetTasks("layouts", ["metadata", "resources"]);
+        for (var layout in me.Layouts.Templates) {
+            var layoutpath = Access(window, "appbaseurl") + layout;
+            waiter.StartTask("layouts", layout);
+            me.localhttpClient.Get(layoutpath, {}, function (r) {
+                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "");
+                me.Layouts.Templates[relurl] = r.responseText;
+                waiter.EndTask("layouts", relurl);
+            });
+        }
+        var f_loadviews = function () {
+            me.Controllers.forEach((controller) => {
+                if (controller.ModelName == "BaseModel") {
+                    console.log("BM");
+                }
+                controller.Views.forEach(function (vm) {
+                    if (IsNull(vm.TemplateHtml)) {
+                        var modelname = FirstNotNull(vm.LogicalModelName, vm.Controller.ModelName);
+                        var controlviewname = Format("{0}.{1}", modelname, vm.Name);
+                        var layouts = FirstNotNull(me.Layouts.Dictionary[controlviewname], []);
+                        for (var i = 0; i < layouts.length; i++) {
+                            var layoutpath = layouts[i];
+                            var customlayoutpath = layoutpath.replace("layout\\", "Customisations\\" + application.Settings.Domain + "\\layout\\");
+                            if (customlayoutpath in me.Layouts.Templates) {
+                                vm.TemplateHtml = me.Layouts.Templates[customlayoutpath];
+                                vm.LayoutPath = customlayoutpath;
+                            }
+                            else {
+                                vm.TemplateHtml = me.Layouts.Templates[layoutpath];
+                                vm.LayoutPath = layoutpath;
+                            }
+                            vm.OriginalTemplateHtml = vm.TemplateHtml;
+                            var xpath = vm.LayoutPath.substring(0, vm.LayoutPath.lastIndexOf("."));
+                            var extension = "";
+                            if (xpath.endsWith(".razor")) {
+                                extension = "razor";
+                                try {
+                                    var t = new RazorTemplate();
+                                    t.LayoutPath = vm.LayoutPath;
+                                    t.Compile(me.Layouts.Templates[vm.LayoutPath]);
+                                    vm.AddTemplate("razor", t);
+                                    //vm.RazorTemplate = Razor.Complile(me.Layouts.Templates[razorpath]);
+                                }
+                                catch (ex) {
+                                    console.error("Error (" + ex + ") in " + vm.LayoutPath);
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+            Log("Views Loaded.");
+        };
+        me.Menu = application.Settings.Navigation;
+        var metafiles = ["configdata\\meta.json", "configdata\\extendedmeta.json"];
+        metafiles = metafiles.concat(me.Settings.CustomFiles.Where(i => i.endsWith("meta.json")));
+        var metadictionary = {};
+        var metawaiter = new Waiter();
+        metawaiter.SetWaiter("metas", function () {
+            metafiles.forEach(function (metafile) {
+                metaModels.Load(metadictionary[metafile]);
+            });
+            waiter.EndTask("layouts", "metadata");
+        });
+        metawaiter.SetTasks("metas", metafiles);
+        for (var i = 0; i < metafiles.length; i++) {
+            var metafile = Access(window, "appbaseurl") + metafiles[i];
+            me.httpClient.Get(metafile, {}, function (r) {
+                var myArr = JSON.parse(r.responseText);
+                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "");
+                metadictionary[relurl] = myArr;
+                metawaiter.EndTask("metas", relurl);
+            });
+        }
+        me.LoadResources(() => waiter.EndTask("layouts", "resources"));
+    }
+    SetCulture(culture) {
+        var me = this;
+        me.LoadResources(function () { });
+    }
+    LoadResources(callback) {
+        var me = this;
+        var resourcefilename = "resources-" + me.Settings.Culture + ".json";
+        var resourcefiles = ["configdata\\" + resourcefilename];
+        resourcefiles = resourcefiles.concat(me.Settings.CustomFiles.Where(i => i.endsWith(resourcefilename)));
+        var resourcesdictionary = {};
+        var resourcewaiter = new Waiter();
+        resourcewaiter.SetWaiter("resources", function () {
+            resourcefiles.forEach(function (resourcefile) {
+                me.Resources.Load(me.Settings.Culture, resourcesdictionary[resourcefile], resourcefile);
+            });
+            callback();
+        });
+        resourcewaiter.SetTasks("resources", resourcefiles);
+        for (var i = 0; i < resourcefiles.length; i++) {
+            var resourcefile = Access(window, "appbaseurl") + resourcefiles[i];
+            me.httpClient.Get(resourcefile, {}, function (r) {
+                var myArr = JSON.parse(r.responseText);
+                var relurl = IsNull(Access(window, "appbaseurl")) ? r.OriginalRequestUrl : Replace(r.OriginalRequestUrl, Access(window, "appbaseurl"), "");
+                resourcesdictionary[relurl] = myArr;
+                resourcewaiter.EndTask("resources", relurl);
+            });
+        }
+    }
+    LoadData(company) {
+        var me = this;
+        var cachemaxage = 3600;
+        var datawaiter = new Waiter();
+        //ShowProgress("LoadData");
+        datawaiter.SetWaiter("data", function () {
+            DataLookup.LookupFunction = AppDataLayer.DataLookup;
+            if (window.location.hash.length > 1) {
+                me.NavigateUrl(window.location.hash);
+            }
+        });
+        var dcounter = 0;
+        var savetoIDB = function () { };
+        var retrievedata = function (callback) { callback([]); };
+        var sd_storename = "SD";
+        if (me._idb.IsAvailable()) {
+            savetoIDB = function () {
+                me._idb.Save(AppDataLayer.Data, sd_storename, function () {
+                    var d = new Date();
+                    SetParameter("DBDate", d.toString());
+                });
+            };
+            retrievedata = function (callback) {
+                var storedate = GetParameter("DBDate");
+                var sdate = new Date(storedate);
+                var cdate = new Date();
+                var h = 1;
+                sdate.setTime(sdate.getTime() + (h * 60 * 60 * 1000));
+                if (isNaN(sdate.getTime())
+                    || sdate < cdate) {
+                    callback([]);
+                }
+                else {
+                    me._idb.GetData(sd_storename, function (r) {
+                        callback(r);
+                    });
+                }
+            };
+        }
+        var queryswithactions = Object.keys(me.StaticDataQueryActions).Select(i => me.StaticDataQueryActions[i]);
+        var querylist = queryswithactions.Select(i => i.query);
+        datawaiter.StartTask("data", "obtain");
+        retrievedata(function (r) {
+            var idbdata = FirstNotNull(r, []);
+            if (idbdata.length > 0) {
+                AppDataLayer.Data = idbdata.FirstOrDefault();
+                Log("data retrieved from IDB");
+                datawaiter.EndTask("data", "obtain");
+            }
+            else {
+                Log("retrieving data from server");
+                me.httpClient.GetMultiData(querylist, function (r) {
+                    var data = r;
+                    console.log(r);
+                    for (var key in data) {
+                        if (key.indexOf("|") > -1) {
+                            var queryname = key.split("|")[0];
+                            var queryix = key.split("|")[1];
+                            var queryitem = queryswithactions[queryix];
+                            if (!IsNull(queryitem)) {
+                                var onready = queryitem.onready;
+                                onready(data[key].Model);
+                            }
+                            else {
+                                Toast_Error(Format("Handler for query {0} was not found!", queryname));
+                            }
+                        }
+                    }
+                    AppDataLayer.Link();
+                    Log("data retrieved from server");
+                    datawaiter.EndTask("data", "obtain");
+                    savetoIDB();
+                }, null, 0);
+            }
+        });
+    }
+    LoadMenu() {
+        var menuelement = _SelectFirst("#menu");
+        var children = application.Settings.Navigation.Children;
+        var adminnode = children.FirstOrDefault(i => i["Key"] == "Admin");
+        var menuobj = { Children: [] };
+        menuobj.Children = children;
+        if (!this.IsAdmin()) {
+            menuobj.Children = children.Where(i => i != adminnode);
+        }
+        TreeMenu(menuelement, menuobj);
+    }
+    LoadUI() {
+        var footerelement = _SelectFirst(".main.grid>.footer");
+        footerelement.innerHTML = Res("general.FooterHTML");
+        this.LoadMenu();
+        //application.Container = document.getElementsByClassName("container")[0];
+        //StartJS();
+        var settings = '<a id="action-center-button" class="icon entypo-cog" href="#Settings\\List"> </a>';
+        var fragment = document.createElement("template");
+        fragment.innerHTML = settings;
+        var r_actions = _SelectFirst(".r-actions");
+        r_actions.appendChild(fragment.content.children[0]);
+        var onlineindicator = document.createElement("span");
+        onlineindicator.classList.add("button");
+        r_actions.appendChild(onlineindicator);
+        var me = this;
+        function updateIndicator() {
+            if (!navigator.onLine) {
+                onlineindicator.classList.add("entypo-block");
+                _Show(onlineindicator);
+            }
+            else {
+                onlineindicator.classList.remove("entypo-block");
+                _Hide(onlineindicator);
+            }
+        }
+        updateIndicator();
+        window.addEventListener('online', updateIndicator);
+        window.addEventListener('offline', updateIndicator);
+    }
+    ClearFloats(except = null) {
+        var nav = _SelectFirst(".navigation");
+        if (except != nav) {
+            nav.classList.remove("visible");
+            var e = nav;
+            e["A_Show"] = function () {
+                this.classList.add("visible");
+                _Show(this);
+            };
+            e["A_Hide"] = function () {
+                this.classList.remove("visible");
+            };
+        }
+        var ac = document.querySelector("#action-center");
+        if (except != ac) {
+            ac.classList.add("hidden");
+            var e = ac;
+            e["A_Show"] = function () {
+                this.classList.remove("hidden");
+                _Show(this);
+            };
+            e["A_Hide"] = function () {
+                this.classList.add("hidden");
+            };
+        }
+        var vi = document.querySelector(".viewinstances");
+        if (except != vi) {
+            vi.classList.remove("pop");
+            var e = vi;
+            e["A_Show"] = function () {
+                this.classList.add("pop");
+                _Show(this);
+            };
+            e["A_Hide"] = function () {
+                this.classList.remove("pop");
+            };
+        }
+    }
+    ToggleFloat(selector, ev) {
+        var me = this;
+        var e = _SelectFirst(selector);
+        ev.stopPropagation();
+        //HoverBox(e);
+        //_Show(e);
+        me.ClearFloats(e);
+        if (selector == ".navigation") {
+            e.classList.contains("visible") ? e["A_Hide"]() : e["A_Show"]();
+        }
+        if (selector == "#action-center") {
+            e.classList.contains("hidden") ? e["A_Show"]() : e["A_Hide"]();
+        }
+        if (selector == ".viewinstances") {
+            e.classList.contains("pop") ? e["A_Hide"]() : e["A_Show"]();
+        }
+    }
+    CloseHovering(element, path = []) {
+        //console.log("CloseHovering");
+        var hovers = Array.from(document.querySelectorAll(".hovering"));
+        var objects = document.querySelectorAll("app-objectpicker, app-autocomplete");
+        objects.forEach(o => {
+            let hs = o.shadowRoot.querySelectorAll(".hovering");
+            if (hs.length > 0) {
+                hovers.push(hs[0]);
+            }
+        });
+        var parents = _Parents(element);
+        if (path != null && path.length > 0) {
+            parents = path.slice(1);
+        }
+        var hoveringparents = parents.Where(i => !IsNull(i.classList) && i.classList.contains("hovering"));
+        if (element.classList.contains("hovering")) {
+            hoveringparents.push(element);
+        }
+        var shouldclose = element.classList.contains("hoverclose") ? true : false;
+        var hoverstoclose = hovers.Where(i => hoveringparents.indexOf(i) == -1);
+        for (var i = 0; i < hoverstoclose.length; i++) {
+            var htc = hoverstoclose[i];
+            //if (!hovers[i].contains(element) || shouldclose) {
+            if ("A_Hide" in htc) {
+                htc["A_Hide"]();
+            }
+            else {
+                if (htc.style.display != "none") {
+                    console.log("Hiding: ");
+                    console.log(htc);
+                    _Hide(htc);
+                }
+            }
+            //}
+        }
+    }
+    UIClick(e) {
+        var me = this;
+        var target = e.target;
+        var path = e["path"];
+        if (IsArray(path) && path.length > 0 && !IsNull(path[0])) {
+            target = path[0];
+        }
+        me.CloseHovering(target, Coalesce(path, []));
+    }
+    CurrentView() {
+        var elements = _Select(".container>div");
+        var element = null;
+        elements.forEach(function (el) {
+            if (el.style.display != "none") {
+                element = el;
+            }
+        });
+        if (element != null) {
+            return view(element);
+        }
+        return null;
+    }
+    SaveToClient(data, storename, callback) {
+        var me = this;
+        me._idb.Save(data, storename, callback);
+    }
+    GetFromClient(storename, callback, filter = null) {
+        var me = this;
+        me._idb.GetData(storename, callback, filter);
+    }
+    RefreshStaticData(callback) {
+        var me = this;
+        me._idb.ClearStore("SD", function (r) {
+            me.LoadData(application.Settings.Company);
+            callback();
+        });
+    }
+}
+class App_ActionCenter extends HTMLElement {
+    constructor() {
+        super();
+    }
+    attributeChangedCallback(attrName, oldValue, newValue) {
+        this[attrName] = this.hasAttribute(attrName);
+    }
+    connectedCallback() {
+        var element = this;
+        var htmlbuilder = [];
+        htmlbuilder.push('<fieldset class="controller">');
+        htmlbuilder.push('<legend>Action Center</legend>');
+        htmlbuilder.push('<span class="button" rel="#log">Logs</span>');
+        htmlbuilder.push('<span class="button" rel="#toasts">Messages</span>');
+        htmlbuilder.push('</fieldset>');
+        htmlbuilder.push('<div id="log" class="tab"></div>');
+        htmlbuilder.push('<div id="toasts" class="tab" style="display:none"></div>');
+        element.innerHTML = htmlbuilder.join('\n');
+        var fieldset_e = _SelectFirst("fieldset", element);
+        fieldset_e.addEventListener("click", function (event) {
+            var target = event.target;
+            if (target.tagName == "SPAN") {
+                var tabs = _Select(".tab", element);
+                tabs.forEach(function (tab) { _Hide(tab); });
+                var tab = _SelectFirst(target.getAttribute("rel"), element);
+                var links = _Select(".button", target.parentElement);
+                links.forEach(function (link) { link.classList.remove("Selected"); });
+                target.classList.add("Selected");
+                _Show(tab);
+            }
+        });
+    }
+}
+window.customElements.define("app-actioncenter", App_ActionCenter);
+var application = new Application();
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("register app-actioncenter");
+});
+function AddImportToApplication(s) {
+    var existing = application.ImportScripts.FirstOrDefault(i => i.Name == s.Name);
+    if (existing == null) {
+        application.ImportScripts.push(s);
+    }
+}
+function RegisterController(app, controllerF) {
+    let _controllers = window["_controllers"];
+    if (IsNull(_controllers)) {
+        _controllers = [];
+        window["_controllers"] = _controllers;
+    }
+    _controllers.push(controllerF);
+}
+function AddControllerToApplication(app, controller) {
+    controller.Container = app.GetContainer;
+    var exisingcontroller = application.GetController(controller.ModelName);
+    if (exisingcontroller == null) {
+        //console.log("  >adding controller " + Format("{0}.{1}", controller.NS, controller.ModelName));
+        app.Controllers.push(controller);
+    }
+    else {
+        //console.log("  >extending controller " + Format("{0}.{1}", controller.NS, controller.ModelName));
+        for (var i = 0; i < controller.Views.length; i++) {
+            var view = controller.Views[i];
+            exisingcontroller.AddView(view);
+        }
+        for (var key in controller.Commands) {
+            exisingcontroller.Commands[key] = controller.Commands[key];
+        }
+    }
+}
+application.Load();
+var Models;
+(function (Models) {
+    class AppMessage {
+    }
+    Models.AppMessage = AppMessage;
+    class BaseArticle {
+    }
+    Models.BaseArticle = BaseArticle;
+    class Article extends BaseArticle {
+    }
+    Models.Article = Article;
+    class Category {
+    }
+    Models.Category = Category;
+})(Models || (Models = {}));
 //# sourceMappingURL=Application.js.map

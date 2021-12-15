@@ -1,6 +1,7 @@
 ﻿class Glyph {
     public Value: string;
     public Tag?: string;
+    public Slot?: any;
     public Children: Glyph[] = [];
     public Level?: number;
     public AddChild(item:string) {

@@ -10,17 +10,17 @@
 interface NavigationItemDetails { }
 interface RouteProperties
 {
-    area: string,
+    area: string, 
     controller: string,
     view: string,
     parameters:string
 }
 declare function StartJS(): any;
 
-function OnAuthenticated(result:any)
+function OnAuthenticated(result:any) 
 {
-    Toast_Success("Authentication successful.");
-
+    Toast_Success("Authentication successful."); 
+     
     application.LoadData(result);
 }
 function GetParameter(key: string): string
@@ -170,7 +170,7 @@ interface AppResponse
     Model: any[];
     Errors: any[];
     ViewData: object;
-}
+} 
 class AppUICommand
 {
     public Key: string = "";
@@ -379,7 +379,7 @@ class Application
  
     public ScriptsReady()
     {
-        var me = this;
+        var me = this;   
         HtmlHelpers.GetMinMaxDate = GetMinMaxDate;
         HtmlHelpers.ResNvl = ResNvl;
         HtmlHelpers.dataentrypoint = application.Settings.DataEntryPoint;
@@ -683,6 +683,10 @@ class Application
  
     public Load() {
         var me = this;
+        let controller = <Func<ModelController>[]>Coalesce(window["_controllers"], []);
+        controller.forEach(fc => {
+            AddControllerToApplication(me, fc());
+        });
         document.body.addEventListener("load", function () {
             application.LoadX();
         });
@@ -1315,6 +1319,14 @@ function AddImportToApplication(s: ImportScript)
     if (existing == null) {
         application.ImportScripts.push(s);
     }
+}
+function RegisterController(app: Application, controllerF: Func<ModelController>) {
+    let _controllers = window["_controllers"];
+    if (IsNull(_controllers)) {
+        _controllers = [];
+        window["_controllers"] = _controllers
+    }
+    _controllers.push(controllerF);
 }
 function AddControllerToApplication(app: Application, controller: ModelController) {
     controller.Container = app.GetContainer;

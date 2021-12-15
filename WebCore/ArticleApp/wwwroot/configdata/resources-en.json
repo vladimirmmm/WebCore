@@ -1,0 +1,27 @@
+{
+  "general": {
+
+  },
+  "menu": {
+    "Synonym.List": "Synonyms",
+    "Document.List": "Documents",
+    "Document.Find": "Search Documents",
+    "Document.Process": "Process Documents",
+    "Settings.List": "Settings"
+  },
+  "texts": {
+
+  },
+  "models": {
+    "Document": {
+      "Plural": "Documents"
+
+    }
+  },
+  "UI": {
+
+  },
+  "Business": {
+
+  }
+}

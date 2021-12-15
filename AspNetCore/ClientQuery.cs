@@ -54,6 +54,7 @@ namespace ApiModel
                             _InferedType = ClienDataType.Booloean;
                             break;
                     }
+                    
                 }
                 return _InferedType;
             }
@@ -575,6 +576,15 @@ namespace ApiModel
             }
             return result;
         }
+    }
+       
+    public class UriQuery {
+        public string Query { get; set; }
+        public List<Object> Fields { get; set; }
+        public List<Object> Filters { get; set; }
+        public string OrderBy{ get; set; }
+        public int? Skip { get; set; }
+        public int? Take { get; set; }
     }
     public class ResultParameter
     {

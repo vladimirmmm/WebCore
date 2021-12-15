@@ -1,136 +1,10 @@
-﻿
-declare var JsBarcode: Function;
+﻿/// <reference path="appmodels.ts" />
+
 module BaseModel 
 {
-    export function GetDbCommandForObject(obj, commandname, keys: string = "Id", excludes: string[] = []):any {
-        var meta = GetMeta(obj);
-        var updateobj = {};
-        for (var i = 0; i < meta.Fields.length; i++) {
-            var field = meta.Fields[i];
-            if (
-                !field.IsArray && !field.IsObject 
-                && excludes.indexOf(field.MetaKey) == -1
-            ) {
-                if (field.MetaKey in obj) {
-                    var val = obj[field.MetaKey];
-                    if (!IsNull(val)) {
-                        updateobj[field.MetaKey] = val;
-                    }
-                }
-            }
-            updateobj["Keys"] = keys;
-            updateobj["TypeName"] = meta.MetaKey;
-            updateobj["CommandName"] = commandname;
-        }
-        FIxUpdateObj(updateobj);
-        return updateobj;
-    }
-    export function GetUpdateCommand(obj, typename, commandname, keys:string="Id", excludes: string[] = ["Id"]) {
-        var meta = GetMetaByTypeName(typename);
-        var updateobj = {};
-        for (var i = 0; i < meta.Fields.length; i++) {
-            var field = meta.Fields[i];
-            if (
-                !field.IsArray && !field.IsObject
-                && excludes.indexOf(field.MetaKey) == -1
-            ) {
-                if (field.MetaKey in obj) {
-                    var val = obj[field.MetaKey];
-                    if (!IsNull(val)) {
-                        updateobj[field.MetaKey] = val;
-                    }
-                }
-            }
-            updateobj["Keys"] = keys;
-            updateobj["TypeName"] = typename;
-            updateobj["CommandName"] = commandname;
-        }
-        return updateobj;
-    }
 
-    export function GetDeleteCommand(typename, id:any) {
-        var command = {};
-        command["TypeName"] = typename;
-        command["CommandName"] = "Delete";
-        command["Keys"] = "Id";
-        command["Id"] = id;
-        return command;
-    }
 
-    export function FIxUpdateObj(obj)
-    {
-        var mt = GetMeta(obj);
-        for (var key in obj)
-        {
-            if (!IsNull(obj[key]) && !IsNull(mt) && (key in mt))
-            {
-                var pmt = <PropertyMeta>mt[key];
-                if (pmt != null && In(pmt.SourceType,"Date"))
-                {
-                    var d = IsDate(obj[key]) ? obj[key] : StringToDate(obj[key], application.Settings.DateFormat);
 
-                    obj[key] = Format("{0:yyyy-MM-dd}", d);
-                }
-                if (pmt != null && In(pmt.SourceType, "DateTime")) {
-                    var d = IsDate(obj[key]) ? obj[key] : StringToDate(obj[key], application.Settings.DateFormat);
-
-                    obj[key] = Format("{0:yyyy-MM-ddTHH:mm:ss}", d);
-                }
-                if ( pmt != null && In(pmt.SourceType, "double", "integer", "money")) {
-                    obj[key] = Number(obj[key]);
-
-                }
-            }
-            if (IsNull(obj[key])) {
-                delete obj[key];
-            } else
-            {
-                if (IsArray(obj[key])) {
-                    for (var i = 0; i < obj[key].length; i++)
-                    {
-                        FIxUpdateObj(obj[key][i]);
-                    }
-                }
-               
-            }
-
-        }
-    }
-
-    export function SaveCompanyAddress(element: Element)
-    {
-        var uiobj = GetBoundObject(element);
-        var commands = [];
-        var commandname = "INSERT";
-        var excludes = ["Id"];
-        if (!IsNull(uiobj["Id"])) {
-            excludes = [];
-            commandname = "UPDATE";
-        }
-        var updateobj = GetUpdateCommand(uiobj, "CompanyAddress", commandname,"Id", excludes);
-
-        if (!IsNull(uiobj["Address"])) {
-            updateobj = GetUpdateCommand(uiobj["Address"], "CompanyAddress", commandname,"Id", excludes);
-        }
-        updateobj["CompanyId"] = application.Settings.Company["Id"];
-        commands.push(updateobj);
-        BaseModel.Dependencies.httpClient.Post("~/webui/api/xclientcommand", JSON.stringify(commands),
-            function (xhttp: XMLHttpRequest) {
-                var data: AppResponse = JSON.parse(xhttp.responseText);
-                if (!IsNull(data.Errors) && data.Errors.length == 0)
-                {
-                    Toast_Success(Res("UI.CompanyAddress.Saved"));
-                }
-            }, null, "application/json");
-    }
-
-    export class Dependencies {
-        public static Container(): Element { return null; };
-        public static httpClient: HttpClient;
-        public static LoadContent(element: Element) { };
-        public static ClientValidation: boolean = true;
-        public static DataLayer: AppDataLayer = null;
-    } 
 
     export class List extends ListViewModel<any[]>
     {
@@ -342,4 +216,4 @@ module BaseModel
 }
 
 
-AddControllerToApplication(application, new BaseModel.Controller());
+RegisterController(application, ()=>new BaseModel.Controller());

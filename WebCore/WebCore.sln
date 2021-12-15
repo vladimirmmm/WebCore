@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreApiModel", "..\AspNetCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreWebApp", "..\CoreWebApp\CoreWebApp.csproj", "{96F49932-949E-4045-9331-184DFFBF0216}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreDataService", "..\CoreDataService\CoreDataService.csproj", "{641C0927-66B3-47BC-9931-981829AAD2B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreDataService", "..\CoreDataService\CoreDataService.csproj", "{641C0927-66B3-47BC-9931-981829AAD2B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArticleApp", "ArticleApp\ArticleApp.csproj", "{197C1590-C208-4093-9F0E-099F392C2E29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{641C0927-66B3-47BC-9931-981829AAD2B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{641C0927-66B3-47BC-9931-981829AAD2B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{641C0927-66B3-47BC-9931-981829AAD2B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{197C1590-C208-4093-9F0E-099F392C2E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{197C1590-C208-4093-9F0E-099F392C2E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{197C1590-C208-4093-9F0E-099F392C2E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{197C1590-C208-4093-9F0E-099F392C2E29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

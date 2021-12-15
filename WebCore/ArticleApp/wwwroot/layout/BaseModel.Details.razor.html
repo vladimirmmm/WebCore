@@ -1,0 +1,60 @@
+﻿<div class="@view.LogicalModelName Details">
+    <app-header class="header">
+        <h1 id="Title">@model.Name</h1>
+    </app-header>
+    <div class="body ">
+        <app-tabs>
+            <div class="heads">
+                <label class="head" rel="simplefields">@(html.Res("UI.BaseModel.SimpleFields"))</label>
+                <label class="head" rel="objectfields">@(html.Res("UI.BaseModel.ObjectFields"))</label>
+                <label class="head" rel="idfields">@(html.Res("UI.BaseModel.IdFields"))</label>
+                <label class="head" rel="listfields">@(html.Res("UI.BaseModel.ListFields"))</label>
+            </div>
+            <div class="tab content" name="simplefields">
+                @foreach(var field in context.meta.SimpleFields){
+                <div class="field">
+                    <span class="name">@(html.Res("models."+context.meta.TypeName+"."+ field.MetaKey))</span>
+                    <span class="value">@(model[field.MetaKey])</span>
+                </div>
+                }
+            </div>
+            <div class="tab content" name="objectfields">
+                @foreach(var field in context.meta.ObjectFields){
+                var obj = model[field.MetaKey];
+                <div class="field">
+                    <span class="name">@(html.Res("models."+context.meta.TypeName+"."+ field.MetaKey))</span>
+                        @{}
+                        if (!IsNull(obj)){
+                        <a href="#@field.typeArgument\\Details\\@obj.Id">@(FirstNotNull(obj["Name"],obj["Identifier"],obj["Id"]))</a>
+                        }
+                    
+                </div>
+                }
+            </div>
+            <div class="tab content" name="idfields">
+                @foreach(var field in context.meta.IdFields){
+                <div class="field">
+                    <span class="name">@(html.Res("models."+context.meta.TypeName+"."+ field.MetaKey))</span>
+                    <span class="value">@(model[field.MetaKey])</span>
+                </div>
+                }
+            </div>
+            <div class="tab content" name="listfields">
+                @foreach(var field in context.meta.ListFields){
+
+                <div class="field">
+                    <span class="name">@(html.Res("models."+context.meta.TypeName+"."+ field.MetaKey))</span>
+                    <ul>
+                        @foreach(var item in model[field.MetaKey]){
+                        <li><a href="#@field.typeArgument\\Details\\@item.Id">@(FirstNotNull(item["Name"],item["Identifier"],item["Id"]))</a></li>
+                        }
+                    </ul>
+                </div>
+                }
+            </div>
+        </app-tabs>
+
+    </div>
+    
+
+</div>

@@ -1,0 +1,68 @@
+﻿<div class="Article">
+    <app-header class="header">
+        <h2>@(html.Res("models.Article.Plural"))</h2>
+   
+        <div class="filter collapsed">
+            <div class="field commands">
+                <span class="icon a-BigRight" onclick="_ToggleClassForElements(_Select('.filter',view(this).UIElement),'collapsed');"></span>
+                <span class="icon a-Search" onclick="view(this).Search()">@(html.Res("UI.Catalog.Filters.Search"))</span>
+                <span class="icon a-ClearFilter" onclick="ClearFilter(view(this).UIElement)"></span>
+            </div>
+            <div class="items list ">
+                <div class="field borderless">
+                    <span class="name">@(html.Res("UI.Article.Filters.Id"))</span>
+                    <input class="value" type="text" bind="Id" uidatatype="Number" />
+                </div>
+                <div class="field borderless">
+                    <span class="name">@(html.Res("UI.Article.Filters.Title"))</span>
+                    <input class="value" type="text" bind="Title" />
+                </div>
+                <div class="field borderless">
+                    <span class="name">@(html.Res("UI.Article.Filters.Category"))</span>
+                    <app-autocomplete class="autocomplete control deviza"
+                                  datafunction="function(a,b){Partner.DataLayer.GetDataForAutoComplete('AppCategory',a,b);}"
+                                  value="@model.CategoryId"
+                                  label="@model.Category.Title"
+                                  valuefield="Id"
+                                  displayfield="Title"
+                                  minlengthtosearch="0"
+                                  bind="CategoryId">
+                    </app-autocomplete>
+                </div>
+            </div>
+        </div>
+    </app-header>
+
+    <div class="body">
+        <table is="app-datatable" class="generaltable">
+            <thead>
+                <tr class="item">
+                    <th></th>
+                    <th><span class="name">@(html.Res("UI.Article.Id"))</span></th>
+                    <th><span class="name">@(html.Res("UI.Article.Title"))</span></th>
+                    <th><span class="name">@(html.Res("UI.Article.Category"))</span></th>
+                </tr>
+            </thead>
+            <tbody class="list items" binding-items="model" binding-mode="list">
+                @foreach (var article in model) {
+                var meta=GetMeta(article);
+
+                <tr class="item">
+
+                    <td key="Actions">
+                        <app-commandbar class="listactions" activatorindex="0">
+                                @(view.GetCommandbarHtml(article))
+                         </app-commandbar>
+                        <input type="hidden" value="@article.Id" bind="Id" />
+                    </td>
+                    <td><span class="value">@article.Id</span></td>
+                    <td><span class="value">@article.Title</span></td>
+                    <td><span class="value">@article.Category.Title</span></td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="pager"></div>
+
+</div>

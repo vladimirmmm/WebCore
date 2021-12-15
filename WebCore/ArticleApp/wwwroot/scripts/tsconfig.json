@@ -1,0 +1,21 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es6"
+  },
+  "exclude": [
+    "node_modules",
+    "wwwroot"
+
+  ],
+  "include": [
+    "*.ts",
+    "Article\\*.ts",
+    "Core\\*.ts"
+  ],
+  "references": []
+}

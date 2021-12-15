@@ -1,0 +1,150 @@
+﻿<div>
+    <div>
+
+    </div>
+    <div>
+
+        <fieldset>
+            <legend>@(html.Res('general.WebServiceIdentifier'))</legend>
+            <span class="WebServiceIdentifier"></span>
+            <input type="text" id="WebServiceIdentifier" />
+            <input type="button" value="@(html.Res('general.Set'))" onclick="SetWebServiceIdentifier();" />
+
+            <span class="DataEntryPoint"></span>
+            <input type="text" id="DataEntryPoint" />
+            <input type="button" value="@(html.Res('general.Set'))" onclick="SetDataEntryPoint();" />
+
+        </fieldset>
+        <fieldset>
+            <legend>SalesForce</legend>
+            <div class="field">
+                <span class="name"> SF Url</span>
+                <input type="text" style="width:300px" id="SFURL" />
+            </div>
+            <div class="field">
+                <span class="name"> Username</span>
+                <input type="text" style="width:300px" id="SFUsername" />
+            </div>
+            <div class="field">
+
+                <span class="name">Password + Security Token</span>
+                <input type="text" id="SFPWANDTOKEN" autocomplete="off" />
+            </div>
+            <input type="button" value="@(html.Res('general.Set'))" onclick="DocApp.DataLayer.SetSalesForce(this);" />
+
+        </fieldset>
+               <fieldset>
+            <legend>Jira</legend>
+            <div class="field">
+                <span class="name"> Username</span>
+                <input type="text" id="JiraUsername" />
+            </div>
+            <div class="field">
+
+                <span class="name">Password</span>
+                <input type="text" id="JiraKulcs" autocomplete="off" />
+            </div>
+            <input type="button" value="@(html.Res('general.Set'))" onclick="DocApp.DataLayer.SetJira(this);" />
+
+        </fieldset>
+        <fieldset>
+            <legend>@(html.Res("general.Settings"))</legend>
+            <div>
+                BE Version: @(window["BE_version"])<br />
+                UI Version: @(window["UI_version"])
+            </div>
+            <input type="button" onclick="view(this).ShowSettings()" value="@(html.Res('UI.Settings.ShowSettings'))" />
+            <div class="appsettings"></div>
+        </fieldset>
+        <fieldset>
+            <legend>@(html.Res('general.ClientCache'))</legend>
+            <input type="button" value="@(html.Res('general.RefreshAll'))" onclick="view(this).Refresh('ALL');" />
+            <input type="button" value="@(html.Res('general.RefreshIDB'))" onclick="view(this).Refresh('IDB');" />
+            <input type="button" value="@(html.Res('general.RefreshLocalStorage'))" onclick="view(this).Refresh('LS');" />
+            <input type="button" value="@(html.Res('general.RefreshFiles'))" onclick="view(this).Refresh('FS');" />
+        </fieldset>
+        <fieldset>
+            <legend>@(html.Res('general.User'))</legend>
+            <div class="field">
+                <span class="name">@(html.Res('general.UserName'))</span>
+                <input type="text" class="value" name="username" />
+            </div>
+            <div class="field">
+                <span class="name">@(html.Res('general.Email'))</span>
+                <input type="text" class="value" name="email" />
+            </div>
+            <div class="field">
+                <span class="name">&nbsp;</span>
+                <input class="value" type="button" value="@(html.Res('general.Login'))" onclick="Login();" />
+
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>@(html.Res('general.Resources'))</legend>
+            <div>
+                <input type="button" onclick="view(this).ShowMissingResources()" value="@(html.Res('UI.Settings.ShowMissingResources'))" />
+                <input type="button" onclick="view(this).GetDbLayout()" value="@(html.Res('UI.Settings.PartnerDbLayout'))" />
+                <div class="missingresources"></div>
+            </div>
+            <div class="resourcelist">
+
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>@(html.Res('general.UI'))</legend>
+            <div class="field">
+                <span class="name">@(html.Res("general.Language"))</span>
+                <select class="culture value" bind="Language" onchange="view(this).SetLanguage()"></select>
+            </div>
+            <div class="field">
+                <span class="name">@(html.Res("general.PageSize"))</span>
+                <input class="value" type="text" name="UI.PageSize" value="@application.Settings.PageSize" />
+            </div>
+  
+
+
+        </fieldset>
+        <fieldset>
+            <legend>@(html.Res('general.Device'))</legend>
+            <ul class="list items" binding-items="model" binding-mode="list">
+                @foreach (var item in model) {
+                <li class="item" binding-items="model">
+                    <div class="field">
+                        <span class="name">@item.Key</span>
+                        <span class="value">@item.Value</span>
+                    </div>
+                </li>
+                }
+            </ul>
+        </fieldset>
+        <div style="@(!IsNull(getUrlParameter('debug'))?'':'display:none')">
+
+            <app-tabs>
+                <div class="heads">
+                    <label class="head" rel="sql">@(html.Res("UI.Settings.SQL"))</label>
+                    <label class="head" rel="api">@(html.Res("UI.Settings.API"))</label>
+                </div>
+                <div class="tab" name="sql">
+                    <input type="button" value="Execute SQL" onclick="view(this).ExecuteSQL(this);" />
+                    <input type="text" id="connection" value="" name="Url" placeholder="Connection" />
+
+                    <label class="linenr"></label>
+                    <textarea id="SqlCommand" style="width:100%" rows="20" onclick="this.previousElementSibling.innerHTML=getTextAreaLineNr(this)"></textarea>
+                </div>
+                <div class="tab" name="api">
+                    <input type="button" value="Execute API" onclick="view(this).ExecuteApi(this);" />
+                    <label class="linenr"></label>
+                    <input type="text" id="apiurl" value="/api/Vouchers/" name="Url" placeholder="Api Relative Url" />
+                    <select id="apimethod">
+                        <option value="POST">POST</option>
+                        <option value="PUT">PUT</option>
+                        <option value="GET">GET</option>
+                        <option value="DELETE">DELETE</option>
+                    </select>
+                    <textarea id="ApiCommand" style="width:100%" rows="20"></textarea>
+                </div>
+            </app-tabs>
+        
+        </div>
+    </div>
+</div>

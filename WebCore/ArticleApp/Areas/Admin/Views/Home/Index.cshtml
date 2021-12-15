@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TherM</title>
+    <script src="~/config-app.js"></script>
+</head>
+<body>
+
+    <div id="printarea" style="display:none"></div>
+    <div class="main grid" onmousedown="application.UIClick(event);">
+        <div class="navbar grid">
+            <div class="l-actions">
+                <span id="menu-button" class="a-Menu icon" onclick="application.ToggleFloat('.navigation',event)"></span>
+            </div>
+            <div class="viewinstances hovering"></div>
+            <div class="navbar_logo"></div>
+            <div class="r-actions">
+                <span id="view-instances-button" class="icon a-ViewInstances" onclick="application.ToggleFloat('.viewinstances',event)"></span>
+                <span id="action-center-button" class="icon a-ActionCenter" onclick="application.ToggleFloat('#action-center',event)"></span>
+            </div>
+
+            <!--<progress id="progress"></progress>-->
+            <div id="progress">
+                <div class="wrapper">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="navigation hovering">
+            <span class="button close entypo-left-open-big" onclick="application.menuElement().classList.remove('visible');"></span>
+
+            <div id="menu" class="hierarchyview" onclick="application.Navigate(this, arguments)">
+
+            </div>
+
+        </div>
+        <div class="container">
+
+        </div>
+        <div class="footer">
+
+        </div>
+        <app-actioncenter id="action-center" class="hovering" style="display:none"></app-actioncenter>
+
+    </div>
+
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

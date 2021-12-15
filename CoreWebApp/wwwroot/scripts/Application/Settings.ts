@@ -254,7 +254,7 @@
         public ShowSplashScreen()
         {
             var rsx = FirstNotNull(AppDataLayer.Data["Contents"], []);
-            var splasharticle = (<ErpApp.Model.Article[]>rsx).FirstOrDefault(i => i.Title == "SplashScreen");
+            var splasharticle = (<any[]>rsx).FirstOrDefault(i => i.Title == "SplashScreen");
             if (splasharticle != null)
             {
                 var c = document.createElement("div");
@@ -290,5 +290,5 @@
 
     }
 }
+RegisterController(application, () => new Settings.Controller());
 
-AddControllerToApplication(application, new Settings.Controller());

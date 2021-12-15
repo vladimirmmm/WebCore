@@ -1,0 +1,63 @@
+﻿<div class="Article Save">
+    @{ var meta = GetMeta(model); }
+
+    <app-header class="header">
+        @if(application.IsAdmin()) {
+        <div class="view actions">
+            <span class="icon a-Save" onclick="view(this).SavePost(this)" title="@(html.Res('UI.Commands.v-Save'))"><label>@(html.Res("UI.Commands.v-Save"))</label></span>
+        </div>
+        }
+        <h1 id="Title">@model.Title</h1>
+    </app-header>
+    <div class="body">
+        <div class="article">
+            <input type="hidden" bind="Id" value="@model.Id" />
+            <input type="hidden" bind="TypeName" value="@model.TypeName" />
+            <div class="field ">
+                <span class="name">@meta.Id.Label</span>
+                <span class="value">@model.Id</span>
+            </div>
+            <div class="field ">
+                <span class="name">@meta.Title.Label</span>
+                @(html.InputFor(model, m=>m.Title,{class:"value", type:"text"}))
+            </div>
+            <div class="field ">
+                <span class="name">@meta.CategoryId.Label</span>
+                <app-autocomplete class="autocomplete control deviza"
+                                  datafunction="function(a,b){Partner.DataLayer.DataLookup(a,'AppCategory',['Title'],'Id','Title',b);}"
+                                  value="@model.CategoryId"
+                                  label="@model.Category.Title"
+                                  valuefield="Id"
+                                  displayfield="Title"
+                                  minlengthtosearch="0"
+                                  bind="CategoryId">
+                </app-autocomplete>
+            </div>
+            <div class="field ">
+                <span class="name">@meta.ImageUrl.Label</span>
+                <input type="url" bind="ImageUrl" value="@model.ImageUrl" />
+            </div>
+            <div class="field ">
+                <span class="name">@(html.Res("general.Files"))</span>
+                <input class="fileuploader value" type="file" multiple="" onchange="view(this).HandleUploadedFiles(this)" />
+
+            </div>
+            <div class="files">
+
+            </div>
+            <div></div>
+            <div class="article-textarea">
+                <span class="name">@meta.Description.Label</span>
+                <div>
+                    @(html.TextAreaFor(model, m=>m.Description,{class:"value", cols:"70", rows:"5"}))
+
+                </div>
+            </div>
+            <div class="article-textarea">
+                <span class="name">@meta.Content.Label</span>
+                @(html.TextAreaFor(model, m=>m.Content,{class:"value htmleditor", cols:"200", rows:"10"}))
+            </div>
+        </div>
+    </div>
+
+</div>

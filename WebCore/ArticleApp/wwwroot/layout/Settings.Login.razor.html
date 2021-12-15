@@ -1,0 +1,31 @@
+﻿<div class="Settings Login">
+    <app-header class="header">
+        <h1>@(html.Res("general.Login"))</h1>
+    </app-header>
+    <div class="body">
+        <div>
+            <span class="name">@(html.Res("general.Language"))</span>
+
+            <select class="culture value" bind="Language"></select>
+        </div>
+        <div class="field">
+            <span class="name">@(html.Res("general.Username"))</span>
+            <input type="text" bind="Username" />
+        </div>
+        <div class="field">
+            <span class="name">@(html.Res("general.Password"))</span>
+            <input type="password" bind="Password" />
+        </div>
+        <div>
+            @(html.Res("general.Or"))
+        </div>
+        <div class="field">
+            <span class="name">@(html.Res("general.WSID"))</span>
+            <input type="text" bind="WSID" />
+        </div>
+        <div>
+            <input type="button" value="@(html.Res('general.Login'))" onclick="view(this).Login();" />
+
+        </div>
+    </div>
+</div>

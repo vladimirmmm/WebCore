@@ -320,9 +320,111 @@ interface IViewTemplate {
     Extension: string;
     Copy(): IViewTemplate;
 }
+declare namespace OdataQueryOptions {
+    class Operators {
+        static Dictionary: {
+            eq: any;
+            ne: any;
+            gt: any;
+            ge: any;
+            lt: any;
+            le: any;
+            and: any;
+            or: any;
+            not: any;
+            add: any;
+            sub: any;
+            mul: any;
+            div: any;
+            mod: any;
+        };
+    }
+    class Functions {
+        static Dictionary: {
+            endswith: any;
+            startswith: any;
+            substringof: any;
+            indexof: any;
+            replace: any;
+            substring: any;
+            tolower: any;
+            toupper: any;
+            trim: any;
+            concat: any;
+            round: any;
+            floor: any;
+            div: any;
+            ceiling: any;
+            day: any;
+            hour: any;
+            minute: any;
+            month: any;
+            second: any;
+            year: any;
+        };
+    }
+    class E {
+    }
+    class E_Reference extends E {
+    }
+    class E_Value extends E {
+    }
+    class E_Operator extends E {
+    }
+    class E_Function extends E {
+    }
+    class Query extends E {
+        Select: Select;
+        Filter: Filter;
+        Expand: Expand;
+        OrderBy: OrderBy;
+        Top: Top;
+        Skip: Skip;
+        Count: Count;
+    }
+    class Filter extends E {
+        Items: E[];
+    }
+    class Expand {
+        Path: string;
+        Query: Query;
+    }
+    class Select {
+        Fields: string[];
+    }
+    class OrderBy {
+        Clauses: Object;
+    }
+    class Top {
+        Value: string;
+    }
+    class Skip {
+        Value: string;
+    }
+    class Count {
+        Value: boolean;
+    }
+}
+declare class Odataparser {
+    static GlyphTags: {
+        Function: string;
+        Operator: string;
+        Variable: string;
+        DValue: string;
+        TValue: string;
+        IValue: string;
+        SValue: string;
+    };
+    Parse(item: string): void;
+    GetClientFilters(value: string): ClientFilter[];
+    BuildQuery(g: Glyph, q: OdataQueryOptions.Query): DictionaryOf<Glyph>;
+    static test(): void;
+    static testquery(q: string): void;
+}
 declare class Glyph {
     Value: string;
     Tag?: string;
+    Slot?: any;
     Children: Glyph[];
     Level?: number;
     AddChild(item: string): void;
@@ -754,9 +856,16 @@ declare function JsonCopy(obj: object): any;
 declare function GetHtml2(obj: any, span?: string): string;
 declare function GetHtml(obj: Object): string;
 declare function download(filename: any, data: any): void;
+declare var _TrimLeft: (item: any, chars: any) => any;
+declare var _TrimRight: (item: any, chars: any) => any;
+declare var _Trim: (item: any, chars: any) => any;
+declare function GetStringWithLiterals(text: string, literalstr?: string): {
+    aliasedtext: string;
+    literaldictionary: {};
+};
 declare function CsvLineSplit(text: string, delimiter?: string, enclose?: string): string[];
-declare function compareString(a: any, b: any): 0 | 1 | -1;
-declare function getStringCompareFunction(p: Function): (a: any, b: any) => 0 | 1 | -1;
+declare function compareString(a: any, b: any): 1 | 0 | -1;
+declare function getStringCompareFunction(p: Function): (a: any, b: any) => 1 | 0 | -1;
 declare function RestoreModel(item: object, fielddictionary: object): object;
 declare var dataURLToBlob: (dataURL: any) => Blob;
 declare class Timer {
@@ -836,6 +945,17 @@ declare class ExcelImport extends ImportScript {
     LoadExcel(data: any): void;
     ReloadExcel(): void;
     Clear(): void;
+}
+declare function GetDbCommandForObject(obj: any, commandname: any, keys?: string, excludes?: string[]): any;
+declare function GetUpdateCommand(obj: any, typename: any, commandname: any, keys?: string, excludes?: string[]): {};
+declare function GetDeleteCommand(typename: any, id: any): {};
+declare function FIxUpdateObj(obj: any): void;
+declare class Dependencies {
+    static Container(): Element;
+    static httpClient: HttpClient;
+    static LoadContent(element: Element): void;
+    static ClientValidation: boolean;
+    static DataLayer: AppDataLayer;
 }
 declare class AppDataLayer {
     static Queries: any;
@@ -1022,220 +1142,7 @@ declare class HttpClient {
 declare function modelobj(element: Element): object;
 declare function view(element: Element): View;
 declare function controller(element: Element): ModelController;
-declare class AppDependencies {
-    static Container(): Element;
-    static httpClient: HttpClient;
-    static LoadContent(element: Element): void;
-    static ClientValidation: boolean;
-    static DataLayer: AppDataLayer;
-}
-interface NavigationItemDetails {
-}
-interface RouteProperties {
-    area: string;
-    controller: string;
-    view: string;
-    parameters: string;
-}
-declare function StartJS(): any;
-declare function OnAuthenticated(result: any): void;
-declare function GetParameter(key: string): string;
-declare function SetParameter(key: string, value: any): void;
-declare function SetWebServiceIdentifier(): void;
-declare function SetDataEntryPoint(): void;
-declare function Login(): void;
-declare var missingresources: {};
-declare function RetrieveResource(key: string): string;
-declare function ResNvl(keys: string[], key?: string): string;
-declare class ResourceContainer implements Dictionary {
-    Cultures: {};
-    Load(culture: string, obj: Dictionary, key: string): void;
-}
-interface AppResponse {
-    Model: any[];
-    Errors: any[];
-    ViewData: object;
-}
-declare class AppUICommand {
-    Key: string;
-    CssClass: string;
-    Url: (model: any, view?: View, command?: AppUICommand) => string;
-    IsInContext: (model: any, view?: View) => boolean;
-    OnClick: (model: any, view?: View, command?: AppUICommand) => string;
-    Prefix: string;
-    Action: string;
-    AppearsIn: string[];
-    Label: string;
-    Source: any;
-    Html: string;
-    Render(model: any, control?: any): string;
-    static GetFunctions(condition: string): any[];
-    static CreateFrom(obj: object): AppUICommand;
-    static Create(condition: string, appearsin: string[], key: string, action: string, classprefix?: string): AppUICommand;
-    static CreateFromHtml(key: string, Render: Function, isincontext?: Function): AppUICommand;
-}
-interface AppScript {
-    script: string;
-    children?: AppScript[];
-}
-declare const default_MoneyFormat: String;
-declare function FormatCurrencyAmount(value: any): number;
-interface AppSettings {
-    Domain: string;
-    DomainNamespace: string;
-    DefaultNewVoucherTypePrefix: string;
-    Currency: string;
-    Company: object;
-    ClientValidation: boolean;
-    DefaultCulture: string;
-    Connections: string[];
-    Culture: string;
-    Cultures: string[];
-    MainHash: string;
-    DateTimeFormat: string;
-    DateFormat: string;
-    MonetaryFormat: string;
-    QuantityFormat: string;
-    DecimalFormat: string;
-    DataEntryPoint: string;
-    BarcodeField: string;
-    PageSize: number;
-    CustomFiles: string[];
-    Imports: string[];
-    Scripts: AppScript[];
-    Views: string[];
-    Employee: object;
-    AllowedFeatures: object;
-    RouteSymbols: DictionaryOf<string>;
-    Navigation: DictionaryOf<string>;
-    AppQueryDictionaries: DictionaryOf<any>;
-}
-interface IQueryAction {
-    query: ClientQuery;
-    onready: Function;
-}
-declare class Application {
-    Resources: ResourceContainer;
-    data: Object;
-    private _Container;
-    private _ScriptsReady;
-    private _scriptwaiter;
-    private get scriptwaiter();
-    Commands: DictionaryOf<AppUICommand>;
-    StaticDataQueryActions: DictionaryOf<IQueryAction>;
-    RegisterCommand(command: AppUICommand): void;
-    UnRegisterCommand(key: string): void;
-    ScriptsReady(): void;
-    IsInDebugMode(): boolean;
-    IsAdmin(): boolean;
-    get Container(): Element;
-    constructor();
-    get AppName(): string;
-    ImportScripts: ImportScript[];
-    Controllers: ModelController[];
-    Waiter: Waiter;
-    httpClient: HttpClient;
-    localhttpClient: HttpClient;
-    Menu: NavigationItem;
-    ReloadSettings(): void;
-    menuElement(): Element;
-    LoadContent(item: Element): void;
-    DataPipe(data: any, v: View): void;
-    Delete(element: Element, args?: any): void;
-    GetContainer(): Element;
-    GetController(name: string): ModelController;
-    Authenticate(callback?: Function): void;
-    Navigate(source: Element, args: any): void;
-    NavigateTo(controller: string, view: string, p: any, area?: string): void;
-    GetView(controllername: string, viewname: string, viewid?: string): View;
-    GetRouteProperties(url?: string): RouteProperties;
-    NavigateUrl(url: string): void;
-    LoadX(): void;
-    Load(): void;
-    private _storename;
-    private _Settings;
-    get Settings(): AppSettings;
-    SaveSettings(settings?: AppSettings): void;
-    private NavigationItems;
-    Layouts: {
-        Dictionary: {};
-        Templates: {};
-        load: () => void;
-    };
-    LoadLayouts(): void;
-    SetCulture(culture: string): void;
-    LoadResources(callback: Function): void;
-    LoadData(company: object): void;
-    LoadMenu(): void;
-    LoadUI(): void;
-    ClearFloats(except?: Element): void;
-    ToggleFloat(selector: string, ev: MouseEvent): void;
-    CloseHovering(element: Element, path?: Element[]): void;
-    UIClick(e: MouseEvent): void;
-    CurrentView(): View;
-    private _idb;
-    SaveToClient(data: any, storename: string, callback: Function): void;
-    GetFromClient<T>(storename: string, callback: Action<T[]>, filter?: Func1<T, boolean>): void;
-    RefreshStaticData(callback: Function): void;
-    Refresh: any;
-}
-declare class App_ActionCenter extends HTMLElement {
-    constructor();
-    attributeChangedCallback(attrName: any, oldValue: any, newValue: any): void;
-    connectedCallback(): void;
-}
-declare var application: Application;
-declare function AddImportToApplication(s: ImportScript): void;
-declare function AddControllerToApplication(app: Application, controller: ModelController): void;
-declare var tinymce: any;
-declare module Common.Article {
-    class List extends ListViewModel<ErpApp.Model.Article[]> {
-        Identifier(): string;
-        Title(): string;
-        FormatIdentifier(p: any, area?: string): string;
-        constructor(controller: ModelController);
-        Action(p: Object): void;
-        Search(parameters?: SearchParameters): void;
-    }
-    class Details extends ViewModel<ErpApp.Model.Article> {
-        Identifier(): string;
-        Title(): string;
-        constructor(controller: ModelController);
-        Action(p: Object): void;
-    }
-    class Save extends ViewModel<ErpApp.Model.Article> {
-        private Files;
-        constructor(controller: ModelController);
-        Identifier(): string;
-        private _Title;
-        Title(): string;
-        Action(p: any): void;
-        HandleUploadedFiles(element: Element): void;
-        SavePost(element: Element): void;
-        AddCategory(): void;
-    }
-    class Controller extends ModelController {
-        constructor();
-        GetControllerSpecificActions(model: ErpApp.Model.Article): AppUICommand[];
-        Delete(uielement: Element, id: any): void;
-        TransformActionHtml(action: string, model: ErpApp.Model.Article, html: string, area: string): string;
-        PrepareView(vm: View, p?: any): void;
-    }
-}
-declare var JsBarcode: Function;
 declare module BaseModel {
-    function GetDbCommandForObject(obj: any, commandname: any, keys?: string, excludes?: string[]): any;
-    function GetUpdateCommand(obj: any, typename: any, commandname: any, keys?: string, excludes?: string[]): {};
-    function GetDeleteCommand(typename: any, id: any): {};
-    function FIxUpdateObj(obj: any): void;
-    function SaveCompanyAddress(element: Element): void;
-    class Dependencies {
-        static Container(): Element;
-        static httpClient: HttpClient;
-        static LoadContent(element: Element): void;
-        static ClientValidation: boolean;
-        static DataLayer: AppDataLayer;
-    }
     class List extends ListViewModel<any[]> {
         Identifier(): string;
         Title(): string;
@@ -1261,9 +1168,9 @@ declare module BaseModel {
 declare var tinymce: any;
 declare module Common.Contact {
     class MessageCollection {
-        Incoming: ErpApp.Model.AppMessage[];
-        Outgoing: ErpApp.Model.AppMessage[];
-        get All(): ErpApp.Model.AppMessage[];
+        Incoming: Models.AppMessage[];
+        Outgoing: Models.AppMessage[];
+        get All(): Models.AppMessage[];
     }
     class Details extends ViewModel<MessageCollection> {
         Identifier(): string;
@@ -1275,7 +1182,7 @@ declare module Common.Contact {
         Search(tag?: string): void;
         LoadList(query: ClientQuery, selector: string, setmodel: Function, page?: number): void;
         CloseElement(element: Element): void;
-        NewMessage(msg: ErpApp.Model.AppMessage): void;
+        NewMessage(msg: Models.AppMessage): void;
         ViewMessage(id: any): void;
         ReplyTo(id: any): void;
         SendMessage(): void;
@@ -1635,6 +1542,7 @@ declare function ToggleFloatBox(element: HTMLElement, setheight?: boolean): void
 declare function FloatList(listdata: [], fields: []): string;
 declare function CellDetails(html: any, setheight?: boolean): string;
 declare function ClearFilter(viewelement: Element): void;
+declare var JsBarcode: Function;
 declare function LoadBarcodes(): void;
 declare function GetFiltersFromUI(filtercontainer: Element): IClientFilter[];
 declare function resizableGrid(tbl: any, headonly?: boolean): void;
@@ -1667,46 +1575,6 @@ declare class App_Selector extends HTMLElement {
     private SelectNext;
     private SelectPrev;
     private SelectElement;
-}
-declare module ErpApp.Model {
-    class AppMessage {
-        Id: number;
-        CreatedOn: Date;
-        CreatedByUserId: string;
-        TargetUserId: string;
-        Subject: string;
-        Content: string;
-        FromName: string;
-        ToName: string;
-        ParentId: number;
-        IsReadByTarget: number;
-        TypeName: string;
-    }
-    class BaseArticle {
-        Id: string;
-        Title: string;
-        Content: string;
-        ImageUrl: string;
-        TypeName: string;
-        Category: Category;
-    }
-    class Article extends BaseArticle {
-        Description: string;
-        Created: Date;
-        CategoryId: number;
-        CreatedByUserId: number;
-        Domain: string;
-        Url: string;
-        TypeName: string;
-        Files: FileObject[];
-    }
-    class Category {
-        Id: string;
-        Title: string;
-        Code: string;
-        ParentId: number;
-        TypeName: string;
-    }
 }
 interface QueryLookupOptions {
     QueryName?: string;
@@ -1783,4 +1651,210 @@ declare class ValidationFuntionContainer {
     Number: (item: any, regex: any) => boolean;
     Functions(): Function[];
     constructor();
+}
+declare class AppDependencies {
+    static Container(): Element;
+    static httpClient: HttpClient;
+    static LoadContent(element: Element): void;
+    static ClientValidation: boolean;
+    static DataLayer: AppDataLayer;
+}
+interface NavigationItemDetails {
+}
+interface RouteProperties {
+    area: string;
+    controller: string;
+    view: string;
+    parameters: string;
+}
+declare function StartJS(): any;
+declare function OnAuthenticated(result: any): void;
+declare function GetParameter(key: string): string;
+declare function SetParameter(key: string, value: any): void;
+declare function SetWebServiceIdentifier(): void;
+declare function SetDataEntryPoint(): void;
+declare function Login(): void;
+declare var missingresources: {};
+declare function RetrieveResource(key: string): string;
+declare function ResNvl(keys: string[], key?: string): string;
+declare class ResourceContainer implements Dictionary {
+    Cultures: {};
+    Load(culture: string, obj: Dictionary, key: string): void;
+}
+interface AppResponse {
+    Model: any[];
+    Errors: any[];
+    ViewData: object;
+}
+declare class AppUICommand {
+    Key: string;
+    CssClass: string;
+    Url: (model: any, view?: View, command?: AppUICommand) => string;
+    IsInContext: (model: any, view?: View) => boolean;
+    OnClick: (model: any, view?: View, command?: AppUICommand) => string;
+    Prefix: string;
+    Action: string;
+    AppearsIn: string[];
+    Label: string;
+    Source: any;
+    Html: string;
+    Render(model: any, control?: any): string;
+    static GetFunctions(condition: string): any[];
+    static CreateFrom(obj: object): AppUICommand;
+    static Create(condition: string, appearsin: string[], key: string, action: string, classprefix?: string): AppUICommand;
+    static CreateFromHtml(key: string, Render: Function, isincontext?: Function): AppUICommand;
+}
+interface AppScript {
+    script: string;
+    children?: AppScript[];
+}
+declare const default_MoneyFormat: String;
+declare function FormatCurrencyAmount(value: any): number;
+interface AppSettings {
+    Domain: string;
+    DomainNamespace: string;
+    DefaultNewVoucherTypePrefix: string;
+    Currency: string;
+    Company: object;
+    ClientValidation: boolean;
+    DefaultCulture: string;
+    Connections: string[];
+    Culture: string;
+    Cultures: string[];
+    MainHash: string;
+    DateTimeFormat: string;
+    DateFormat: string;
+    MonetaryFormat: string;
+    QuantityFormat: string;
+    DecimalFormat: string;
+    DataEntryPoint: string;
+    BarcodeField: string;
+    PageSize: number;
+    CustomFiles: string[];
+    Imports: string[];
+    Scripts: AppScript[];
+    Views: string[];
+    Employee: object;
+    AllowedFeatures: object;
+    RouteSymbols: DictionaryOf<string>;
+    Navigation: DictionaryOf<string>;
+    AppQueryDictionaries: DictionaryOf<any>;
+}
+interface IQueryAction {
+    query: ClientQuery;
+    onready: Function;
+}
+declare class Application {
+    Resources: ResourceContainer;
+    data: Object;
+    private _Container;
+    private _ScriptsReady;
+    private _scriptwaiter;
+    private get scriptwaiter();
+    Commands: DictionaryOf<AppUICommand>;
+    StaticDataQueryActions: DictionaryOf<IQueryAction>;
+    RegisterCommand(command: AppUICommand): void;
+    UnRegisterCommand(key: string): void;
+    ScriptsReady(): void;
+    IsInDebugMode(): boolean;
+    IsAdmin(): boolean;
+    get Container(): Element;
+    constructor();
+    get AppName(): string;
+    ImportScripts: ImportScript[];
+    Controllers: ModelController[];
+    Waiter: Waiter;
+    httpClient: HttpClient;
+    localhttpClient: HttpClient;
+    Menu: NavigationItem;
+    ReloadSettings(): void;
+    menuElement(): Element;
+    LoadContent(item: Element): void;
+    DataPipe(data: any, v: View): void;
+    Delete(element: Element, args?: any): void;
+    GetContainer(): Element;
+    GetController(name: string): ModelController;
+    Authenticate(callback?: Function): void;
+    Navigate(source: Element, args: any): void;
+    NavigateTo(controller: string, view: string, p: any, area?: string): void;
+    GetView(controllername: string, viewname: string, viewid?: string): View;
+    GetRouteProperties(url?: string): RouteProperties;
+    NavigateUrl(url: string): void;
+    LoadX(): void;
+    Load(): void;
+    private _storename;
+    private _Settings;
+    get Settings(): AppSettings;
+    SaveSettings(settings?: AppSettings): void;
+    private NavigationItems;
+    Layouts: {
+        Dictionary: {};
+        Templates: {};
+        load: () => void;
+    };
+    LoadLayouts(): void;
+    SetCulture(culture: string): void;
+    LoadResources(callback: Function): void;
+    LoadData(company: object): void;
+    LoadMenu(): void;
+    LoadUI(): void;
+    ClearFloats(except?: Element): void;
+    ToggleFloat(selector: string, ev: MouseEvent): void;
+    CloseHovering(element: Element, path?: Element[]): void;
+    UIClick(e: MouseEvent): void;
+    CurrentView(): View;
+    private _idb;
+    SaveToClient(data: any, storename: string, callback: Function): void;
+    GetFromClient<T>(storename: string, callback: Action<T[]>, filter?: Func1<T, boolean>): void;
+    RefreshStaticData(callback: Function): void;
+    Refresh: any;
+}
+declare class App_ActionCenter extends HTMLElement {
+    constructor();
+    attributeChangedCallback(attrName: any, oldValue: any, newValue: any): void;
+    connectedCallback(): void;
+}
+declare var application: Application;
+declare function AddImportToApplication(s: ImportScript): void;
+declare function RegisterController(app: Application, controllerF: Func<ModelController>): void;
+declare function AddControllerToApplication(app: Application, controller: ModelController): void;
+declare module Models {
+    class AppMessage {
+        Id: number;
+        CreatedOn: Date;
+        CreatedByUserId: string;
+        TargetUserId: string;
+        Subject: string;
+        Content: string;
+        FromName: string;
+        ToName: string;
+        ParentId: number;
+        IsReadByTarget: number;
+        TypeName: string;
+    }
+    class BaseArticle {
+        Id: string;
+        Title: string;
+        Content: string;
+        ImageUrl: string;
+        TypeName: string;
+        Category: Category;
+    }
+    class Article extends BaseArticle {
+        Description: string;
+        Created: Date;
+        CategoryId: number;
+        CreatedByUserId: number;
+        Domain: string;
+        Url: string;
+        TypeName: string;
+        Files: FileObject[];
+    }
+    class Category {
+        Id: string;
+        Title: string;
+        Code: string;
+        ParentId: number;
+        TypeName: string;
+    }
 }

@@ -1,0 +1,10 @@
+﻿[
+  {
+    "outputFile": "wwwroot/css/FlowUI/ControlsUI.css",
+    "inputFile": "wwwroot/css/FlowUI/ControlsUI.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/FlowUI/FlowUI.css",
+    "inputFile": "wwwroot/css/FlowUI/FlowUI.scss"
+  }
+]

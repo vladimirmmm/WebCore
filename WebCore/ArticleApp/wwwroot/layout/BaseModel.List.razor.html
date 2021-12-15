@@ -1,0 +1,45 @@
+﻿<div class="@view.LogicalModelName list">
+    <app-header class="header">
+        <h2>@view.LogicalModelName</h2>
+        <div class="filter">
+            <div class="field commands">
+                <span class="name">...</span>
+                <span class="icon a-Search" onclick="view(this).Search()"></span>
+                <span class="icon a-Down" onclick="_ToggleClass(_SelectFirst('.filter',view(this).UIElement),'collapsed');"></span>
+            </div>
+            <div class="items list" binding-items="model" binding-mode="list">
+                @foreach (var filter in context["Filters"]) {
+                <div class="">
+                    <div class="field">
+                        <span class="name">@filter.Field</span>
+                        <div class="value">
+                            @(html.GetFilter(filter))
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+    </app-header>
+ 
+    <div class="generallist body">
+        <table class="generaltable">
+            <thead>
+                <tr class="item">
+                    <th><span class="name">@(html.Res("models.BaseModel.Id"))</span></th>
+                    <th><span class="name">@(html.Res("models.BaseModel.Name"))</span></th>
+                </tr>
+            </thead>
+            <tbody class="list items voucher" binding-items="model" binding-mode="list">
+                @foreach (var item in model) {
+                <tr class="item">
+                    <td><span class="value">@item.Id</span></td>
+                    <td><a class="value" href="#@(item.TypeName)\\Details\\@(item.Id)">@(FirstNotNull(item.Name, item.Identifier,"view"))</a></td>
+                </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+    <div class="pager"></div>
+</div>

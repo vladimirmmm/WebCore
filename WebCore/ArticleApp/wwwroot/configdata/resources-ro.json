@@ -1,0 +1,110 @@
+﻿{
+  "general": {
+    "Code": "Cod",
+    "Description": "Descriere",
+    "EmptyFilter": "Gol",
+    "AuthSuccess": "Autentificare reusita!",
+    "Username": "Nume utilizator",
+    "UserName": "Nume utilizator",
+    "Password": "Parolă",
+    "Or": "Sau",
+    "LoginButton": "Intrare",
+    "Key": "Cheie",
+    "And": "și",
+    "Value": "Valoare",
+    "Add": "Adaugă",
+    "Date": "Data",
+    "Time": "Ora",
+    "Hour": "Ora",
+    "Delete": "Șterge",
+    "Remove": "Eliminare",
+    "Save": "Salvare",
+    "Set": "Setează",
+    "Search": "Căutare",
+    "Select": "Alege",
+    "SelectAll": "Selectare tot",
+    "DeselectAll": "Deselectare tot",
+    "Submit": "Trimite",
+    "Create": "Creare",
+    "List": "Listă",
+    "Print": "Listare",
+    "Home": "Acasă",
+    "Process": "Procesare",
+    "Menu": "Meniu",
+    "Settings": "Setări",
+    "Login": "Autentificare",
+    "Logout": "Logout",
+    "ItemNotFound": "Element inexistent",
+    "Recent": "Recent",
+    "Actions": "Comenzi",
+    "FooterHTML": "&copy; Dyntell Software Romania.",
+    "PageSize": "Nr de elemente pe o pagină",
+    "Language": "Limbă",
+    "UI": "Interfață Grafică",
+    "WebServiceIdentifier": "Identificator web service",
+    "All": "Toate",
+    "Clear": "Șterge",
+    "Cancel": "Revocare",
+    "Ok": "OK",
+    "Device": "Dispozitiv",
+    "Delivered": "Livrat",
+    "CloseUnsavedComfirmation": "Datele au fost modifcate. Doriți să renunțați la aceste modificări?",
+    "Count": "Nr. elemente",
+    "NextStep": "Pasul următor",
+    "PreviousStep": "Pasul anterior",
+    "ExactFilter": "Filtrare fixă ",
+    "Quant": "Cant.",
+    "Hide": "Ascunde",
+    "Show": "Arată",
+    "ValidationResult": "Validare",
+    "Warehouse": "Gestiune",
+    "VoucherItemSelector": "Subdocumente",
+    "OpenAll": "Deschide tot",
+    "CloseAll": "Închide tot",
+    "Error": "Eroare",
+    "Warning": "Avertizare",
+    "Success": "Succes",
+    "Name": "Denumire",
+    "New": "Element nou",
+    "Yes": "Da",
+    "No": "Nu"
+  },
+  "menu": {
+    "Article.List": "Articole",
+    "Settings.Login": "Login"
+  },
+  "texts": {
+
+  },
+  "models": {
+
+    "Category": {
+      "this": "Categorie",
+      "plural": "Categorii"
+    },
+    "Article": {
+      "this": "Articol",
+      "plural": "Articole"
+
+    }
+  },
+  "UI": {
+    "Commands": {
+      "a-Create": "Adaugă",
+      "a-Search": "Caută",
+      "a-Print": "Listare"
+    },
+    "Article": {
+
+
+    },
+    "general": {
+      "DateMin": "De la",
+      "DateMax": "Până la"
+
+    }
+  },
+  "Business": {
+
+  }
+}
